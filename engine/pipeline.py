@@ -14,6 +14,20 @@ log = logging.getLogger("pythia.pipeline")
 _lock = asyncio.Lock()
 
 
+async def refresh_world() -> int:
+    """Cheap sensing pass — refresh live events + brief WITHOUT calling the LLM.
+    Keeps the agent view and oracle context current between forecasts."""
+    from .runtime import intake
+    try:
+        events = await intake.fetch(limit=250)
+        STATE.events = events
+        STATE.set_world(build_brief(events))
+        return len(events)
+    except Exception as e:  # noqa: BLE001
+        log.warning("sense refresh failed: %s", e)
+        return 0
+
+
 async def run_prediction(trigger: str = "manual") -> RunRecord:
     from .runtime import intake, oracle
 
@@ -33,6 +47,7 @@ async def run_prediction(trigger: str = "manual") -> RunRecord:
             # high cap so no single source (weather alerts, news) starves the others;
             # build_brief then takes the top few per domain.
             events = await intake.fetch(limit=250)
+            STATE.events = events
             brief = build_brief(events)
             run.brief = brief
             STATE.set_world(brief)

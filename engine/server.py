@@ -18,19 +18,22 @@ log = logging.getLogger("pythia.server")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from .loop import LOOP
+    from .loop import LOOP, SENSE
     from .pipeline import run_prediction
     LOOP.start()
+    SENSE.start()   # keep live events fresh between forecasts
     log.info("PYTHIA oracle up | %s", CONFIG.summary())
 
     async def _boot():
         from .runtime import intake
+        from .pipeline import refresh_world
         # wait for Osiris to be reachable, then give its routes a moment to compile
         for _ in range(20):
             if await intake.health():
                 break
             await asyncio.sleep(2)
         await asyncio.sleep(4)
+        await refresh_world()              # populate live events immediately (for agents/chat)
         await run_prediction(trigger="boot")
 
     asyncio.create_task(_boot())
@@ -106,6 +109,36 @@ async def predict():
         return {"status": "already running"}
     asyncio.create_task(run_prediction(trigger="manual"))
     return {"status": "started"}
+
+
+@app.get("/agent/view")
+async def agent_view():
+    """One consolidated, machine-readable view of the world for external agents:
+    the assembled brief, every live event (with coords), and current predictions.
+    For a live feed, subscribe to GET /state/stream (SSE)."""
+    from .runtime import oracle
+    by_domain: dict[str, list] = {}
+    for e in STATE.events:
+        by_domain.setdefault(e.category, []).append({
+            "title": e.title, "summary": e.summary, "source": e.source,
+            "lat": e.lat, "lng": e.lng, "salience": e.salience, "ts": e.ts,
+        })
+    return {
+        "generated_at": STATE.last_run_ms,
+        "model": oracle.model,
+        "summary": (STATE.world.text if STATE.world else ""),
+        "domains": (STATE.world.domains if STATE.world else {}),
+        "events_by_domain": by_domain,
+        "event_count": len(STATE.events),
+        "predictions": [p.model_dump() for p in STATE.predictions],
+        "live_stream": "/state/stream",
+    }
+
+
+@app.get("/agent/events")
+async def agent_events():
+    """Flat list of every live world event the oracle is currently watching."""
+    return {"count": len(STATE.events), "events": [e.model_dump() for e in STATE.events]}
 
 
 @app.get("/world")

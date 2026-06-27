@@ -42,9 +42,26 @@ PYTHIA does. It is an **oracle**: a single surface that takes in the entire live
 
 - **Forecasts the future** from the live world, grouped by horizon, each prediction carrying a probability, its reasoning, and a location — **click one and the globe flies there.**
 - **Answers questions** — a chat that can see *every* live source and its own forecasts at once.
-- **Surfaces risk on the map** — overlays like live storm/flood warning zones drawn as outlined areas.
-- **Is a cockpit, not a page** — pull up news feeds and chat as movable, resizable windows around a spinning globe, and watch the world go on.
+- **Watches everything** — world news, conflict/war zones, NWS storm & flood polygons, EONET disasters, wildfires, earthquakes, cyber threats, infrastructure, **global markets** (oil, indices, commodities, crypto), and **Polymarket** crowd odds.
+- **Surfaces headlines** — big breaking-news ticker along the bottom; risk overlays drawn as outlined zones on the map.
+- **Is a cockpit, not a page** — pull up news feeds and chat as movable, resizable windows around a spinning globe (manual or event-snapping spin), and watch the world go on.
 - **Picks its own brain** — switch between any model installed in [Ollama](https://ollama.com) from the UI.
+- **Opens its eyes to your agents** — a clean machine-readable API exposes the whole world view (see below).
+
+## Agent API
+
+PYTHIA isn't just a dashboard — it's a sensor + reasoning layer your own agents can plug into. The engine exposes everything it sees in one place:
+
+| Endpoint | Returns |
+|---|---|
+| `GET /agent/view` | The full world view: assembled summary, **every live event grouped by domain (with coordinates)**, active domains, and current predictions. |
+| `GET /agent/events` | Flat list of every live world event being watched. |
+| `GET /state/stream` | Server-Sent-Events live feed — push updates as the world changes. |
+| `GET /predictions` · `POST /chat` | Current forecasts; ask the oracle a question grounded in all live data. |
+
+```bash
+curl http://localhost:8088/agent/view      # one JSON payload = the agent's eyes on the world
+```
 
 ## Quickstart
 
@@ -65,7 +82,7 @@ cp .env.example .env     # sensible defaults; no keys needed
 | `integrations/osiris/` | The overlay applied to an Osiris checkout — the predictions deck, chat, floating windows, map overlays, and API routes. See its `INSTALL.md`. |
 | `run-all.sh` · `PYTHIA.app` | One-tap launchers. |
 
-**Engine API** (`:8088`): `/predict` · `/predictions` · `/chat` · `/world` · `/state` (+ SSE) · `/models` · `/model` · `/loop` · `/links` · `/health`
+**Engine API** (`:8088`): `/predict` · `/predictions` · `/chat` · `/world` · `/agent/view` · `/agent/events` · `/state` (+ SSE `/state/stream`) · `/models` · `/model` · `/loop` · `/links` · `/health`
 
 ## Configuration (`.env`)
 

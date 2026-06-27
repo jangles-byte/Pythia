@@ -30,6 +30,8 @@ FEEDS = [
     ("/api/cyber-threats", "cyber", "cyber"),
     ("/api/infrastructure", "infra", "infrastructure"),
     ("/api/polymarket", "polymarket", "market-odds"),
+    ("/api/markets", "markets", "markets"),
+    ("/api/crypto", "crypto", "markets"),
 ]
 
 # Words that raise an event's salience (drives auto-scan selection).
@@ -127,6 +129,31 @@ def _to_event(d: dict, source: str, category: str) -> WorldEvent | None:
     )
 
 
+def _markets_events(data: dict, source: str) -> list[WorldEvent]:
+    """Flatten Osiris markets/crypto (grouped name->{price,change_percent}) into events."""
+    out: list[WorldEvent] = []
+    if not isinstance(data, dict):
+        return out
+
+    def emit(name: str, v: dict) -> None:
+        if not isinstance(v, dict) or v.get("price") is None:
+            return
+        chg = v.get("change_percent")
+        sign = "+" if (chg or 0) >= 0 else ""
+        title = f"{name}: {v['price']}" + (f" ({sign}{chg}%)" if chg is not None else "")
+        out.append(WorldEvent(title=title[:120], category="markets", source=source,
+                              salience=min(1.0, 0.45 + abs(float(chg or 0)) / 10)))
+
+    for k, v in data.items():
+        if isinstance(v, dict):
+            if "price" in v:
+                emit(k, v)                       # flat: name -> quote
+            else:
+                for name, q in v.items():        # group: indices/commodities/... -> {name: quote}
+                    emit(name, q)
+    return out
+
+
 class OsirisIntake:
     def __init__(self, base_url: str | None = None):
         self.base = (base_url or CONFIG.osiris_url).rstrip("/")
@@ -145,10 +172,14 @@ class OsirisIntake:
             # generous: Next.js compiles each route on first hit (cold start)
             r = await c.get(f"{self.base}{path}", timeout=20)
             if r.status_code < 400:
-                for d in _find_items(r.json()):
-                    ev = _to_event(d, source, category)
-                    if ev:
-                        out.append(ev)
+                data = r.json()
+                if source in ("markets", "crypto"):
+                    out.extend(_markets_events(data, source))
+                else:
+                    for d in _find_items(data):
+                        ev = _to_event(d, source, category)
+                        if ev:
+                            out.append(ev)
         except (httpx.HTTPError, ValueError) as e:
             log.debug("feed %s failed: %s", path, e)
         return out

@@ -14,6 +14,7 @@ class EngineState:
     def __init__(self) -> None:
         self.predictions: list[Prediction] = []     # current forecast set
         self.world: Optional[WorldBrief] = None
+        self.events: list = []                       # latest raw WorldEvents (for agents)
         self.runs: "OrderedDict[str, RunRecord]" = OrderedDict()
         self.generating: bool = False
         self.loop_enabled: bool = False
