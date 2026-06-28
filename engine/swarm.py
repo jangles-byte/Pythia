@@ -34,9 +34,10 @@ def _persona_messages(name: str, lens: str, brief_text: str, preds: list[Predict
         f"You are the {name}, one specialist on PYTHIA's forecasting swarm. "
         f"You judge the future strictly through the lens of {lens}. "
         f"You will be given a live world snapshot and a numbered list of candidate predictions. "
-        f"For EACH prediction give your OWN probability (0-100) and a terse reason from your lens. "
+        f"For EACH prediction give your OWN probability (0-100) and make your case in your own voice: "
+        f"1-2 sentences citing the specific signals (or absences) that drive your view, from your lens. "
         f'Return ONLY a JSON array, one object per prediction: '
-        f'{{"i": <index>, "p": <0-100>, "note": "<reason, max 12 words>"}}. No prose, no markdown.'
+        f'{{"i": <index>, "p": <0-100>, "note": "<your 1-2 sentence argument>"}}. No prose, no markdown.'
     )
     user = (
         f"=== LIVE WORLD SNAPSHOT ===\n{brief_text[:2600]}\n\n"
@@ -50,7 +51,7 @@ async def _ask(oracle, name: str, lens: str, brief_text: str,
                preds: list[Prediction]) -> tuple[str, dict[int, tuple[float, str]]]:
     """Run one persona; return its {prediction_index: (probability, note)} map."""
     try:
-        text = await oracle._complete(_persona_messages(name, lens, brief_text, preds), max_tokens=900)
+        text = await oracle._complete(_persona_messages(name, lens, brief_text, preds), max_tokens=1300)
     except Exception as e:  # noqa: BLE001
         log.warning("swarm persona %s failed: %s", name, e)
         return name, {}
@@ -70,7 +71,7 @@ async def _ask(oracle, name: str, lens: str, brief_text: str,
         if not 0 <= i < len(preds):
             continue
         p = max(0.0, min(1.0, p / 100.0 if p > 1 else p))
-        scored[i] = (round(p, 2), str(o.get("note", "")).strip()[:120])
+        scored[i] = (round(p, 2), str(o.get("note", "")).strip()[:320])
     return name, scored
 
 

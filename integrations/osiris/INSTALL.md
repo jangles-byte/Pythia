@@ -9,6 +9,7 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | File here | Goes to |
 |---|---|
 | `PythiaPanel.tsx` | `src/components/PythiaPanel.tsx` — the oracle / predictions deck |
+| `DeliberationModal.tsx` | `src/components/DeliberationModal.tsx` — swarm deliberation popup (gauge + per-agent votes) |
 | `PythiaStatus.tsx` | `src/components/PythiaStatus.tsx` — top-right status + model picker |
 | `CreditsModal.tsx` | `src/components/CreditsModal.tsx` — credits |
 | `FloatingWindow.tsx` | `src/components/FloatingWindow.tsx` — movable/resizable window shell |
