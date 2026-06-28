@@ -45,13 +45,13 @@ export default function ChatBox() {
         {busy && <div className="self-start text-[10px] text-[var(--text-muted)] flex items-center gap-1.5 px-1"><Loader2 className="w-3 h-3 animate-spin" /> consulting the feeds…</div>}
         <div ref={endRef} />
       </div>
-      <div className="flex items-center gap-1.5 p-2 border-t border-white/5">
+      <div className="flex items-center gap-1.5 p-2 border-t border-[var(--border-secondary)]">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
           placeholder="Ask the oracle…"
-          className="flex-1 bg-white/5 rounded-lg px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
+          className="flex-1 bg-[var(--hover-accent)] rounded-lg px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
         />
         <button onClick={send} disabled={busy} className="p-1.5 rounded-lg disabled:opacity-50" style={{ background: 'rgba(154,123,255,.22)', color: 'var(--gold-primary)' }}><Send className="w-3.5 h-3.5" /></button>
       </div>

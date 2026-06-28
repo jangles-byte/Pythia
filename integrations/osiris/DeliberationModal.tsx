@@ -90,9 +90,9 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
             </div>
 
             {/* Consensus gauge */}
-            <div className="flex items-center gap-3 rounded-xl border border-white/5 p-3 mb-3" style={{ background: 'rgba(255,255,255,.02)' }}>
+            <div className="flex items-center gap-3 rounded-xl border border-[var(--border-secondary)] p-3 mb-3" style={{ background: 'rgba(255,255,255,.02)' }}>
               <svg viewBox="0 0 200 112" className="w-[140px] shrink-0">
-                <path d={arc(1)} fill="none" stroke="rgba(255,255,255,.08)" strokeWidth="12" strokeLinecap="round" />
+                <path d={arc(1)} fill="none" stroke="var(--border-primary)" strokeWidth="12" strokeLinecap="round" />
                 <path d={arc(Math.min(1, Math.max(0, consensus / 100)))} fill="none" stroke={color} strokeWidth="12" strokeLinecap="round" />
                 <text x="100" y="86" textAnchor="middle" className="font-mono font-bold" style={{ fontSize: 30, fill: color }}>{consensus}%</text>
                 <text x="100" y="104" textAnchor="middle" style={{ fontSize: 9, fill: 'var(--text-muted)', letterSpacing: 1 }}>CONSENSUS</text>
@@ -118,10 +118,10 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
               <div className="mb-3">
                 <div className="text-[8px] font-mono tracking-widest text-[var(--text-muted)] mb-2">WHERE THE COUNCIL LANDED</div>
                 <svg viewBox="0 0 300 46" className="w-full">
-                  <line x1="10" y1="30" x2="290" y2="30" stroke="rgba(255,255,255,.12)" strokeWidth="1" />
+                  <line x1="10" y1="30" x2="290" y2="30" stroke="var(--border-primary)" strokeWidth="1" />
                   {[0, 25, 50, 75, 100].map((t) => (
                     <g key={t}>
-                      <line x1={10 + t * 2.8} y1="27" x2={10 + t * 2.8} y2="33" stroke="rgba(255,255,255,.2)" strokeWidth="1" />
+                      <line x1={10 + t * 2.8} y1="27" x2={10 + t * 2.8} y2="33" stroke="var(--text-muted)" strokeWidth="1" />
                       <text x={10 + t * 2.8} y="43" textAnchor="middle" style={{ fontSize: 7, fill: 'var(--text-muted)' }}>{t}</text>
                     </g>
                   ))}
@@ -146,7 +146,7 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
                   const m = AGENT_META[a.name] || { color: 'var(--text-secondary)', lens: '' };
                   const pct = Math.round(a.probability * 100);
                   return (
-                    <div key={a.name} className="rounded-lg border border-white/5 p-2" style={{ background: 'rgba(255,255,255,.02)' }}>
+                    <div key={a.name} className="rounded-lg border border-[var(--border-secondary)] p-2" style={{ background: 'rgba(255,255,255,.02)' }}>
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <Hexagon className="w-3 h-3 shrink-0" style={{ color: m.color }} />
@@ -155,7 +155,7 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
                         </div>
                         <span className="text-[11px] font-mono font-bold shrink-0" style={{ color: m.color }}>{pct}%</span>
                       </div>
-                      <div className="h-1 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-1 rounded-full bg-[var(--hover-accent)] overflow-hidden">
                         <div className="h-full rounded-full" style={{ width: `${pct}%`, background: m.color }} />
                       </div>
                       {a.note && <p className="text-[8px] font-mono text-[var(--text-secondary)] mt-1 leading-relaxed">“{a.note}”</p>}
@@ -171,7 +171,7 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
 
             {/* Location */}
             {p.location && (
-              <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/5">
+              <div className="flex items-center justify-between gap-2 pt-2 border-t border-[var(--border-secondary)]">
                 <span className="text-[9px] font-mono flex items-center gap-1" style={{ color }}><MapPin className="w-3 h-3" /> {p.location}</span>
                 {p.lat != null && p.lng != null && (
                   <button

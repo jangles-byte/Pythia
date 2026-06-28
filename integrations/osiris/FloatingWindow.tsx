@@ -47,7 +47,7 @@ export default function FloatingWindow({ title, icon, initial, z, onClose, onFoc
       style={{ left: pos.x, top: pos.y, width: size.w, height: min ? undefined : size.h, zIndex: z, boxShadow: '0 12px 48px rgba(0,0,0,0.6)' }}
       onMouseDown={onFocus}
     >
-      <div className="flex items-center justify-between px-2.5 py-1.5 cursor-move select-none border-b border-white/5" style={{ background: 'rgba(255,255,255,0.03)' }} onMouseDown={startDrag}>
+      <div className="flex items-center justify-between px-2.5 py-1.5 cursor-move select-none border-b border-[var(--border-secondary)]" style={{ background: 'rgba(255,255,255,0.03)' }} onMouseDown={startDrag}>
         <div className="flex items-center gap-1.5 min-w-0">
           {icon}
           <span className="text-[10px] font-mono tracking-wider text-[var(--text-primary)] truncate">{title}</span>

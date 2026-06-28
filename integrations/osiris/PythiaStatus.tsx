@@ -63,7 +63,7 @@ export default function PythiaStatus({ compact = false }: { compact?: boolean })
               <div className="absolute right-0 mt-1 z-[401] glass-panel p-1 min-w-[150px] max-h-[240px] overflow-y-auto">
                 {models.length === 0 && <div className="text-[8px] font-mono text-[var(--text-muted)] px-2 py-1">no models found</div>}
                 {models.map((m) => (
-                  <button key={m} onClick={() => pick(m)} className="w-full text-left text-[9px] font-mono px-2 py-1 rounded hover:bg-white/5 truncate"
+                  <button key={m} onClick={() => pick(m)} className="w-full text-left text-[9px] font-mono px-2 py-1 rounded hover:bg-[var(--hover-accent)] truncate"
                     style={{ color: m === s.model ? 'var(--gold-primary)' : 'var(--text-secondary)' }}>
                     {m === s.model ? '● ' : ''}{m}
                   </button>
@@ -74,7 +74,7 @@ export default function PythiaStatus({ compact = false }: { compact?: boolean })
         </div>
       )}
 
-      <span className="flex items-center gap-2 border-l border-white/10 pl-2.5">
+      <span className="flex items-center gap-2 border-l border-[var(--border-primary)] pl-2.5">
         <Dot on={s.osiris} label="OSIRIS" />
         <Dot on={s.oracle} label="ORACLE" />
       </span>

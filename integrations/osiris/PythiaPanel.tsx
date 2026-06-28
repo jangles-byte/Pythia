@@ -126,13 +126,13 @@ export default function PythiaPanel({ mobile = false, onLocate }: { mobile?: boo
                 <div key={p.id}
                   onClick={() => { setSelected(p); if (p.lat != null && p.lng != null) onLocate?.(p.lat, p.lng); }}
                   title="Open the swarm deliberation"
-                  className="rounded-lg border border-white/5 p-2 mb-1.5 transition-colors cursor-pointer hover:border-[var(--border-active)]"
+                  className="rounded-lg border border-[var(--border-secondary)] p-2 mb-1.5 transition-colors cursor-pointer hover:border-[var(--border-active)]"
                   style={{ background: 'rgba(255,255,255,.02)' }}>
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-[10px] text-[var(--text-primary)] leading-snug">{p.statement}</span>
                     <span className="text-[11px] font-mono font-bold shrink-0 flex items-center gap-1" style={{ color: h.color }}>{p.split && <span title="the swarm disagrees sharply" style={{ color: 'var(--alert-red)', fontSize: 8 }}>⚠</span>}{Math.round(p.probability * 100)}%</span>
                   </div>
-                  <div className="h-1 rounded-full bg-white/5 mt-1.5 overflow-hidden">
+                  <div className="h-1 rounded-full bg-[var(--hover-accent)] mt-1.5 overflow-hidden">
                     <div className="h-full rounded-full" style={{ width: `${Math.round(p.probability * 100)}%`, background: h.color }} />
                   </div>
                   {p.reasoning && <div className="text-[8px] font-mono text-[var(--text-muted)] mt-1 leading-relaxed">{p.reasoning}</div>}

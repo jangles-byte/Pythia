@@ -48,7 +48,7 @@ export default function CreditsModal({ open, onClose }: { open: boolean; onClose
             <div className="flex flex-col gap-2">
               {CREDITS.map((c) => (
                 <a key={c.name} href={c.url} target="_blank" rel="noopener noreferrer"
-                  className="group flex items-center justify-between rounded-xl border border-white/5 hover:border-[var(--border-active)] px-3 py-2 transition-colors"
+                  className="group flex items-center justify-between rounded-xl border border-[var(--border-secondary)] hover:border-[var(--border-active)] px-3 py-2 transition-colors"
                   style={{ background: 'rgba(255,255,255,.02)' }}>
                   <div className="flex flex-col">
                     <span className="text-[12px] font-semibold text-[var(--text-primary)]">{c.name} <span className="text-[9px] font-mono text-[var(--text-muted)]">· {c.by}</span></span>
