@@ -33,6 +33,11 @@ FEEDS = [
     ("/api/markets", "markets", "markets"),
     ("/api/crypto", "crypto", "markets"),
     ("/api/frontlines", "frontlines", "conflict"),
+    ("/api/displacement", "unhcr", "displacement"),
+    ("/api/economy", "worldbank", "economy"),
+    ("/api/censorship", "ooni", "censorship"),
+    ("/api/health-outbreaks", "who", "health"),
+    ("/api/unrest", "unrest", "unrest"),
 ]
 
 # Words that raise an event's salience (drives auto-scan selection).
@@ -168,6 +173,54 @@ def _frontline_events(data: dict) -> list[WorldEvent]:
                        category="conflict", source="frontlines", lat=48.5, lng=31.2, salience=0.9)]
 
 
+def _displacement_events(data: dict) -> list[WorldEvent]:
+    """UNHCR forced-displacement → one global summary + the top origin countries (with coords)."""
+    feats = (data or {}).get("features") or []
+    out: list[WorldEvent] = []
+    summ = (data or {}).get("summary") or ""
+    if summ:
+        out.append(WorldEvent(title=f"Global forced displacement — top origins: {summ}"[:180],
+                              summary="UNHCR refugees, asylum-seekers and IDPs by country of origin.",
+                              category="displacement", source="unhcr", salience=0.85))
+    for f in feats[:5]:
+        p = f.get("properties") or {}
+        c = (f.get("geometry") or {}).get("coordinates") or [None, None]
+        out.append(WorldEvent(title=str(p.get("label", ""))[:140], category="displacement",
+                              source="unhcr", lng=c[0], lat=c[1], salience=0.8))
+    return out
+
+
+def _summary_signal(data: dict, source: str, category: str, prefix: str) -> list[WorldEvent]:
+    """Single oracle signal from a country-level feed's `summary` string."""
+    summ = (data or {}).get("summary") or ""
+    if not summ:
+        return []
+    return [WorldEvent(title=f"{prefix}: {summ}"[:180], category=category, source=source, salience=0.75)]
+
+
+def _health_events(data: dict) -> list[WorldEvent]:
+    """WHO disease outbreaks → a summary signal + the most recent outbreaks (with coords)."""
+    out = _summary_signal(data, "who", "health", "Disease outbreaks (WHO)")
+    for f in (data or {}).get("features", [])[:4]:
+        p = f.get("properties") or {}
+        c = (f.get("geometry") or {}).get("coordinates") or [None, None]
+        out.append(WorldEvent(title=str(p.get("label", ""))[:140], category="health",
+                              source="who", lng=c[0], lat=c[1], salience=0.8))
+    return out
+
+
+def _unrest_events(data: dict) -> list[WorldEvent]:
+    """GDELT protest hotspots → a summary signal + the top locations (with coords)."""
+    out = _summary_signal(data, "unrest", "unrest", "Protest hotspots (GDELT)")
+    for f in (data or {}).get("features", [])[:6]:
+        p = f.get("properties") or {}
+        c = (f.get("geometry") or {}).get("coordinates") or [None, None]
+        out.append(WorldEvent(title=str(p.get("label", ""))[:140], category="unrest",
+                              source="unrest", lng=c[0], lat=c[1],
+                              salience=min(1.0, 0.6 + (p.get("events", 0) or 0) / 20)))
+    return out
+
+
 class OsirisIntake:
     def __init__(self, base_url: str | None = None):
         self.base = (base_url or CONFIG.osiris_url).rstrip("/")
@@ -183,14 +236,25 @@ class OsirisIntake:
     async def _fetch_feed(self, c: httpx.AsyncClient, path: str, source: str, category: str) -> list[WorldEvent]:
         out: list[WorldEvent] = []
         try:
-            # generous: Next.js compiles each route on first hit (cold start)
-            r = await c.get(f"{self.base}{path}", timeout=20)
+            # generous: Next.js compiles each route on first hit (cold start), and a few
+            # feeds (e.g. /api/unrest aggregates many GDELT files) are slow until cached.
+            r = await c.get(f"{self.base}{path}", timeout=35)
             if r.status_code < 400:
                 data = r.json()
                 if source in ("markets", "crypto"):
                     out.extend(_markets_events(data, source))
                 elif source == "frontlines":
                     out.extend(_frontline_events(data))
+                elif source == "unhcr":
+                    out.extend(_displacement_events(data))
+                elif source == "worldbank":
+                    out.extend(_summary_signal(data, "worldbank", "economy", "Cost-of-living — highest inflation"))
+                elif source == "ooni":
+                    out.extend(_summary_signal(data, "ooni", "censorship", "Internet censorship — top network-anomaly countries"))
+                elif source == "who":
+                    out.extend(_health_events(data))
+                elif source == "unrest":
+                    out.extend(_unrest_events(data))
                 else:
                     for d in _find_items(data):
                         ev = _to_event(d, source, category)
