@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import ssl
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -9,6 +10,14 @@ from dotenv import load_dotenv
 
 _ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(_ROOT / ".env", override=False)
+
+# httpx defaults its CA bundle to certifi, which fails to load under some OpenSSL 3
+# setups (X509: NO_CERTIFICATE_OR_CRL_FOUND) and 500s every request. The system
+# trust store loads fine, so use it — this keeps full TLS verification on.
+try:
+    HTTPX_VERIFY: "ssl.SSLContext | bool" = ssl.create_default_context()
+except Exception:  # noqa: BLE001 — fall back to httpx's default if the system store is unavailable
+    HTTPX_VERIFY = True
 
 # Reuse MiroFish's local LLM as the oracle's brain unless overridden in pythia/.env.
 _MIROFISH_DIR = Path(os.environ.get("MIROFISH_DIR", str(Path.home() / "MiroFish")))

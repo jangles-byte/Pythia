@@ -11,7 +11,7 @@ from typing import Awaitable, Callable, Optional
 
 import httpx
 
-from .config import CONFIG
+from .config import CONFIG, HTTPX_VERIFY
 from .models import Prediction, WorldBrief
 
 log = logging.getLogger("pythia.oracle")
@@ -48,23 +48,23 @@ class Oracle:
 
     async def health(self) -> bool:
         try:
-            async with httpx.AsyncClient(timeout=5) as c:
+            async with httpx.AsyncClient(verify=HTTPX_VERIFY, timeout=5) as c:
                 r = await c.get(f"{self.base}/models", headers={"Authorization": f"Bearer {self.key}"})
                 return r.status_code < 500
-        except httpx.HTTPError:
+        except Exception:  # noqa: BLE001 — health is a status dot; never raise
             return False
 
     async def list_models(self) -> list[str]:
         """Scan the LLM backend (Ollama) for installed models."""
         try:
-            async with httpx.AsyncClient(timeout=8) as c:
+            async with httpx.AsyncClient(verify=HTTPX_VERIFY, timeout=8) as c:
                 r = await c.get(f"{self.base}/models", headers={"Authorization": f"Bearer {self.key}"})
                 r.raise_for_status()
                 data = r.json().get("data", [])
                 names = sorted({m.get("id", "") for m in data if m.get("id")})
                 # drop embedding-only models — they can't do chat completions
                 return [n for n in names if n and "embed" not in n.lower()]
-        except (httpx.HTTPError, ValueError):
+        except Exception:  # noqa: BLE001
             return []
 
     def _prompt(self, brief: WorldBrief) -> str:
@@ -96,7 +96,7 @@ class Oracle:
 
     async def _complete(self, messages: list[dict], max_tokens: int = 900) -> str:
         body = {"model": self.model, "messages": messages, "temperature": CONFIG.temperature, "max_tokens": max_tokens}
-        async with httpx.AsyncClient(timeout=CONFIG.request_timeout) as c:
+        async with httpx.AsyncClient(verify=HTTPX_VERIFY, timeout=CONFIG.request_timeout) as c:
             r = await c.post(f"{self.base}/chat/completions", json=body,
                              headers={"Authorization": f"Bearer {self.key}"})
             r.raise_for_status()
