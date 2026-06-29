@@ -8,6 +8,8 @@ PYTHIA fuses two open-source projects — **[MiroFish](https://github.com/666ghj
 
 It runs **entirely on your own hardware**. No cloud, no API keys, no cost.
 
+> **Building an agent?** Point it at PYTHIA and it gains **eyes on the whole planet** — one live, machine-readable view of everything happening on Earth (conflict, disasters, markets, displacement, disease, unrest, cyber) plus forecasts and reasoning, to inform decisions and add real-world context to whatever it does. → **[For agents ↓](#for-agents--give-your-agent-eyes-on-the-planet)**
+
 ![PYTHIA — the cockpit](screenshots/cockpit.png)
 
 </div>
@@ -87,20 +89,88 @@ No API keys. No accounts. No cost.
 4. **Surface** — predictions land on the deck and the globe; click one to fly there and read the full deliberation.
 5. **Serve** — the entire world-view is exposed over the Agent API for your own tools to consume.
 
-## Agent API
+## For agents — give your agent eyes on the planet
 
-PYTHIA isn't just a dashboard — it's a sensor + reasoning layer your own agents can plug into. The engine exposes everything it sees in one place:
+Most agents are blind to the real world. PYTHIA fixes that: run it once and your agent gets a single, always-current view of **what's happening on Earth right now** — armed conflict, disasters, markets, displacement, disease, unrest, cyber activity — plus PYTHIA's own forecasts and reasoning. Use it to **inform decisions, add real-world context, ground answers, or trigger behavior when the world changes.**
 
-| Endpoint | Returns |
-|---|---|
-| `GET /agent/view` | The full world view: assembled summary, **every live event grouped by domain (with coordinates)**, active domains, and current predictions. |
-| `GET /agent/events` | Flat list of every live world event being watched. |
-| `GET /state/stream` | Server-Sent-Events live feed — push updates as the world changes. |
-| `GET /predictions` · `POST /chat` | Current forecasts; ask the oracle a question grounded in all live data. |
+Everything is local HTTP + JSON on **`http://localhost:8088`**. No keys, no SDK, no rate limits, CORS open.
 
+### Install & run (one time)
+
+**Prerequisites**
+- [Ollama](https://ollama.com) running, with a chat model pulled — `ollama pull llama3.1` (any model works).
+- A [Osiris](https://github.com/simplifaisoul/osiris) checkout with the PYTHIA overlay applied — see [`integrations/osiris/INSTALL.md`](integrations/osiris/INSTALL.md).
+- Python 3.11+ and [uv](https://docs.astral.sh/uv/).
+
+**Start the stack** — the live globe (`:3000`) + the agent API (`:8088`):
 ```bash
-curl http://localhost:8088/agent/view      # one JSON payload = the agent's eyes on the world
+git clone https://github.com/jangles-byte/Pythia && cd Pythia
+cp .env.example .env          # sensible defaults — no keys needed
+./run-all.sh                  # starts Osiris + the engine and opens the UI
 ```
+Your agent only ever talks to the engine: **`http://localhost:8088`**. The UI is optional — close it and the engine keeps sensing the world. Confirm it's up:
+```bash
+curl http://localhost:8088/health
+curl http://localhost:8088/links     # {engine, osiris, oracle} all true once ready
+```
+
+### The one call most agents want
+```bash
+curl http://localhost:8088/agent/view
+```
+One JSON payload = your agent's situational awareness: a prose **summary** of the world, every live **event grouped by domain** (with coordinates), the active **domains**, and the current **predictions**.
+
+### Full API reference
+
+| Method & path | Query / body | Returns |
+|---|---|---|
+| `GET /health` | — | service status + active config |
+| `GET /config` | — | Osiris URL, model, horizons, refresh intervals |
+| `GET /links` | — | liveness — `engine`/`osiris`/`oracle` booleans, current `model`, `generating`, `loop`, `prediction_count` |
+| `GET /agent/view` | — | **the whole world in one payload** — `summary`, `domains`, `events_by_domain` (lat/lng), `event_count`, `predictions`, `live_stream` |
+| `GET /agent/events` | `domain`, `source`, `min_salience`, `since` (ms), `limit` | live events, most-salient first, + `domains_available` for discovery |
+| `GET /predictions` | `horizon` (`24h`\|`week`\|`month`\|`year`), `min_probability` | forecasts (each with its swarm `agents`, `split`, `base_probability`) + the world brief + valid `horizons` |
+| `GET /world` | — | the assembled world brief — prose `text`, `domains`, `event_count` |
+| `GET /runs` | — | the last 20 oracle passes (stage, trigger, timing) |
+| `GET /state` | — | full state snapshot — predictions + world + runs + flags |
+| `GET /state/stream` | — | **SSE** — a snapshot, then live deltas as the world changes |
+| `POST /predict` | — | trigger a fresh forecast now → `{status}` |
+| `POST /chat` | `{ "message": "…", "history": [] }` | `{answer}` — ask anything; grounded in every live feed + current forecasts |
+| `POST /model` | `{ "model": "name" }` | switch the oracle's model at runtime |
+| `GET /models` | — | installed Ollama models + the current one |
+| `POST /loop` | `{ "enabled": true }` | toggle continuous auto-forecasting |
+| `GET /docs` · `GET /openapi.json` | — | interactive Swagger UI + the full **OpenAPI spec** (self-discovery) |
+
+### Object shapes
+- **Event** — `{ title, summary, category, source, lat, lng, salience (0–1), ts (epoch ms), url }`
+- **Prediction** — `{ statement, horizon, probability (0–1), reasoning, location, lat, lng, base_probability, split, agents: [{ name, probability, note }] }`
+
+### Recipes
+```bash
+# High-salience conflict events only, top 20, with coordinates
+curl 'http://localhost:8088/agent/events?domain=conflict&min_salience=0.7&limit=20'
+
+# This-week forecasts the oracle is at least 60% confident on
+curl 'http://localhost:8088/predictions?horizon=week&min_probability=0.6'
+
+# Ground a question in the live world
+curl -X POST http://localhost:8088/chat -H 'content-type: application/json' \
+     -d '{"message":"What is most likely to escalate in the next 24 hours, and where?"}'
+
+# React in real time — stream world changes
+curl -N http://localhost:8088/state/stream
+
+# Force a fresh read of the planet, then fetch the result
+curl -X POST http://localhost:8088/predict && sleep 40 && curl http://localhost:8088/agent/view
+
+# Switch to a bigger brain for deeper reasoning
+curl -X POST http://localhost:8088/model -H 'content-type: application/json' -d '{"model":"llama3.1:70b"}'
+```
+
+### Notes for agents
+- **Visibility ≠ availability** — UI layer toggles only affect the map; the engine senses *every* feed regardless, so the API always returns the full world.
+- **Discover, don't guess** — `/agent/events` returns `domains_available`, `/predictions` returns `horizons`, `/models` lists models, and `/openapi.json` describes the entire API.
+- **Always fresh** — a background sensing loop refreshes the world brief continuously; turn on `/loop` to keep forecasts re-running too.
 
 ## Quickstart
 
@@ -121,7 +191,7 @@ cp .env.example .env     # sensible defaults; no keys needed
 | `integrations/osiris/` | The overlay applied to an Osiris checkout — the predictions deck, chat, floating windows, map overlays, and API routes. See its `INSTALL.md`. |
 | `run-all.sh` · `PYTHIA.app` | One-tap launchers. |
 
-**Engine API** (`:8088`): `/predict` · `/predictions` · `/chat` · `/world` · `/agent/view` · `/agent/events` · `/state` (+ SSE `/state/stream`) · `/models` · `/model` · `/loop` · `/links` · `/health`
+**Engine API** (`:8088`): `/agent/view` · `/agent/events` · `/predictions` · `/predict` · `/chat` · `/world` · `/state` (+ SSE `/state/stream`) · `/runs` · `/models` · `/model` · `/loop` · `/links` · `/config` · `/health` · `/docs` + `/openapi.json`. Full reference, parameters, and recipes are in **[For agents](#for-agents--give-your-agent-eyes-on-the-planet)**.
 
 ## Configuration (`.env`)
 

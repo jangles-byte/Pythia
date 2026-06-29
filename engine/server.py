@@ -96,8 +96,13 @@ async def set_model(payload: dict = Body(...)):
 
 
 @app.get("/predictions")
-async def predictions():
-    return {"predictions": [p.model_dump() for p in STATE.predictions],
+async def predictions(horizon: str | None = None, min_probability: float = 0.0):
+    """Current forecasts, optionally filtered by `horizon` (24h|week|month|year)
+    and `min_probability` (0..1)."""
+    preds = [p for p in STATE.predictions
+             if (not horizon or p.horizon == horizon) and p.probability >= min_probability]
+    return {"predictions": [p.model_dump() for p in preds],
+            "horizons": CONFIG.horizons,
             "world": STATE.world.model_dump() if STATE.world else None}
 
 
@@ -136,9 +141,27 @@ async def agent_view():
 
 
 @app.get("/agent/events")
-async def agent_events():
-    """Flat list of every live world event the oracle is currently watching."""
-    return {"count": len(STATE.events), "events": [e.model_dump() for e in STATE.events]}
+async def agent_events(domain: str | None = None, source: str | None = None,
+                       min_salience: float = 0.0, since: int = 0, limit: int = 0):
+    """Every live world event, with optional filters so an agent gets exactly what it wants:
+    `domain` (category), `source`, `min_salience` (0..1), `since` (epoch ms), `limit`.
+    Returned most-salient first, with the list of available domains for discovery."""
+    out = []
+    for e in STATE.events:
+        if domain and e.category != domain:
+            continue
+        if source and e.source != source:
+            continue
+        if e.salience < min_salience:
+            continue
+        if since and e.ts < since:
+            continue
+        out.append(e)
+    out.sort(key=lambda e: e.salience, reverse=True)
+    if limit > 0:
+        out = out[:limit]
+    return {"count": len(out), "events": [e.model_dump() for e in out],
+            "domains_available": sorted({e.category for e in STATE.events})}
 
 
 @app.get("/world")
