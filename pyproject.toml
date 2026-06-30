@@ -1,18 +1,22 @@
 [project]
 name = "pythia"
 version = "0.1.0"
-description = "PYTHIA — Osiris x MiroFish x Kalshi autonomous prediction & wager engine"
+description = "A local, keyless world-watching prediction oracle — fuses Osiris live global feeds and a local agent swarm (MiroFish-style) with a local LLM to forecast what happens next, and exposes the whole world-view as an agent API."
 requires-python = ">=3.11"
+license = "MIT"
+keywords = ["ai-agents", "agent-api", "local-llm", "ollama", "prediction", "forecasting", "self-hosted", "world-model", "real-time"]
+authors = [{ name = "Jangles", email = "267653011+jangles-byte@users.noreply.github.com" }]
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
     "httpx>=0.27",
-    "websockets>=12.0",
-    "cryptography>=42.0",
     "python-dotenv>=1.0",
     "pydantic>=2.7",
-    "requests>=2.31",
 ]
+
+[project.urls]
+Homepage = "https://github.com/jangles-byte/Pythia"
+Repository = "https://github.com/jangles-byte/Pythia"
 
 [tool.uv]
 package = false
