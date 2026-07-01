@@ -94,8 +94,8 @@ class Oracle:
     async def _chat(self, user: str) -> str:
         return await self._complete([{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}], 1400)
 
-    async def _complete(self, messages: list[dict], max_tokens: int = 900) -> str:
-        body = {"model": self.model, "messages": messages, "temperature": CONFIG.temperature, "max_tokens": max_tokens}
+    async def _complete(self, messages: list[dict], max_tokens: int = 900, model: str | None = None) -> str:
+        body = {"model": model or self.model, "messages": messages, "temperature": CONFIG.temperature, "max_tokens": max_tokens}
         async with httpx.AsyncClient(verify=HTTPX_VERIFY, timeout=CONFIG.request_timeout) as c:
             r = await c.post(f"{self.base}/chat/completions", json=body,
                              headers={"Authorization": f"Bearer {self.key}"})

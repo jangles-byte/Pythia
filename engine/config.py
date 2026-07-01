@@ -80,6 +80,16 @@ class Config:
 
     # ── Swarm (a council of LLM personas deliberates each forecast) ──
     swarm_enabled: bool = field(default_factory=lambda: _b("SWARM_ENABLED", True))
+    swarm_persona_models: dict[str, str] = field(default_factory=lambda: {
+        name: model
+        for name, model in [
+            ("Strategist", os.environ.get("SWARM_MODEL_STRATEGIST", "")),
+            ("Economist", os.environ.get("SWARM_MODEL_ECONOMIST", "")),
+            ("Naturalist", os.environ.get("SWARM_MODEL_NATURALIST", "")),
+            ("Skeptic", os.environ.get("SWARM_MODEL_SKEPTIC", "")),
+        ]
+        if model
+    })
 
     def summary(self) -> dict:
         return {
