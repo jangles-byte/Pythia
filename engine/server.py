@@ -95,6 +95,35 @@ async def set_model(payload: dict = Body(...)):
     return {"model": oracle.model}
 
 
+@app.get("/swarm/models")
+async def swarm_models_get():
+    """Per-persona model overrides for the swarm council + the models available to pick from."""
+    from .runtime import oracle
+    from .swarm import PERSONAS
+    return {
+        "personas": [name for name, _ in PERSONAS],
+        "overrides": STATE.swarm_models,          # persona -> model (only those overridden)
+        "default_model": oracle.model,            # what a persona uses when not overridden
+        "available": await oracle.list_models(),
+    }
+
+
+@app.post("/swarm/model")
+async def swarm_model_set(payload: dict = Body(...)):
+    """Set (or clear) the model for one swarm persona. Empty/blank model = use the main model."""
+    from .swarm import PERSONAS
+    persona = (payload or {}).get("persona", "").strip()
+    model = (payload or {}).get("model", "").strip()
+    if persona not in {name for name, _ in PERSONAS}:
+        raise HTTPException(400, "unknown persona")
+    if model:
+        STATE.swarm_models[persona] = model
+    else:
+        STATE.swarm_models.pop(persona, None)
+    log.info("swarm persona %s -> %s", persona, model or "(main)")
+    return {"overrides": STATE.swarm_models}
+
+
 @app.get("/predictions")
 async def predictions(horizon: str | None = None, min_probability: float = 0.0):
     """Current forecasts, optionally filtered by `horizon` (24h|week|month|year)

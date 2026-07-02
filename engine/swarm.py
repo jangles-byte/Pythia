@@ -12,6 +12,7 @@ import json
 import logging
 
 from .models import AgentView, Prediction, WorldBrief
+from .state import STATE
 
 log = logging.getLogger("pythia.swarm")
 
@@ -50,8 +51,9 @@ def _persona_messages(name: str, lens: str, brief_text: str, preds: list[Predict
 async def _ask(oracle, name: str, lens: str, brief_text: str,
                preds: list[Prediction]) -> tuple[str, dict[int, tuple[float, str]]]:
     """Run one persona; return its {prediction_index: (probability, note)} map."""
+    persona_model = STATE.swarm_models.get(name) or None    # per-persona override (else main model)
     try:
-        text = await oracle._complete(_persona_messages(name, lens, brief_text, preds), max_tokens=1300)
+        text = await oracle._complete(_persona_messages(name, lens, brief_text, preds), max_tokens=1300, model=persona_model)
     except Exception as e:  # noqa: BLE001
         log.warning("swarm persona %s failed: %s", name, e)
         return name, {}

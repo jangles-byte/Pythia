@@ -15,6 +15,7 @@ class EngineState:
         self.predictions: list[Prediction] = []     # current forecast set
         self.world: Optional[WorldBrief] = None
         self.events: list = []                       # latest raw WorldEvents (for agents)
+        self.swarm_models: dict[str, str] = {}       # persona name -> model override (empty = use main)
         self.runs: "OrderedDict[str, RunRecord]" = OrderedDict()
         self.generating: bool = False
         self.loop_enabled: bool = False
