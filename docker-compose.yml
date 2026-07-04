@@ -1,4 +1,5 @@
 name: pythia
+
 services:
   osiris:
     image: ghcr.io/aiacos/osiris:latest
@@ -12,6 +13,12 @@ services:
       - HOSTNAME=0.0.0.0
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
     restart: unless-stopped
 
   pythia:
@@ -25,7 +32,10 @@ services:
       - OSIRIS_URL=http://osiris:3000
       - ENGINE_HOST=0.0.0.0
       - ENGINE_PORT=8088
-      - LLM_BASE_URL=${LLM_BASE_URL:-http://localhost:11434/v1}
+      # LLM defaults point at a host-side Ollama; override via .env or shell env.
+      # host.docker.internal works on Docker Desktop; on Linux add --add-host or use
+      # the host network's IP (e.g. 172.17.0.1 for default bridge).
+      - LLM_BASE_URL=${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
       - LLM_API_KEY=${LLM_API_KEY:-ollama}
       - LLM_MODEL=${LLM_MODEL:-llama3.1}
       - ORACLE_TEMPERATURE=${ORACLE_TEMPERATURE:-0.5}
@@ -36,5 +46,8 @@ services:
       - SENSE_INTERVAL_SEC=${SENSE_INTERVAL_SEC:-180}
       - SWARM_ENABLED=${SWARM_ENABLED:-true}
     depends_on:
-      - osiris
+      osiris:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
