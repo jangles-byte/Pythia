@@ -1,0 +1,15 @@
+.git
+.venv
+__pycache__
+*.pyc
+.env
+runs/
+screenshots/
+integrations/
+PYTHIA.app/
+PYTHIA.command
+run-all.sh
+README.md
+CONTRIBUTING.md
+LICENSE
+logo.png

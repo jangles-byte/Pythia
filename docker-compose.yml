@@ -1,0 +1,40 @@
+name: pythia
+services:
+  osiris:
+    image: ghcr.io/aiacos/osiris:latest
+    container_name: osiris
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  pythia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pythia-engine
+    ports:
+      - "8088:8088"
+    environment:
+      - OSIRIS_URL=http://osiris:3000
+      - ENGINE_HOST=0.0.0.0
+      - ENGINE_PORT=8088
+      - LLM_BASE_URL=${LLM_BASE_URL:-http://localhost:11434/v1}
+      - LLM_API_KEY=${LLM_API_KEY:-ollama}
+      - LLM_MODEL=${LLM_MODEL:-llama3.1}
+      - ORACLE_TEMPERATURE=${ORACLE_TEMPERATURE:-0.5}
+      - ORACLE_TIMEOUT_SEC=${ORACLE_TIMEOUT_SEC:-180}
+      - HORIZONS=${HORIZONS:-24h,week,month,year}
+      - PREDICTIONS_PER_HORIZON=${PREDICTIONS_PER_HORIZON:-3}
+      - LOOP_INTERVAL_SEC=${LOOP_INTERVAL_SEC:-900}
+      - SENSE_INTERVAL_SEC=${SENSE_INTERVAL_SEC:-180}
+      - SWARM_ENABLED=${SWARM_ENABLED:-true}
+    depends_on:
+      - osiris
+    restart: unless-stopped
