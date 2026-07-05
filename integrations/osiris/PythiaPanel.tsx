@@ -7,8 +7,9 @@
  */
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, Sparkles, Radio, Loader2, Globe2 } from 'lucide-react';
+import { Eye, Sparkles, Radio, Loader2, Globe2, Hexagon } from 'lucide-react';
 import DeliberationModal from './DeliberationModal';
+import SwarmConfig from './SwarmConfig';
 
 type Agent = { name: string; probability: number; note?: string };
 type Prediction = { id: string; statement: string; horizon: string; probability: number; reasoning: string; location?: string; lat?: number | null; lng?: number | null; agents?: Agent[]; base_probability?: number | null; split?: boolean };
@@ -19,6 +20,7 @@ type Snap = {
   generating?: boolean; loop_enabled?: boolean; last_run_ms?: number | null;
   world?: World | null; predictions?: Prediction[]; runs?: Run[];
 };
+type Score = { brier?: number | null; hit_rate?: number | null; resolved?: number; open?: number };
 
 const E = (p: string) => `/api/engine${p}`;
 
@@ -47,6 +49,8 @@ export default function PythiaPanel({ mobile = false, onLocate }: { mobile?: boo
   const [snap, setSnap] = useState<Snap>({});
   const [connected, setConnected] = useState(false);
   const [selected, setSelected] = useState<Prediction | null>(null);
+  const [showSwarm, setShowSwarm] = useState(false);
+  const [score, setScore] = useState<Score | null>(null);
 
   useEffect(() => {
     let stop = false;
@@ -60,6 +64,20 @@ export default function PythiaPanel({ mobile = false, onLocate }: { mobile?: boo
     };
     poll();
     const iv = setInterval(poll, 2500);
+    return () => { stop = true; clearInterval(iv); };
+  }, []);
+
+  // Track record — resolved-forecast accuracy (updates slowly; poll once a minute)
+  useEffect(() => {
+    let stop = false;
+    const poll = async () => {
+      try {
+        const r = await fetch(E('/scorecard'));
+        if (r.ok) { const d = await r.json(); if (!stop) setScore(d); }
+      } catch { /* engine offline — strip just hides */ }
+    };
+    poll();
+    const iv = setInterval(poll, 60000);
     return () => { stop = true; clearInterval(iv); };
   }, []);
 
@@ -88,6 +106,9 @@ export default function PythiaPanel({ mobile = false, onLocate }: { mobile?: boo
         </div>
         <div className="flex items-center gap-2">
           <span title={connected ? 'engine connected' : 'engine offline'} className="w-1.5 h-1.5 rounded-full" style={{ background: connected ? 'var(--cyan-primary)' : 'var(--alert-red)' }} />
+          <button onClick={() => setShowSwarm((s) => !s)} title="Swarm models — pick a model for each persona" className="flex items-center px-1.5 py-0.5 rounded" style={{ background: showSwarm ? 'rgba(154,123,255,.2)' : 'rgba(255,255,255,.05)', color: showSwarm ? 'var(--gold-primary)' : 'var(--text-muted)' }}>
+            <Hexagon className="w-3 h-3" />
+          </button>
           <button onClick={toggleLoop} title="Auto-refresh forecasts on an interval" className="flex items-center gap-1 text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ background: snap.loop_enabled ? 'rgba(45,245,200,.15)' : 'rgba(255,255,255,.05)', color: snap.loop_enabled ? 'var(--cyan-primary)' : 'var(--text-muted)' }}>
             <Radio className="w-3 h-3" /> AUTO
           </button>
@@ -102,6 +123,19 @@ export default function PythiaPanel({ mobile = false, onLocate }: { mobile?: boo
         <span className="flex items-center gap-1"><Globe2 className="w-3 h-3" /> watching <span className="text-[var(--text-primary)]">{world?.event_count ?? '—'}</span> signals · {Object.keys(domains).length} domains</span>
         <span>{snap.generating ? <span className="text-[var(--gold-primary)]">{STAGE_LABEL[run?.stage || 'thinking'] || 'working…'}</span> : <>updated {timeago(snap.last_run_ms)}</>}</span>
       </div>
+
+      {/* Track record strip — how the oracle has actually done */}
+      {score?.resolved ? (
+        <div
+          className="flex items-center justify-between text-[9px] font-mono mb-2 px-1 text-[var(--text-muted)]"
+          title="Brier score = mean squared error of resolved forecasts — 0.0 is prophecy, 0.25 is coin-flipping. Each forecast is graded by an LLM judge when its horizon expires."
+        >
+          <span>⌾ track record · <span className="text-[var(--text-primary)]">Brier {score.brier ?? '—'}</span>{score.hit_rate != null ? <> · {Math.round(score.hit_rate * 100)}% calls right</> : null} · {score.resolved} resolved</span>
+          <span>{score.open ?? 0} open</span>
+        </div>
+      ) : null}
+
+      {showSwarm && <SwarmConfig />}
 
       {/* Predictions */}
       <div className={mobile ? 'flex flex-col gap-3' : 'overflow-y-auto flex flex-col gap-3 pr-1'}>

@@ -46,9 +46,11 @@ PYTHIA does. It is an **oracle**: a single surface that takes in the entire live
 ## What PYTHIA does
 
 - **Forecasts the future** from the live world, grouped by horizon, each prediction carrying a probability, its reasoning, and a location — **click one and the globe flies there.**
+- **Draws the future on the globe** — every located forecast becomes a pulsing **forecast ring** (sized by probability, colored by horizon) so the map shows the *next 7 days*, not just the present. Click a ring to read the prophecy; flip on month/year rings from the ORACLE layer group.
+- **Keeps score in public** — every forecast goes on the record the moment it's made (`runs/ledger.jsonl`). When its horizon expires an LLM judge grades it against the archived world, and the deck shows the running **Brier score, hit rate and calibration** — per horizon *and per swarm persona*. The oracle is accountable.
 - **Deliberates as a swarm** — a council of four specialist agents (Strategist · Economist · Naturalist · Skeptic) re-scores every forecast through its own lens. PYTHIA surfaces their **consensus *and* their dissent**, flagging the forecasts where the swarm splits.
 - **Answers questions** — a chat that can see *every* live source and its own forecasts at once.
-- **Watches everything** — world news, conflict zones, **live Ukraine territory control / war fronts** (DeepStateMap), NWS storm & flood polygons, EONET disasters, wildfires, earthquakes, cyber threats, infrastructure, **global markets** (oil, indices, commodities, crypto), and **Polymarket** crowd odds — plus a full **social & humanitarian** layer set: displacement/refugees, disease outbreaks, civil unrest, food insecurity, inflation, unemployment, GDP, extreme poverty, and internet censorship. **Every source is free and keyless.**
+- **Watches everything** — world news, conflict zones, **live Ukraine territory control / war fronts** (DeepStateMap), NWS storm & flood polygons, EONET disasters, wildfires, earthquakes, cyber threats, infrastructure, **global markets** (oil, indices, commodities, crypto), **futures & term structure** (WTI/Brent/gas/gold/grains/equity futures + the VIX, with a ~6-month contango/backwardation read — the market's own forecast, geo-anchored to the supply regions that drive it), and **Polymarket** crowd odds — plus a full **social & humanitarian** layer set: displacement/refugees, disease outbreaks, civil unrest, food insecurity, inflation, unemployment, GDP, extreme poverty, and internet censorship. **Every source is free and keyless.**
 - **Surfaces headlines** — big breaking-news ticker along the bottom; risk overlays drawn as outlined zones on the map.
 - **Is a cockpit, not a page** — pull up news feeds and chat as movable, resizable windows around a spinning globe (manual or event-snapping spin), and watch the world go on.
 - **Picks its own brain** — switch between any model installed in [Ollama](https://ollama.com) from the UI.
@@ -70,6 +72,8 @@ Every forecast is re-judged by a council of four specialist agents, each reasoni
 
 Click any prediction to open its deliberation: a **consensus gauge**, an **agreement spectrum** showing where each agent landed, every agent's vote and its one-to-two-sentence argument, and the shift from the oracle's first guess to the swarm consensus. Sharp disagreement is flagged as a **split**. It all runs locally on your Ollama model — no Zep, no cloud.
 
+**Give each persona its own brain.** The hexagon button on the deck opens the swarm model picker — assign any installed Ollama model per persona (a big model for the Strategist, a fast one for the Skeptic…). Every vote in the deliberation is tagged with the model that cast it, picks survive engine restarts (`runs/swarm_models.json`), and you can seed them from `.env`: `SWARM_MODELS=Strategist=llama3.1:70b,Skeptic=qwen3:8b`. Since the ledger records each vote's model, the `/scorecard` per-persona Brier scores double as a live **model bake-off** on real-world forecasting.
+
 ## Everything it watches — free & keyless
 
 PYTHIA fuses dozens of live, no-key feeds into a single world-state. Toggle any of them on the globe; the oracle ingests them **all**, regardless of what's visible.
@@ -90,7 +94,8 @@ No API keys. No accounts. No cost.
 2. **Draft** — the local LLM reads the brief and drafts concrete, *located* predictions across four horizons (24h · week · month · year), each with a probability and reasoning.
 3. **Deliberate** — the persona swarm re-scores every forecast; consensus, dissent, and splits are computed.
 4. **Surface** — predictions land on the deck and the globe; click one to fly there and read the full deliberation.
-5. **Serve** — the entire world-view is exposed over the Agent API for your own tools to consume.
+5. **Serve** — the entire world-view is exposed over the Agent API (and an MCP server) for your own tools to consume.
+6. **Keep score** — every forecast is persisted; once its horizon expires an LLM judge grades it against the archived world, and the Brier scorecard updates — overall, per horizon, and per swarm persona.
 
 ## For agents — give your agent eyes on the planet
 
@@ -141,12 +146,30 @@ One JSON payload = your agent's situational awareness: a prose **summary** of th
 | `POST /chat` | `{ "message": "…", "history": [] }` | `{answer}` — ask anything; grounded in every live feed + current forecasts |
 | `POST /model` | `{ "model": "name" }` | switch the oracle's model at runtime |
 | `GET /models` | — | installed Ollama models + the current one |
+| `GET /swarm/models` | — | swarm personas, per-persona model overrides, the default model, and the models available |
+| `POST /swarm/model` | `{ "persona": "Skeptic", "model": "qwen3:8b" }` | give one persona its own model (empty `model` = back to the main one); persisted across restarts |
 | `POST /loop` | `{ "enabled": true }` | toggle continuous auto-forecasting |
+| `GET /scorecard` | — | **the track record** — Brier score, hit rate, per-horizon + per-persona accuracy, calibration bins, recent resolutions |
+| `POST /scorecard/resolve` | — | grade any due forecasts now (instead of waiting for the hourly judge) |
 | `GET /docs` · `GET /openapi.json` | — | interactive Swagger UI + the full **OpenAPI spec** (self-discovery) |
 
 ### Object shapes
 - **Event** — `{ title, summary, category, source, lat, lng, salience (0–1), ts (epoch ms), url }`
 - **Prediction** — `{ statement, horizon, probability (0–1), reasoning, location, lat, lng, base_probability, split, agents: [{ name, probability, note }] }`
+
+### MCP server — plug PYTHIA straight into your agent
+
+The whole Agent API is also exposed as an **MCP server** (stdio), so Claude Code, Claude
+Desktop, or any MCP client gets PYTHIA as native tools — `world_brief`, `get_events`,
+`get_predictions`, `predict_now`, `ask_oracle`, `get_scorecard`:
+
+```bash
+# Claude Code (engine must be running):
+claude mcp add pythia -- uv --directory /path/to/Pythia run python -m engine.mcp
+```
+
+Any other MCP client: `{ "command": "uv", "args": ["--directory", "/path/to/Pythia", "run", "python", "-m", "engine.mcp"] }`.
+Point it at a non-default engine with `PYTHIA_ENGINE_URL`.
 
 ### Recipes
 ```bash
@@ -190,11 +213,11 @@ cp .env.example .env     # sensible defaults; no keys needed
 
 | Part | Role |
 |---|---|
-| `engine/` | The PYTHIA oracle — FastAPI. Pulls + fuses every feed (`osiris_intake`, `world_state`), runs the forecast and chat (`oracle`), deliberates with the persona council (`swarm`), serves the API (`server`). |
+| `engine/` | The PYTHIA oracle — FastAPI. Pulls + fuses every feed (`osiris_intake`, `world_state`), runs the forecast and chat (`oracle`), deliberates with the persona council (`swarm`), keeps the track record (`ledger` — persist → judge → Brier), serves the API (`server`) and the MCP bridge (`mcp`). |
 | `integrations/osiris/` | The overlay applied to an Osiris checkout — the predictions deck, chat, floating windows, map overlays, and API routes. See its `INSTALL.md`. |
 | `run-all.sh` · `PYTHIA.app` | One-tap launchers. |
 
-**Engine API** (`:8088`): `/agent/view` · `/agent/events` · `/predictions` · `/predict` · `/chat` · `/world` · `/state` (+ SSE `/state/stream`) · `/runs` · `/models` · `/model` · `/loop` · `/links` · `/config` · `/health` · `/docs` + `/openapi.json`. Full reference, parameters, and recipes are in **[For agents](#for-agents--give-your-agent-eyes-on-the-planet)**.
+**Engine API** (`:8088`): `/agent/view` · `/agent/events` · `/predictions` · `/predict` · `/chat` · `/world` · `/scorecard` · `/state` (+ SSE `/state/stream`) · `/runs` · `/models` · `/model` · `/loop` · `/links` · `/config` · `/health` · `/docs` + `/openapi.json`. Full reference, parameters, and recipes are in **[For agents](#for-agents--give-your-agent-eyes-on-the-planet)**.
 
 ## Configuration (`.env`)
 

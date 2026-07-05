@@ -10,7 +10,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Hexagon, TrendingUp, TrendingDown } from 'lucide-react';
 
-type Agent = { name: string; probability: number; note?: string };
+type Agent = { name: string; probability: number; note?: string; model?: string };
 type Prediction = {
   id: string; statement: string; horizon: string; probability: number;
   reasoning?: string; location?: string; lat?: number | null; lng?: number | null;
@@ -152,6 +152,13 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
                           <Hexagon className="w-3 h-3 shrink-0" style={{ color: m.color }} />
                           <span className="text-[10px] font-bold" style={{ color: m.color }}>{a.name}</span>
                           <span className="text-[7px] font-mono text-[var(--text-muted)] truncate">{m.lens}</span>
+                          {a.model && (
+                            <span className="text-[7px] font-mono shrink-0 px-1 py-[1px] rounded truncate max-w-[92px]"
+                              title={`this vote was cast by ${a.model}`}
+                              style={{ background: 'rgba(255,255,255,.05)', color: 'var(--text-muted)', border: '1px solid var(--border-secondary)' }}>
+                              {a.model}
+                            </span>
+                          )}
                         </div>
                         <span className="text-[11px] font-mono font-bold shrink-0" style={{ color: m.color }}>{pct}%</span>
                       </div>
