@@ -189,6 +189,38 @@ class Oracle:
                     start = None
         return objs
 
+    @staticmethod
+    def _clean_pred(it: dict, brief_id: str) -> Prediction | None:
+        """Normalize one raw prediction dict from model output (or None if unusable)."""
+        if not isinstance(it, dict) or not it.get("statement"):
+            return None
+        p = it.get("probability", 50)
+        try:
+            p = float(p)
+        except (TypeError, ValueError):
+            p = 50.0
+        p = max(0.0, min(1.0, p / 100.0 if p > 1 else p))
+
+        def _num(v):
+            try:
+                return float(v)
+            except (TypeError, ValueError):
+                return None
+        lat, lng = _num(it.get("lat")), _num(it.get("lng"))
+        if lat is not None and not (-90 <= lat <= 90):
+            lat = None
+        if lng is not None and not (-180 <= lng <= 180):
+            lng = None
+        return Prediction(
+            statement=str(it["statement"]).strip()[:300],
+            horizon=_norm_horizon(str(it.get("horizon", "week"))),
+            probability=round(p, 2),
+            reasoning=str(it.get("reasoning", "")).strip()[:400],
+            location=str(it.get("location", "")).strip()[:80],
+            lat=lat, lng=lng,
+            brief_id=brief_id,
+        )
+
     @classmethod
     def _parse(cls, text: str, brief_id: str) -> list[Prediction]:
         preds: list[Prediction] = []
@@ -197,34 +229,41 @@ class Oracle:
                 it = json.loads(chunk)
             except (ValueError, TypeError):
                 continue
-            if not isinstance(it, dict) or not it.get("statement"):
-                continue
-            p = it.get("probability", 50)
-            try:
-                p = float(p)
-            except (TypeError, ValueError):
-                p = 50.0
-            p = max(0.0, min(1.0, p / 100.0 if p > 1 else p))
-
-            def _num(v):
-                try:
-                    return float(v)
-                except (TypeError, ValueError):
-                    return None
-            lat, lng = _num(it.get("lat")), _num(it.get("lng"))
-            if lat is not None and not (-90 <= lat <= 90):
-                lat = None
-            if lng is not None and not (-180 <= lng <= 180):
-                lng = None
-            preds.append(Prediction(
-                statement=str(it["statement"]).strip()[:300],
-                horizon=_norm_horizon(str(it.get("horizon", "week"))),
-                probability=round(p, 2),
-                reasoning=str(it.get("reasoning", "")).strip()[:400],
-                location=str(it.get("location", "")).strip()[:80],
-                lat=lat, lng=lng,
-                brief_id=brief_id,
-            ))
+            pred = cls._clean_pred(it, brief_id)
+            if pred:
+                preds.append(pred)
         if not preds:
             log.warning("oracle: no predictions parsed from: %s", text[:200])
         return preds
+
+    async def what_if(self, scenario: str, brief) -> dict:
+        """Counterfactual mode: inject a hypothetical event into the live world and
+        forecast the knock-on effects. Ephemeral — nothing is stored or ledgered."""
+        base = (brief.text if brief else "(no live world data loaded)")[:4000]
+        prompt = (
+            f"=== LIVE WORLD SNAPSHOT ===\n{base}\n\n"
+            f"=== HYPOTHETICAL EVENT (assume it just happened) ===\n{scenario.strip()[:400]}\n\n"
+            "Reason through the knock-on consequences, grounded in the real snapshot above.\n"
+            "Return ONLY JSON:\n"
+            '{"narrative": "<3-4 sentences tracing the chain of consequences>", "predictions": ['
+            '{"statement": "<concrete knock-on event>", "horizon": "24h"|"week"|"month", '
+            '"probability": <integer 0-100, conditional on the hypothetical>, '
+            '"reasoning": "<one sentence>", "location": "<place>", "lat": <or null>, "lng": <or null>}'
+            ", ... 4 to 6 predictions]}\nJSON only — no markdown, no commentary."
+        )
+        text = await self._complete([{"role": "system", "content": SYSTEM},
+                                     {"role": "user", "content": prompt}], 1200)
+        narrative, preds = "", []
+        for chunk in self._extract_objects(text):
+            try:
+                d = json.loads(chunk)
+            except (ValueError, TypeError):
+                continue
+            if isinstance(d, dict) and isinstance(d.get("predictions"), list):
+                narrative = str(d.get("narrative", "")).strip()[:900]
+                preds = [p for p in (self._clean_pred(it, "") for it in d["predictions"]) if p]
+                break
+        if not preds:   # model skipped the wrapper and emitted bare prediction objects
+            preds = self._parse(text, "")
+        return {"scenario": scenario.strip()[:400], "narrative": narrative,
+                "predictions": [p.model_dump() for p in preds]}

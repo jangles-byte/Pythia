@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import asyncio
+import difflib
 import logging
 
-from .models import RunRecord
+from .models import Prediction, RunRecord
 from .state import STATE
 from .world_state import build_brief
 
@@ -12,6 +13,45 @@ log = logging.getLogger("pythia.pipeline")
 
 # one oracle pass at a time (the local model is single-stream)
 _lock = asyncio.Lock()
+
+
+def hydrate_from_ledger() -> int:
+    """Wake up remembering: reload still-live forecasts from the ledger so the
+    deck and rings aren't blank while the first pass runs."""
+    from .models import AgentView
+    from .runtime import ledger
+    if STATE.predictions:
+        return 0
+    preds = []
+    for f in ledger.open_recent():
+        preds.append(Prediction(
+            id=f["id"], statement=f["statement"], horizon=f["horizon"],
+            probability=f["probability"], base_probability=f.get("base_probability"),
+            reasoning=f.get("reasoning") or "", location=f.get("location") or "",
+            lat=f.get("lat"), lng=f.get("lng"), split=bool(f.get("split")),
+            agents=[AgentView(**a) for a in f.get("agents", [])],
+            ts=f["ts"], brief_id=f.get("brief_id"),
+        ))
+    if preds:
+        STATE.predictions = preds   # don't touch last_run_ms — no fresh pass happened
+        STATE.publish("predictions", [p.model_dump() for p in preds])
+        log.info("hydrated %d live forecasts from the ledger", len(preds))
+    return len(preds)
+
+
+def _carry_momentum(old: list[Prediction], new: list[Prediction]) -> None:
+    """Match each fresh forecast to last run's nearest statement (same horizon)
+    so the UI can show probability drift (▲▼) between passes."""
+    for np_ in new:
+        best, best_ratio = None, 0.0
+        for op in old:
+            if op.horizon != np_.horizon:
+                continue
+            r = difflib.SequenceMatcher(None, op.statement.lower(), np_.statement.lower()).ratio()
+            if r > best_ratio:
+                best, best_ratio = op, r
+        if best is not None and best_ratio >= 0.6:
+            np_.prev_probability = best.probability
 
 
 async def refresh_world() -> int:
@@ -24,6 +64,8 @@ async def refresh_world() -> int:
         brief = build_brief(events)
         STATE.set_world(brief)
         ledger.maybe_record_brief(brief)   # ~hourly world archive for the judge
+        from . import webhooks
+        webhooks.fire_events(events)       # push fresh high-salience events to subscribers
         return len(events)
     except Exception as e:  # noqa: BLE001
         log.warning("sense refresh failed: %s", e)
@@ -66,6 +108,7 @@ async def run_prediction(trigger: str = "manual") -> RunRecord:
                 except Exception as e:  # noqa: BLE001 — never let the swarm sink a run
                     log.warning("swarm deliberation skipped: %s", e)
 
+            _carry_momentum(STATE.predictions, preds)
             STATE.set_predictions(preds)
             run.prediction_ids = [p.id for p in preds]
 
@@ -74,6 +117,10 @@ async def run_prediction(trigger: str = "manual") -> RunRecord:
             if CONFIG.track_enabled:
                 ledger.record_forecasts(preds, brief)
                 ledger.maybe_record_brief(brief)
+
+            from . import webhooks
+            webhooks.fire_forecasts(preds)
+            webhooks.fire_events(events)
 
             await stage("done", f"{len(preds)} predictions")
         except Exception as e:  # noqa: BLE001

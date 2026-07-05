@@ -75,6 +75,7 @@ class Ledger:
                 "kind": "forecast", "id": p.id, "statement": p.statement,
                 "horizon": p.horizon, "probability": p.probability,
                 "base_probability": p.base_probability, "location": p.location,
+                "reasoning": p.reasoning, "lat": p.lat, "lng": p.lng,
                 "split": p.split, "ts": p.ts,
                 "resolve_after": p.ts + HORIZON_MS.get(p.horizon, HORIZON_MS["week"]),
                 "agents": [{"name": a.name, "probability": a.probability, "model": a.model}
@@ -99,6 +100,15 @@ class Ledger:
                "outcome": outcome, "evidence": evidence[:400], "resolved_ms": now_ms()}
         self.resolutions[fid] = rec
         self._append(rec)
+
+    def open_recent(self, limit: int = 16) -> list[dict]:
+        """Still-live forecasts (horizon not yet expired), newest first — used to
+        rehydrate the deck after an engine restart."""
+        now = now_ms()
+        out = [f for fid, f in self.forecasts.items()
+               if fid not in self.resolutions and f["resolve_after"] > now]
+        out.sort(key=lambda f: f["ts"], reverse=True)
+        return out[:limit]
 
     # ── resolution queue ──
     def due(self, now: Optional[int] = None) -> list[dict]:
@@ -164,6 +174,18 @@ class Ledger:
         persona_scores = {name: {"resolved": s["n"], "brier": round(s["sum"] / s["n"], 3)}
                           for name, s in personas.items() if s["n"]}
 
+        # per-MODEL accuracy — votes carry the model that cast them, so the
+        # scorecard doubles as a local model bake-off on real-world forecasting
+        by_model: dict[str, dict] = {}
+        for f, r in resolved:
+            for a in f.get("agents", []):
+                m = a.get("model") or "(main)"
+                s = by_model.setdefault(m, {"n": 0, "sum": 0.0})
+                s["n"] += 1
+                s["sum"] += (a["probability"] - r["outcome"]) ** 2
+        model_scores = {m: {"resolved": s["n"], "brier": round(s["sum"] / s["n"], 3)}
+                        for m, s in by_model.items() if s["n"]}
+
         unresolved = [fid for fid in self.resolutions
                       if self.resolutions[fid].get("outcome") is None]
         recent = sorted(
@@ -184,5 +206,6 @@ class Ledger:
             "per_horizon": per_horizon,
             "calibration": calibration,
             "personas": persona_scores,
+            "models": model_scores,
             "recent": recent,
         }

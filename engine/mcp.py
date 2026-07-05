@@ -91,6 +91,15 @@ async def ask_oracle(question: str) -> dict:
 
 
 @mcp.tool()
+async def what_if(scenario: str) -> dict:
+    """Counterfactual mode: assume a hypothetical event just happened (e.g. 'the
+    Strait of Hormuz closes tonight') and get the oracle's knock-on forecasts,
+    grounded in the live world. Ephemeral — doesn't touch the real forecast set
+    or the track record. Slow: runs the local LLM."""
+    return await _post("/whatif", {"scenario": scenario})
+
+
+@mcp.tool()
 async def get_scorecard() -> dict:
     """PYTHIA's track record: Brier score (0.0 = prophecy, 0.25 = coin-flip), hit rate,
     per-horizon and per-persona accuracy, calibration bins, and recent resolutions —

@@ -27,6 +27,24 @@ PERSONAS: list[tuple[str, str]] = [
 
 _MAX_PREDS = 16           # how many forecasts to put before the swarm per pass
 _SPLIT_SPREAD = 0.30      # max-min probability gap that counts as real disagreement
+_MIN_TRACK = 5            # resolved forecasts a persona needs before its record moves its weight
+
+
+def _persona_weights() -> dict[str, float]:
+    """The swarm learns: weight each persona's vote by its resolved-forecast Brier.
+    1.0 = coin-flip performance (or no track record yet); better records count for
+    more, worse for less. Clamped so no voice ever dominates or vanishes."""
+    try:
+        from .runtime import ledger
+        stats = ledger.scorecard().get("personas", {})
+    except Exception:  # noqa: BLE001 — weighting is a bonus, never a blocker
+        return {}
+    out: dict[str, float] = {}
+    for name, s in stats.items():
+        if s.get("resolved", 0) >= _MIN_TRACK and s.get("brier") is not None:
+            # brier 0.25 (coin-flip) -> 1.0, 0.10 -> 1.75, 0.50 -> 0.58
+            out[name] = max(0.4, min(2.5, (0.25 + 0.10) / (s["brier"] + 0.10)))
+    return out
 
 
 def _persona_messages(name: str, lens: str, brief_text: str, preds: list[Prediction]) -> list[dict]:
@@ -104,6 +122,11 @@ async def deliberate(oracle, brief: WorldBrief | None, predictions: list[Predict
     brief_text = brief.text if brief else ""
     results = await asyncio.gather(*[_ask(oracle, n, l, brief_text, subset) for n, l in PERSONAS])
 
+    weights = _persona_weights()
+    if weights:
+        log.info("swarm weights (Brier-earned): %s",
+                 {k: round(v, 2) for k, v in weights.items()})
+
     enriched = 0
     for idx, pred in enumerate(subset):
         views = [AgentView(name=name, probability=scored[idx][0], note=scored[idx][1], model=used)
@@ -114,7 +137,8 @@ async def deliberate(oracle, brief: WorldBrief | None, predictions: list[Predict
         ps = [v.probability for v in views]
         if len(ps) >= 2:   # only let the council override the oracle when there's a real quorum
             pred.base_probability = pred.probability
-            pred.probability = round(sum(ps) / len(ps), 2)   # consensus = mean of the council
+            ws = [weights.get(v.name, 1.0) for v in views]
+            pred.probability = round(sum(w * p for w, p in zip(ws, ps)) / sum(ws), 2)
             pred.split = (max(ps) - min(ps)) >= _SPLIT_SPREAD
         enriched += 1
     log.info("swarm deliberated %d/%d forecasts across %d personas", enriched, len(subset), len(PERSONAS))

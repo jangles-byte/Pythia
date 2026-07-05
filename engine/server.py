@@ -27,7 +27,8 @@ async def lifespan(app: FastAPI):
 
     async def _boot():
         from .runtime import intake
-        from .pipeline import refresh_world
+        from .pipeline import hydrate_from_ledger, refresh_world
+        hydrate_from_ledger()              # deck + rings light up with live forecasts instantly
         # wait for Osiris to be reachable, then give its routes a moment to compile
         for _ in range(20):
             if await intake.health():
@@ -275,3 +276,51 @@ async def chat(payload: dict = Body(...)):
 async def loop(payload: dict = Body(default={})):
     STATE.set_loop(bool(payload.get("enabled", not STATE.loop_enabled)))
     return {"loop_enabled": STATE.loop_enabled}
+
+
+@app.post("/whatif")
+async def whatif(payload: dict = Body(...)):
+    """Counterfactual mode: 'assume X just happened' — the oracle forecasts the
+    knock-on effects grounded in the live world. Ephemeral: nothing is stored,
+    nothing enters the track record. Returns {scenario, narrative, predictions}."""
+    from .runtime import intake, oracle
+    from .world_state import build_brief
+    scenario = (payload or {}).get("scenario", "").strip()
+    if not scenario:
+        raise HTTPException(400, "provide `scenario`, e.g. {\"scenario\": \"the Strait of Hormuz closes tonight\"}")
+    brief = STATE.world
+    if brief is None:
+        try:
+            brief = build_brief(await intake.fetch(limit=150))
+            STATE.set_world(brief)
+        except Exception:  # noqa: BLE001
+            brief = None
+    return await oracle.what_if(scenario, brief)
+
+
+@app.get("/webhooks")
+async def webhooks_list():
+    """Registered outbound webhooks (see engine/webhooks.py for payload shapes)."""
+    from . import webhooks
+    return {"webhooks": webhooks.HOOKS}
+
+
+@app.post("/webhooks")
+async def webhooks_add(payload: dict = Body(...)):
+    """Register a webhook: {"url": "...", "min_probability": 0.7, "min_salience": 0.85}.
+    The engine POSTs {kind: "forecasts"|"events", ...} when thresholds are crossed."""
+    from . import webhooks
+    url = (payload or {}).get("url", "").strip()
+    if not url.startswith(("http://", "https://")):
+        raise HTTPException(400, "provide an http(s) `url`")
+    hook = webhooks.add(url, payload.get("min_probability", 0.7), payload.get("min_salience", 0.85))
+    return {"added": hook, "webhooks": webhooks.HOOKS}
+
+
+@app.delete("/webhooks")
+async def webhooks_remove(url: str):
+    """Unregister a webhook by exact URL."""
+    from . import webhooks
+    if not webhooks.remove(url):
+        raise HTTPException(404, "no webhook with that url")
+    return {"webhooks": webhooks.HOOKS}

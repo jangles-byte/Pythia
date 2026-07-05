@@ -62,6 +62,7 @@ class Prediction(BaseModel):
     lng: Optional[float] = None
     agents: list[AgentView] = Field(default_factory=list)   # the swarm's per-persona votes
     base_probability: Optional[float] = None               # the oracle's pre-swarm estimate
+    prev_probability: Optional[float] = None               # last run's probability for ~the same call (momentum)
     split: bool = False                 # True when the swarm disagrees sharply
     brief_id: Optional[str] = None
     ts: int = Field(default_factory=now_ms)
