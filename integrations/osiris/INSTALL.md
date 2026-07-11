@@ -101,6 +101,10 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 - `src/components/HeadlineTicker.tsx` rendered in `page.tsx`; mobile bottom-nav gains an
   ALERTS tab.
 - `src/app/layout.tsx` + `public/manifest.json` — PYTHIA name/icons (home-screen).
+- `public/pythia-logo.png` — the header mark (top-left, rendered by `page.tsx`). Generate it
+  with `python3 scripts/gen-header-logo.py` from the repo root (512px halftone-eye variant
+  with a chunkier dot grid so it reads at 44px); the full-size brand mark is `logo.svg` /
+  `logo.png` at the repo root (`scripts/gen-logo-svg.py` / `gen-logo-png.py`).
 - `src/app/api/markets/route.ts` — dropped the fake browser `User-Agent` from both Yahoo
   fetchers: Yahoo 429s "browser" UAs that arrive without cookies, so the route was silently
   living on its static-estimate fallbacks. A plain server-side fetch passes. (The new
