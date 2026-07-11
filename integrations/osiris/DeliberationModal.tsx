@@ -8,7 +8,8 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Hexagon, TrendingUp, TrendingDown } from 'lucide-react';
+import { X, MapPin, Hexagon, TrendingUp, TrendingDown, ImageDown } from 'lucide-react';
+import { downloadShareCard } from '@/lib/shareCard';
 
 type Agent = { name: string; probability: number; note?: string; model?: string };
 type Prediction = {
@@ -83,7 +84,19 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
                   <div className="text-[11px] text-[var(--text-muted)] leading-tight mt-0.5">how the MiroFish swarm weighed this forecast</div>
                 </div>
               </div>
-              <button onClick={onClose} title="Close (Esc)" className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--hover-accent)]"><X className="w-4 h-4" /></button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => downloadShareCard({
+                    kicker: `PYTHIA forecast · ${HORIZON_LABEL[p.horizon] || p.horizon}`,
+                    headline: p.statement,
+                    big: `${consensus}%`,
+                    sub: agents.length ? `council consensus · ${agents.length} voices${p.split ? ' · split' : ''}` : (p.reasoning || '').slice(0, 90),
+                    footer: `${p.location || ''} · ${new Date().toISOString().slice(0, 10)}`,
+                  }, `pythia-forecast-${consensus}pct.png`)}
+                  title="Download a share card (PNG)"
+                  className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--hover-accent)]"><ImageDown className="w-4 h-4" /></button>
+                <button onClick={onClose} title="Close (Esc)" className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--hover-accent)]"><X className="w-4 h-4" /></button>
+              </div>
             </div>
 
             {/* Statement */}

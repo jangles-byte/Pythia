@@ -101,6 +101,22 @@ class Ledger:
         self.resolutions[fid] = rec
         self._append(rec)
 
+    def history_for(self, statement: str, horizon: str, cap: int = 20) -> list[dict]:
+        """Probability drift: this forecast's probability across past passes.
+        Statements are re-drafted each pass, so match by similarity (same horizon,
+        ≥0.6 ratio) — the same trick the deck's momentum arrows use."""
+        import difflib
+        target = statement.lower()
+        pts = []
+        for f in self.forecasts.values():
+            if f["horizon"] != horizon:
+                continue
+            r = difflib.SequenceMatcher(None, f["statement"].lower(), target).ratio()
+            if r >= 0.6:
+                pts.append({"ts": f["ts"], "p": f["probability"]})
+        pts.sort(key=lambda x: x["ts"])
+        return pts[-cap:]
+
     def open_recent(self, limit: int = 16) -> list[dict]:
         """Still-live forecasts (horizon not yet expired), newest first — used to
         rehydrate the deck after an engine restart."""

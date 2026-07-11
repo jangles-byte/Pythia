@@ -4,7 +4,8 @@
  *  Latest brief text, generate-now, and the daily schedule (time + on/off).
  *  Data: GET /api/engine/brief, POST /api/engine/brief/run, POST /api/engine/brief/config. */
 import { useEffect, useState, useCallback } from 'react';
-import { Sunrise, Loader2, RefreshCw } from 'lucide-react';
+import { Sunrise, Loader2, RefreshCw, ImageDown } from 'lucide-react';
+import { downloadShareCard } from '@/lib/shareCard';
 
 type BriefData = { config: { time: string; enabled: boolean }; latest: { date: string; text: string } | null; history: string[] };
 
@@ -58,6 +59,17 @@ export default function BriefPanel() {
                 {d.config.enabled ? 'On' : 'Off'}
               </button>
             </>
+          )}
+          {d?.latest && (
+            <button
+              onClick={() => downloadShareCard({
+                kicker: `PYTHIA Morning Brief · ${d.latest!.date}`,
+                headline: (d.latest!.text.split('\n').find((l) => l.trim() && !/^[A-Z ]+$/.test(l.trim())) || d.latest!.text.slice(0, 140)).replace(/^[-*•]\s*/, ''),
+                sub: 'the daily digest — overnight, today, markets, watch for',
+                footer: 'generated locally · keyless',
+              }, `pythia-brief-${d.latest!.date}.png`)}
+              title="Download a share card (PNG)"
+              className="flex items-center justify-center w-7 h-7 rounded-lg transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--hover-accent)]"><ImageDown className="w-4 h-4" /></button>
           )}
           <button onClick={run} disabled={busy}
             className="flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg disabled:opacity-50"

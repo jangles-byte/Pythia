@@ -44,6 +44,27 @@ const STAGE_LABEL: Record<string, string> = {
   deliberating: 'council deliberating…', done: 'done', error: 'error',
 };
 
+type Drift = Record<string, { points: { ts: number; p: number }[]; delta: number }>;
+
+/** Tiny probability-drift sparkline — watch the oracle change its mind. */
+function DriftSpark({ d, color }: { d: { points: { ts: number; p: number }[]; delta: number }; color: string }) {
+  const pts = d.points;
+  if (!pts || pts.length < 3) return null;
+  const xs = pts.map((_, i) => (i / (pts.length - 1)) * 60);
+  const ys = pts.map((pt) => 13 - pt.p * 12);
+  const path = xs.map((x, i) => `${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  const big = d.delta >= 0.15;
+  return (
+    <span className="inline-flex items-center gap-1.5" title={`probability drift across ${pts.length} passes · swing ${Math.round(d.delta * 100)}pts`}>
+      <svg viewBox="0 0 60 14" className="w-[60px] h-[14px]">
+        <polyline points={path} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" opacity="0.9" />
+        <circle cx={xs[xs.length - 1]} cy={ys[ys.length - 1]} r="1.8" fill={color} />
+      </svg>
+      {big && <span className="text-[9px] font-mono font-semibold" style={{ color: 'var(--alert-orange, #FFA63D)' }}>Δ{Math.round(d.delta * 100)}</span>}
+    </span>
+  );
+}
+
 function timeago(ms?: number | null): string {
   if (!ms) return '—';
   const s = Math.floor((Date.now() - ms) / 1000);
@@ -108,6 +129,21 @@ export default function PythiaPanel({ mobile = false, embedded = false, onLocate
         const r = await fetch(E('/scorecard'));
         if (r.ok) { const d = await r.json(); if (!stop) setScore(d); }
       } catch { /* engine offline — strip just hides */ }
+    };
+    poll();
+    const iv = setInterval(poll, 60000);
+    return () => { stop = true; clearInterval(iv); };
+  }, []);
+
+  // Probability drift — how each forecast's number moved across passes
+  const [drift, setDrift] = useState<Drift>({});
+  useEffect(() => {
+    let stop = false;
+    const poll = async () => {
+      try {
+        const r = await fetch(E('/drift'));
+        if (r.ok) { const d = await r.json(); if (!stop) setDrift(d.drift || {}); }
+      } catch { /* endpoint absent on older engines — sparklines just hide */ }
     };
     poll();
     const iv = setInterval(poll, 60000);
@@ -233,19 +269,22 @@ export default function PythiaPanel({ mobile = false, embedded = false, onLocate
                     <div className="h-full rounded-full transition-[width] duration-700 ease-out" style={{ width: `${Math.round(p.probability * 100)}%`, background: h.color }} />
                   </div>
                   {p.reasoning && <div className="text-[11px] text-[var(--text-secondary)] mt-1.5 leading-relaxed">{p.reasoning}</div>}
-                  <div className="flex items-center justify-between mt-1.5">
+                  <div className="flex items-center justify-between mt-1.5 gap-2">
                     {p.location
                       ? <button onClick={(e) => { e.stopPropagation(); if (p.lat != null && p.lng != null) onLocate?.(p.lat, p.lng); }}
-                          className="text-[11px] flex items-center gap-1 hover:underline" style={{ color: h.color }}>
+                          className="text-[11px] flex items-center gap-1 hover:underline truncate" style={{ color: h.color }}>
                           📍 {p.location}{p.lat != null ? ' →' : ''}
                         </button>
                       : <span />}
-                    {p.agents && p.agents.length > 0 && (
-                      <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-1">
-                        <Hexagon className="w-3 h-3" style={{ color: 'var(--gold-primary)' }} />
-                        {p.agents.length} {p.agents.length === 1 ? 'voice' : 'voices'}{p.split ? ' · split' : ''}
-                      </span>
-                    )}
+                    <span className="flex items-center gap-2 shrink-0">
+                      {drift[p.id] && <DriftSpark d={drift[p.id]} color={h.color} />}
+                      {p.agents && p.agents.length > 0 && (
+                        <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-1">
+                          <Hexagon className="w-3 h-3" style={{ color: 'var(--gold-primary)' }} />
+                          {p.agents.length} {p.agents.length === 1 ? 'voice' : 'voices'}{p.split ? ' · split' : ''}
+                        </span>
+                      )}
+                    </span>
                   </div>
                 </motion.div>
               ))}

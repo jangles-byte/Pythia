@@ -47,6 +47,8 @@ FEEDS = [
     ("/api/health-outbreaks", "who", "health"),
     ("/api/unrest", "unrest", "unrest"),
     ("/api/food-security", "hungermap", "food"),
+    ("/api/kev", "cisa-kev", "cyber"),
+    ("/api/faa-status", "faa", "aviation"),
     ("/api/unemployment", "wb-unemployment", "economy"),
     ("/api/gdp-growth", "wb-gdp", "economy"),
     ("/api/poverty", "wb-poverty", "economy"),
@@ -362,6 +364,51 @@ def _health_events(data: dict) -> list[WorldEvent]:
     return out
 
 
+def _kev_events(data: dict) -> list[WorldEvent]:
+    """CISA KEV: vulnerabilities being actively exploited in the wild — the top
+    of the cyber-signal food chain. Newest additions only; ransomware use raises
+    salience."""
+    out: list[WorldEvent] = []
+    from .models import now_ms as _now
+    week_ago = _now() - 7 * 86_400_000
+    for v in (data.get("vulns") or [])[:15]:
+        try:
+            import time as _t
+            added_ms = int(_t.mktime(_t.strptime(v.get("date_added", ""), "%Y-%m-%d")) * 1000)
+        except (ValueError, TypeError):
+            added_ms = 0
+        fresh = added_ms >= week_ago
+        out.append(WorldEvent(
+            title=f"Actively exploited: {v.get('cve')} — {v.get('vendor')} {v.get('product')}"[:240],
+            summary=(f"[{'RANSOMWARE' if v.get('ransomware') else 'KEV'}] {v.get('name', '')}. "
+                     f"{v.get('description', '')}")[:2000],
+            category="cyber", source="cisa-kev", lat=None, lng=None,
+            url=v.get("url"),
+            salience=min(1.0, (0.8 if v.get("ransomware") else 0.65) + (0.15 if fresh else 0.0)),
+            raw={},
+        ))
+    return out
+
+
+def _faa_events(data: dict) -> list[WorldEvent]:
+    """FAA airspace pain: ground stops / delay programs / closures at major US
+    airports — the first visible symptom of storms, outages, and security events."""
+    sal = {"closure": 0.9, "ground stop": 0.85, "ground delay": 0.7, "delays": 0.55}
+    out: list[WorldEvent] = []
+    for e in (data.get("events") or [])[:20]:
+        typ = e.get("type", "delays")
+        out.append(WorldEvent(
+            title=f"FAA {typ}: {e.get('city', e.get('airport', '?'))} ({e.get('airport', '')})"[:240],
+            summary=(e.get("reason") or "").strip()[:2000],
+            category="aviation", source="faa",
+            lat=e.get("lat"), lng=e.get("lng"),
+            url="https://nasstatus.faa.gov",
+            salience=sal.get(typ, 0.55),
+            raw={},
+        ))
+    return out
+
+
 def _unrest_events(data: dict) -> list[WorldEvent]:
     """GDELT protest hotspots → a summary signal + the top locations (with coords)."""
     out = _summary_signal(data, "unrest", "unrest", "Protest hotspots (GDELT)")
@@ -422,6 +469,10 @@ class OsirisIntake:
                     out.extend(_health_events(data))
                 elif source == "unrest":
                     out.extend(_unrest_events(data))
+                elif source == "cisa-kev":
+                    out.extend(_kev_events(data))
+                elif source == "faa":
+                    out.extend(_faa_events(data))
                 elif source == "hungermap":
                     out.extend(_summary_signal(data, "hungermap", "food", "Food insecurity — worst-hit"))
                 elif source == "wb-unemployment":

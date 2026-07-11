@@ -15,9 +15,10 @@ const PRESETS: { key: string; label: string; kind: string; fields: { name: strin
   { key: 'vix', label: 'VIX above', kind: 'vix', fields: [{ name: 'level', label: 'level', def: '25', width: 64 }] },
   { key: 'forecast', label: 'Forecast ≥ probability', kind: 'forecast', fields: [{ name: 'min_probability', label: '0–1', def: '0.85', width: 64 }, { name: 'keywords', label: 'keywords (optional)', def: '', width: 150 }] },
   { key: 'event', label: 'Keyword event', kind: 'event', fields: [{ name: 'keywords', label: 'keywords, comma-sep', def: '', width: 170 }, { name: 'min_salience', label: 'salience 0–1', def: '0.6', width: 70 }] },
+  { key: 'odds_swing', label: 'Crowd-odds swing ≥', kind: 'odds_swing', fields: [{ name: 'min_move', label: '0–1 (0.1 = 10pts)', def: '0.1', width: 110 }] },
 ];
 
-const KIND_LABEL: Record<string, string> = { quake: 'quake', market: 'market', vix: 'VIX', forecast: 'forecast', event: 'event' };
+const KIND_LABEL: Record<string, string> = { quake: 'quake', market: 'market', vix: 'VIX', forecast: 'forecast', event: 'event', odds_swing: 'odds' };
 
 export default function SignalRules() {
   const [rules, setRules] = useState<Rule[]>([]);

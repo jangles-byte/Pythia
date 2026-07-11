@@ -8,11 +8,11 @@ import { useEffect, useState } from 'react';
 
 type Quote = { symbol: string; price: number; change_percent: number; spark: number[] };
 
-const CORE = ['^GSPC', '^IXIC', '^VIX', 'CL=F', 'BZ=F', 'NG=F', 'GC=F', 'ZW=F', 'BTC-USD', 'ETH-USD', 'EURUSD=X', 'DXY'];
+const CORE = ['^GSPC', '^IXIC', '^DJI', '^VIX', 'CL=F', 'BZ=F', 'NG=F', 'GC=F', 'SI=F', 'HG=F', 'ZW=F', 'ZC=F', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'EURUSD=X', 'USDJPY=X', 'DXY'];
 const NAME: Record<string, string> = {
-  '^GSPC': 'S&P 500', '^IXIC': 'NASDAQ', '^VIX': 'VIX', 'CL=F': 'WTI', 'BZ=F': 'BRENT',
-  'NG=F': 'NATGAS', 'GC=F': 'GOLD', 'ZW=F': 'WHEAT', 'BTC-USD': 'BTC', 'ETH-USD': 'ETH',
-  'EURUSD=X': 'EUR/USD', 'DXY': 'DXY',
+  '^GSPC': 'S&P 500', '^IXIC': 'NASDAQ', '^DJI': 'DOW', '^VIX': 'VIX', 'CL=F': 'WTI', 'BZ=F': 'BRENT',
+  'NG=F': 'NATGAS', 'GC=F': 'GOLD', 'SI=F': 'SILVER', 'HG=F': 'COPPER', 'ZW=F': 'WHEAT', 'ZC=F': 'CORN',
+  'BTC-USD': 'BTC', 'ETH-USD': 'ETH', 'SOL-USD': 'SOL', 'EURUSD=X': 'EUR/USD', 'USDJPY=X': 'USD/JPY', 'DXY': 'DXY',
 };
 
 function fmt(p: number): string {

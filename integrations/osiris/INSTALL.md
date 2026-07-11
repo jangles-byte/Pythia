@@ -25,6 +25,12 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `SignalRules.tsx` | `src/components/SignalRules.tsx` — the "tap me on the shoulder when…" rule builder (quake ≥ M / market move ±% / VIX level / forecast ≥ prob / keyword event) at the top of the Live Alerts panel; drives `/api/engine/alerts` |
 | `SignalNotifier.tsx` | `src/components/SignalNotifier.tsx` — invisible always-mounted poller: turns fired rules + Morning Briefs (`/api/engine/alerts/feed`) into browser notifications. Rendered next to the tickers in `page.tsx` |
 | `BriefPanel.tsx` | `src/components/BriefPanel.tsx` — the Morning Brief in the deck (sunrise button): latest digest, write-it-now, daily schedule (time + on/off). Imported by `PythiaPanel.tsx` |
+| `TickerWindow.tsx` | `src/components/TickerWindow.tsx` — the floating always-on-top ticker window (opened from the tool strip): watchlist rows with sparklines, add/remove synced with the Watch tab. Rendered via the `'ticker'` FloatingWindow kind in `page.tsx` |
+| `PatchPanel.tsx` | `src/components/PatchPanel.tsx` — My Patch (tool-strip pin button): set name/lat/lng/radius (localStorage), see only the events + forecasts inside it, click to fly |
+| `lib/shareCard.ts` | `src/lib/shareCard.ts` — canvas share-card renderer (1200×630 branded PNG download); buttons live in `DeliberationModal` + `BriefPanel` |
+| `tv-page.tsx` | `src/app/tv/page.tsx` — PYTHIA TV kiosk mode: auto-rotating forecast/signals/brief/markets boards + pinned tickers; `?board=` pins one |
+| `routes/kev-route.ts` | `src/app/api/kev/route.ts` — CISA Known Exploited Vulnerabilities (no key): newest actively-exploited CVEs, ransomware-flagged |
+| `routes/faa-route.ts` | `src/app/api/faa-status/route.ts` — FAA airspace status (no key): ground stops / delay programs / closures at major US airports, geocoded |
 | `RadarStrip.tsx` | `src/components/RadarStrip.tsx` — always-on radar chips in the deck: the highest-salience live event per domain, click to fly there. Imported by `PythiaPanel.tsx` |
 | `HeadlineTicker.tsx` | `src/components/HeadlineTicker.tsx` — bottom world-headline ticker |
 | `MarketTicker.tsx` | `src/components/MarketTicker.tsx` — rolling market ticker (indices · futures · crypto · FX + the engine watchlist) stacked above the headline ticker; keyless quotes via `/api/quotes`, hover to pause. Rendered next to `<HeadlineTicker/>` in `page.tsx` |

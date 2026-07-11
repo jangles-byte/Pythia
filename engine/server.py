@@ -162,6 +162,7 @@ async def agent_view():
             "title": e.title, "summary": e.summary, "source": e.source,
             "lat": e.lat, "lng": e.lng, "salience": e.salience, "ts": e.ts,
         })
+    from .tickers import watch_from_predictions
     return {
         "generated_at": STATE.last_run_ms,
         "model": oracle.model,
@@ -170,6 +171,15 @@ async def agent_view():
         "events_by_domain": by_domain,
         "event_count": len(STATE.events),
         "predictions": [p.model_dump() for p in STATE.predictions],
+        # the user's watched markets are PRIORITY context, not background noise:
+        # surface them (and the oracle's own forecast-linked picks) so any agent
+        # reading this view treats them as things the user needs to know about.
+        "market_watch": {
+            "note": ("These symbols are explicitly watched by the user — treat developments "
+                     "touching them as high-priority when reasoning or reporting."),
+            "watchlist": list(STATE.watchlist),
+            "pythia_watch": watch_from_predictions(STATE.predictions),
+        },
         "live_stream": "/state/stream",
     }
 
@@ -327,6 +337,21 @@ async def watchlist_remove(symbol: str):
     STATE.watchlist = [s for s in STATE.watchlist if s != sym]
     STATE.save_watchlist()
     return {"watchlist": STATE.watchlist}
+
+
+@app.get("/drift")
+async def drift():
+    """Probability drift for every live forecast: how each number moved across
+    passes (similarity-matched through the ledger). {id: {points: [{ts,p}], delta}}
+    — delta is the max-min swing over the tracked window."""
+    from .runtime import ledger
+    out = {}
+    for p in STATE.predictions:
+        pts = ledger.history_for(p.statement, p.horizon)
+        if len(pts) >= 2:
+            vals = [x["p"] for x in pts]
+            out[p.id] = {"points": pts, "delta": round(max(vals) - min(vals), 2)}
+    return {"drift": out}
 
 
 @app.get("/alerts")

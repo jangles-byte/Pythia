@@ -6,11 +6,12 @@ for browser notifications — and to every registered webhook. Rules persist in
 runs/alerts.json, the fired feed in runs/alert_feed.json (bounded).
 
 Rule kinds and their params:
-  event    {keywords, domain?, min_salience}   fresh world events matching terms
-  quake    {min_magnitude}                     seismic events at/above magnitude
-  market   {symbol, move_percent}              |day move| of a symbol crosses bar
-  vix      {level}                             ^VIX at/above level
-  forecast {min_probability, horizon?, keywords?}  new oracle forecast crosses bar
+  event      {keywords, domain?, min_salience}   fresh world events matching terms
+  quake      {min_magnitude}                     seismic events at/above magnitude
+  market     {symbol, move_percent}              |day move| of a symbol crosses bar
+  vix        {level}                             ^VIX at/above level
+  forecast   {min_probability, horizon?, keywords?}  new oracle forecast crosses bar
+  odds_swing {min_move}                          a Polymarket/Manifold question moves that much
 """
 from __future__ import annotations
 
@@ -33,7 +34,9 @@ _FEED_PATH = CONFIG.runs_dir / "alert_feed.json"
 _FEED_MAX = 200
 _MAG_RX = re.compile(r"\bM\s?(\d+(?:\.\d+)?)\b", re.I)
 
-KINDS = ("event", "quake", "market", "vix", "forecast")
+KINDS = ("event", "quake", "market", "vix", "forecast", "odds_swing")
+_ODDS_RX = re.compile(r"crowd odds:\s*(\d{1,3})%\s*YES", re.I)
+_odds_last: dict[str, float] = {}       # question -> last seen probability
 
 
 def _load(path, default):
@@ -206,6 +209,23 @@ async def evaluate() -> int:
                 if q and q.get("price", 0) >= level:
                     _fire(rule, f"VIX at {q['price']:.1f}", f"at/above your {level} bar — equity markets pricing turmoil")
                     fired += 1
+
+            elif k == "odds_swing":
+                min_move = abs(float(p.get("min_move", 0.10)))
+                for e in events:
+                    if getattr(e, "category", "") != "market-odds":
+                        continue
+                    m = _ODDS_RX.search(getattr(e, "summary", "") or "")
+                    if not m:
+                        continue
+                    prob = int(m.group(1)) / 100.0
+                    q = e.title[:120]
+                    last = _odds_last.get(q)
+                    _odds_last[q] = prob
+                    if last is not None and abs(prob - last) >= min_move:
+                        _fire(rule, f"Crowd odds swing: {q}",
+                              f"{int(last * 100)}% → {int(prob * 100)}% YES ({(prob - last) * 100:+.0f}pts) · {getattr(e, 'source', '')}")
+                        fired += 1
 
             elif k == "forecast":
                 bar = float(p.get("min_probability", 0.85))
