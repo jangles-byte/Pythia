@@ -9,3 +9,4 @@ runs/*.jsonl
 Screen Recording.mov
 *.mov
 runs/*.json
+runs/briefs/
