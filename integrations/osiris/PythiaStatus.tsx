@@ -53,8 +53,8 @@ export default function PythiaStatus({ compact = false }: { compact?: boolean })
       <div className="flex items-center justify-between gap-3">
         <span className="pythia-display text-[12px] font-bold tracking-[0.22em] text-[var(--gold-primary)]">PYTHIA</span>
         {s.generating && (
-          <span className="flex items-center gap-1 text-[7px] font-mono tracking-widest text-[var(--gold-primary)]">
-            <Loader2 className="w-2.5 h-2.5 animate-spin" /> FORECASTING
+          <span className="flex items-center gap-1 text-[10px] font-medium text-[var(--gold-primary)]">
+            <Loader2 className="w-3 h-3 animate-spin" /> forecasting…
           </span>
         )}
       </div>
@@ -69,17 +69,17 @@ export default function PythiaStatus({ compact = false }: { compact?: boolean })
 
         {!compact && (
           <div className="relative">
-            <button onClick={() => setOpen((o) => !o)} title="Choose the oracle model" className="flex items-center gap-1 text-[8px] font-mono text-[var(--text-muted)] hover:text-[var(--text-secondary)] max-w-[120px]">
+            <button onClick={() => setOpen((o) => !o)} title="Choose the oracle model" className="flex items-center gap-1 text-[10px] font-mono text-[var(--text-muted)] hover:text-[var(--text-secondary)] max-w-[140px]">
               <span className="truncate">{s.model || '—'}</span>
-              <ChevronDown className="w-2.5 h-2.5 shrink-0" />
+              <ChevronDown className="w-3 h-3 shrink-0" />
             </button>
             {open && (
               <>
                 <div className="fixed inset-0 z-[400]" onClick={() => setOpen(false)} />
-                <div className="absolute right-0 mt-1 z-[401] glass-panel p-1 min-w-[150px] max-h-[240px] overflow-y-auto">
-                  {models.length === 0 && <div className="text-[8px] font-mono text-[var(--text-muted)] px-2 py-1">no models found</div>}
+                <div className="absolute right-0 mt-1 z-[401] glass-panel p-1.5 min-w-[180px] max-h-[260px] overflow-y-auto" style={{ borderRadius: 12 }}>
+                  {models.length === 0 && <div className="text-[11px] text-[var(--text-muted)] px-2 py-1.5">no models found</div>}
                   {models.map((m) => (
-                    <button key={m} onClick={() => pick(m)} className="w-full text-left text-[9px] font-mono px-2 py-1 rounded hover:bg-[var(--hover-accent)] truncate"
+                    <button key={m} onClick={() => pick(m)} className="w-full text-left text-[11px] font-mono px-2.5 py-1.5 rounded-lg hover:bg-[var(--hover-accent)] truncate"
                       style={{ color: m === s.model ? 'var(--gold-primary)' : 'var(--text-secondary)' }}>
                       {m === s.model ? '● ' : ''}{m}
                     </button>

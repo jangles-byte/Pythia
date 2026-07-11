@@ -1,6 +1,6 @@
 'use client';
 
-/** MiroFish swarm config — pick which installed model each persona uses when it deliberates.
+/** Council setup — pick which installed model each persona uses when it deliberates.
  *  Blank = the main oracle model. Choices come from your Ollama install. */
 import { useEffect, useState } from 'react';
 import { Hexagon } from 'lucide-react';
@@ -9,10 +9,11 @@ type Data = { personas: string[]; overrides: Record<string, string>; default_mod
 
 const COLOR: Record<string, string> = {
   Strategist: 'var(--alert-red)', Economist: 'var(--gold-primary)',
-  Naturalist: 'var(--cyan-primary)', Skeptic: 'var(--text-secondary)',
+  Naturalist: 'var(--cyan-primary)', Skeptic: 'var(--horizon-year)',
 };
 const LENS: Record<string, string> = {
-  Strategist: 'geopolitics', Economist: 'markets', Naturalist: 'disasters', Skeptic: 'base rates',
+  Strategist: 'geopolitics & conflict', Economist: 'markets & economy',
+  Naturalist: 'disasters & climate', Skeptic: 'base rates & doubt',
 };
 
 export default function SwarmConfig() {
@@ -38,21 +39,24 @@ export default function SwarmConfig() {
 
   if (!d) return null;
   return (
-    <div className="mt-2 mb-1 rounded-lg border border-[var(--border-secondary)] p-2.5" style={{ background: 'rgba(255,255,255,.02)' }}>
-      <div className="flex items-center gap-1.5 mb-2">
-        <Hexagon className="w-3 h-3" style={{ color: 'var(--gold-primary)' }} />
-        <span className="text-[9px] font-mono tracking-widest text-[var(--text-secondary)]">SWARM MODELS</span>
-        <span className="text-[8px] font-mono text-[var(--text-muted)] ml-auto truncate max-w-[120px]" title={`main model: ${d.default_model}`}>default · {d.default_model}</span>
+    <div className="mb-3 rounded-xl border border-[var(--border-secondary)] p-4" style={{ background: 'rgba(255,255,255,.02)' }}>
+      <div className="flex items-center gap-2 mb-3">
+        <Hexagon className="w-4 h-4" style={{ color: 'var(--gold-primary)' }} />
+        <span className="text-[13px] font-semibold text-[var(--text-primary)]">Council models</span>
+        <span className="text-[11px] text-[var(--text-muted)] ml-auto truncate max-w-[220px]" title={`main oracle model: ${d.default_model}`}>oracle default · <span className="font-mono">{d.default_model}</span></span>
       </div>
-      <div className="flex flex-col gap-1.5">
+      <div className="grid md:grid-cols-2 gap-2">
         {d.personas.map((p) => (
-          <div key={p} className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: COLOR[p] || 'var(--text-muted)' }} />
-            <span className="text-[9px] font-mono w-[62px] shrink-0" style={{ color: COLOR[p] || 'var(--text-secondary)' }} title={LENS[p]}>{p}</span>
+          <div key={p} className="flex items-center gap-2.5 rounded-lg border border-[var(--border-secondary)] px-3 py-2" style={{ background: 'rgba(255,255,255,.02)' }}>
+            <Hexagon className="w-3.5 h-3.5 shrink-0" style={{ color: COLOR[p] || 'var(--text-muted)' }} />
+            <div className="min-w-0 w-[110px] shrink-0">
+              <div className="text-[12px] font-semibold leading-tight" style={{ color: COLOR[p] || 'var(--text-secondary)' }}>{p}</div>
+              <div className="text-[10px] text-[var(--text-muted)] leading-tight truncate">{LENS[p]}</div>
+            </div>
             <select
               value={d.overrides[p] || ''}
               onChange={(e) => pick(p, e.target.value)}
-              className="flex-1 min-w-0 text-[9px] font-mono rounded px-1.5 py-1 outline-none cursor-pointer"
+              className="flex-1 min-w-0 text-[12px] font-mono rounded-lg px-2 py-1.5 outline-none cursor-pointer"
               style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-primary)' }}
             >
               <option value="">Main model (default)</option>
@@ -62,7 +66,7 @@ export default function SwarmConfig() {
         ))}
       </div>
       {d.available.length === 0 && (
-        <div className="text-[8px] font-mono text-[var(--text-muted)] mt-1.5">no models found — is Ollama running?</div>
+        <div className="text-[12px] text-[var(--text-muted)] mt-2">No models found — is Ollama running?</div>
       )}
     </div>
   );

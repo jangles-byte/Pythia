@@ -8,14 +8,19 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 ## New files to copy into your Osiris checkout
 | File here | Goes to |
 |---|---|
-| `PythiaPanel.tsx` | `src/components/PythiaPanel.tsx` — the oracle / predictions deck |
+| `PanelModal.tsx` | `src/components/PanelModal.tsx` — the one big centered popup shell every dashboard panel opens in (backdrop + header + × + Esc); replaced the old edge slideouts |
+| `PythiaPanel.tsx` | `src/components/PythiaPanel.tsx` — the oracle / predictions deck (renders inside `PanelModal` via its `embedded` prop; labeled toolbar, track-record stat row, 2-col forecast grid) |
 | `DeliberationModal.tsx` | `src/components/DeliberationModal.tsx` — swarm deliberation popup (gauge + per-agent votes) |
 | `PythiaStatus.tsx` | `src/components/PythiaStatus.tsx` — top-right status + model picker |
 | `SwarmConfig.tsx` | `src/components/SwarmConfig.tsx` — per-persona swarm model picker (opened from the deck's hexagon button) |
+| `WhatIfPanel.tsx` | `src/components/WhatIfPanel.tsx` — the Hypothetical field (opened from the deck's flask button): ask "what if…", check which personas deliberate, see narrative + knock-on forecasts. Imported by `PythiaPanel.tsx`, so no `page.tsx` change needed |
+| `CouncilChamber.tsx` | `src/components/CouncilChamber.tsx` — watch the deliberation live (deck's gavel button, auto-opens when a pass deliberates): a vote matrix that fills in voice-by-voice from `/state`'s `deliberation` field; click a cell to read that voice's argument. Imported by `PythiaPanel.tsx` |
+| `ForecastCalendar.tsx` | `src/components/ForecastCalendar.tsx` — month calendar (deck's calendar button): every open forecast lands on the day its window closes, colored by horizon; click a day for its docket, click a forecast for the deliberation modal. Imported by `PythiaPanel.tsx` |
 | `ScorecardPanel.tsx` | `src/components/ScorecardPanel.tsx` — track record panel (opened from the deck's target button): Brier + hit rate, calibration chart, per-horizon/persona/model tables, recent verdicts |
+| `LiveAlerts.tsx` | `src/components/LiveAlerts.tsx` — live alerts list (news / quakes / 20+ live TV feeds). Content-only: the old built-in collapse/maximize chrome is gone — it renders inside `PanelModal` (desktop) or the mobile sheet |
 | `CreditsModal.tsx` | `src/components/CreditsModal.tsx` — credits |
 | `FloatingWindow.tsx` | `src/components/FloatingWindow.tsx` — movable/resizable window shell |
-| `ChatBox.tsx` | `src/components/ChatBox.tsx` — chat with the oracle |
+| `ChatBox.tsx` | `src/components/ChatBox.tsx` — chat with the oracle, or put one council persona on the line (speaker dropdown above the input; sends `persona` to POST /chat, answered in that voice by that persona's model) |
 | `SplashScreen.tsx` | `src/components/SplashScreen.tsx` — fish-around-the-eye load screen |
 | `HeadlineTicker.tsx` | `src/components/HeadlineTicker.tsx` — bottom world-headline ticker |
 | `routes/engine-proxy-route.ts` | `src/app/api/engine/[...path]/route.ts` — same-origin proxy to the engine |
@@ -46,14 +51,26 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   control + a **light/dark theme toggle** (Sun) by the 2D/Sat toggles, persisted to
   localStorage as `pythia-theme` (`'core'|'light'`); route news `onWatchFeed` to floating
   windows; pass `onLocate` to `PythiaPanel`; default the left Layers bar off.
+  **Big popups (2026-07):** Layers, Markets, Alerts and the PYTHIA deck open in
+  `<PanelModal>` (import it) instead of the old `absolute right-12 w-80` slideouts —
+  deck at width 1040 with `<PythiaPanel embedded …>`, Markets/Alerts at 820, Layers at
+  720; `onLocate`/fly-to also calls `openOnly(null)` so the modal gets out of the way;
+  `showPythia` defaults to **false** (a modal shouldn't cover the globe on boot).
   **Forecast rings:** poll `/api/engine/predictions` (once on load + every 30s) into
   `data.pythia_predictions`, and add `predictions: true` / `predictions_all: false`
   to `activeLayers`.
   **Hurricanes + flood:** `hurricanes: true` / `flood: true` in `activeLayers`, with
   layer-aware fetches of `/api/hurricanes` → `data.hurricanes` and `/api/flood-outlook`
   → `data.flood`.
-- `src/app/globals.css` — **Doto** dot-matrix display/body font (`--font-display`/`--font-body`);
+- `src/app/globals.css` — `--font-body` is **Inter** (the whole UI reads like a product);
+  the dot-matrix **Doto** stays only on `--font-display` (brand logotype / display accents);
+  a `--horizon-year: #7E97E8` steel-blue token so the year horizon (and the Skeptic) read
+  as a category, not a disabled grey; `@keyframes pythia-sweep` + `.pythia-progress`
+  (the slim indeterminate sweep under the deck toolbar while the oracle works);
   a `body.theme-light` block (soft-Apple whites/greys, frosted glass) + `.pythia-ticker-bg`.
+  The top-right HUD strip's `SYS:` badge reads LIVE/DEGRADED/SYNCING and treats
+  "any data landed" (`dataVersion > 0`) as live, since not every fetch path sets
+  `backendStatus`.
 - `src/app/layout.tsx` — load the Doto + JetBrains Mono Google Fonts.
 - `src/components/OsirisMap.tsx` — `nws-alerts` + `frontlines` polygon sources with
   `nws-fill`/`nws-outline` and `frontline-fill`/`frontline-line` layers; a `displacement`
@@ -88,12 +105,12 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   fetchers: Yahoo 429s "browser" UAs that arrive without cookies, so the route was silently
   living on its static-estimate fallbacks. A plain server-side fetch passes. (The new
   `futures` route does the same.)
-- `src/components/MarketsPanel.tsx` — added an **ODDS** tab: crowd probabilities of future
-  events from Polymarket (real money) + Manifold, sorted by volume, each a clickable row
-  with a YES% bar and source/volume. Fetches `/api/polymarket` + `/api/manifold` directly
-  (refreshes every 3 min). The full modified component is provided here as
-  `MarketsPanel.tsx` for reference — copy it over the upstream file, or apply the ODDS-tab
-  diff by hand if you carry other local changes to this panel.
+- `src/components/MarketsPanel.tsx` — fully replaced (copy `MarketsPanel.tsx` from here
+  over the upstream file). Content-only now: the built-in collapse/maximize header is gone
+  (it renders inside `PanelModal` / the mobile sheet); segmented section tabs; 2-col ticker
+  grid; an **ODDS** tab with crowd probabilities from Polymarket (real money) + Manifold,
+  sorted by volume, each a clickable row with an animated YES% bar and source/volume
+  (fetches `/api/polymarket` + `/api/manifold` directly, refreshing every 3 min).
 
 All UI talks to the engine only through `/api/engine/*`, which forwards to
 `PYTHIA_ENGINE_URL` (default `http://localhost:8088`).

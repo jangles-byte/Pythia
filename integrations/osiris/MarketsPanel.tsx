@@ -1,22 +1,22 @@
 'use client';
 
+/** Markets & intel — live tickers, futures, crowd odds and space weather.
+ *  Renders inside PanelModal (desktop) or the mobile sheet — the container
+ *  provides the chrome, so this is just the content. */
 import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  TrendingUp, TrendingDown, ChevronDown, ChevronUp, BarChart3,
-  Zap, Shield, Droplets, Gem, Bitcoin, LineChart, Maximize2, Minimize2, Percent
+  TrendingUp, TrendingDown, Zap, Shield, Droplets, Gem, Bitcoin, LineChart, Percent,
 } from 'lucide-react';
 
 interface MarketsPanelProps { data: any; spaceWeather?: any; }
 
 const SECTIONS = [
-  { key: 'indices', label: 'INDICES', icon: LineChart },
-  { key: 'stocks', label: 'DEFENSE', icon: Shield },
-  { key: 'oil', label: 'ENERGY', icon: Droplets },
-  { key: 'commodities', label: 'COMMODITIES', icon: Gem },
-  { key: 'crypto', label: 'CRYPTO', icon: Bitcoin },
-  { key: 'odds', label: 'ODDS', icon: Percent },
+  { key: 'indices', label: 'Indices', icon: LineChart },
+  { key: 'stocks', label: 'Defense', icon: Shield },
+  { key: 'oil', label: 'Energy', icon: Droplets },
+  { key: 'commodities', label: 'Commodities', icon: Gem },
+  { key: 'crypto', label: 'Crypto', icon: Bitcoin },
+  { key: 'odds', label: 'Odds', icon: Percent },
 ];
 
 // Crowd odds — real-money (Polymarket) + play-money (Manifold) probabilities of
@@ -28,35 +28,35 @@ function OddRow({ o }: { o: Odd }) {
   const vol = o.volume >= 1e6 ? `$${(o.volume / 1e6).toFixed(1)}M` : o.volume >= 1e3 ? `$${Math.round(o.volume / 1e3)}K` : `$${o.volume}`;
   const inner = (
     <>
-      <div className="flex items-start justify-between gap-2">
-        <span className="text-[9px] font-mono text-[var(--text-secondary)] leading-snug flex-1">{o.question}</span>
-        <span className="text-[11px] font-mono font-bold tabular-nums shrink-0 text-[var(--gold-primary)]">{pct}%<span className="text-[7px] text-[var(--text-muted)] ml-0.5">YES</span></span>
+      <div className="flex items-start justify-between gap-3">
+        <span className="text-[12px] text-[var(--text-primary)] leading-snug flex-1">{o.question}</span>
+        <span className="text-[14px] font-mono font-semibold tabular-nums shrink-0 text-[var(--gold-primary)]">{pct}%<span className="text-[9px] text-[var(--text-muted)] ml-1">yes</span></span>
       </div>
-      <div className="h-1 rounded-full bg-[var(--hover-accent)] mt-1 overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'var(--gold-primary)' }} />
+      <div className="h-1 rounded-full bg-[var(--hover-accent)] mt-1.5 overflow-hidden">
+        <div className="h-full rounded-full transition-[width] duration-700 ease-out" style={{ width: `${pct}%`, background: 'var(--gold-primary)' }} />
       </div>
-      <div className="flex items-center justify-between mt-0.5 text-[7px] font-mono text-[var(--text-muted)]">
-        <span>{o.src === 'POLY' ? 'POLYMARKET · real money' : 'MANIFOLD'}</span>
-        <span>{vol} vol</span>
+      <div className="flex items-center justify-between mt-1 text-[10px] text-[var(--text-muted)]">
+        <span>{o.src === 'POLY' ? 'Polymarket · real money' : 'Manifold'}</span>
+        <span className="font-mono">{vol} vol</span>
       </div>
     </>
   );
   return o.url
-    ? <a href={o.url} target="_blank" rel="noreferrer" className="block py-1.5 px-2 rounded hover:bg-[var(--hover-accent)] transition-colors">{inner}</a>
-    : <div className="py-1.5 px-2 rounded">{inner}</div>;
+    ? <a href={o.url} target="_blank" rel="noreferrer" className="block py-2 px-2.5 rounded-lg hover:bg-[var(--hover-accent)] transition-colors">{inner}</a>
+    : <div className="py-2 px-2.5 rounded-lg">{inner}</div>;
 }
 
 function Ticker({ name, data: d }: { name: string; data: any }) {
   if (!d) return null;
   return (
-    <div className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-[var(--hover-accent)] transition-colors">
-      <span className="text-[10px] font-mono text-[var(--text-secondary)] tracking-wide">{name}</span>
-      <div className="flex items-center gap-2">
-        <span className="text-[11px] font-mono font-bold text-[var(--text-primary)] tabular-nums">
+    <div className="flex items-center justify-between py-2 px-2.5 rounded-lg hover:bg-[var(--hover-accent)] transition-colors border border-transparent hover:border-[var(--border-secondary)]">
+      <span className="text-[12px] text-[var(--text-secondary)]">{name}</span>
+      <div className="flex items-center gap-2.5">
+        <span className="text-[13px] font-mono font-semibold text-[var(--text-primary)] tabular-nums">
           {d.price >= 1000 ? `${(d.price / 1000).toFixed(1)}K` : d.price?.toFixed(2)}
         </span>
-        <span className={`text-[9px] font-mono font-bold flex items-center gap-0.5 ${d.up ? 'text-[var(--alert-green)]' : 'text-[var(--alert-red)]'}`}>
-          {d.up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+        <span className={`text-[11px] font-mono font-medium flex items-center gap-0.5 min-w-[64px] justify-end ${d.up ? 'text-[var(--alert-green)]' : 'text-[var(--alert-red)]'}`}>
+          {d.up ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
           {d.change_percent > 0 ? '+' : ''}{d.change_percent?.toFixed(2)}%
         </span>
       </div>
@@ -65,8 +65,6 @@ function Ticker({ name, data: d }: { name: string; data: any }) {
 }
 
 export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) {
-  const [expanded, setExpanded] = useState(true);
-  const [maximized, setMaximized] = useState(false);
   const [activeSection, setActiveSection] = useState('stocks');
   const markets = data.markets || {};
 
@@ -93,103 +91,72 @@ export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) 
     return () => { stop = true; clearInterval(iv); };
   }, []);
 
-  // Ensure portal only renders on client
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  const content = (
-    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6, duration: 0.6 }} className={`glass-panel p-3 pointer-events-auto transition-all duration-300 flex flex-col ${maximized ? 'fixed inset-4 z-[9999] bg-[#0a0a09]/95 backdrop-blur-3xl' : ''}`}>
-      <button onClick={() => setExpanded(!expanded)} className="flex items-center justify-between w-full mb-2">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="w-3.5 h-3.5 text-[var(--gold-primary)]" />
-          <span className="hud-text text-[12px] text-[var(--text-primary)]">MARKETS & INTEL</span>
-          <span className="gotham-tag gotham-tag--low" style={{ fontSize: '7px', padding: '1px 4px' }}>LIVE</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-[var(--alert-green)] animate-osiris-pulse" />
-          <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); setMaximized(!maximized); if (!expanded && !maximized) setExpanded(true); }} className="hover:text-[var(--text-primary)] transition-colors cursor-pointer" title={maximized ? "Restore" : "Maximize"}>
-            {maximized ? <Minimize2 className="w-3.5 h-3.5 text-[var(--text-muted)]" /> : <Maximize2 className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
+  return (
+    <div className="flex flex-col">
+      {/* Space weather banner */}
+      {spaceWeather && (
+        <div className="mb-3 px-3 py-2.5 rounded-xl border flex items-center justify-between" style={{ borderColor: `${spaceWeather.storm_color}33`, background: `${spaceWeather.storm_color}08` }}>
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4" style={{ color: spaceWeather.storm_color }} />
+            <span className="text-[12px] font-medium text-[var(--text-secondary)]">Space weather</span>
+            {spaceWeather.solar_flares?.length > 0 && (
+              <span className="text-[11px] text-[var(--text-muted)]">· latest flare {spaceWeather.solar_flares[0].class}</span>
+            )}
+          </div>
+          <span className="text-[12px] font-mono font-semibold" style={{ color: spaceWeather.storm_color }}>
+            Kp {spaceWeather.kp_index} — {spaceWeather.storm_level}
           </span>
-          {expanded ? <ChevronUp className="w-3.5 h-3.5 text-[var(--text-muted)]" /> : <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
         </div>
-      </button>
+      )}
 
-      <AnimatePresence>
-        {expanded && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}>
-            {/* Space Weather Banner */}
-            {spaceWeather && (
-              <div className="mb-2 p-2 rounded-lg border" style={{ borderColor: `${spaceWeather.storm_color}33`, background: `${spaceWeather.storm_color}08` }}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <Zap className="w-3 h-3" style={{ color: spaceWeather.storm_color }} />
-                    <span className="text-[10px] font-mono tracking-widest text-[var(--text-muted)]">SPACE WEATHER</span>
-                  </div>
-                  <span className="text-[10px] font-mono font-bold" style={{ color: spaceWeather.storm_color }}>
-                    Kp {spaceWeather.kp_index} — {spaceWeather.storm_level}
-                  </span>
-                </div>
-                {spaceWeather.solar_flares?.length > 0 && (
-                  <div className="mt-1 text-[8px] font-mono text-[var(--text-muted)]">
-                    Latest flare: {spaceWeather.solar_flares[0].class}
-                  </div>
-                )}
-              </div>
-            )}
+      {/* Section tabs — segmented control */}
+      <div className="flex gap-1 mb-3 overflow-x-auto rounded-xl p-1" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid var(--border-secondary)' }}>
+        {SECTIONS.map(s => {
+          const Icon = s.icon;
+          const active = activeSection === s.key;
+          return (
+            <button key={s.key} onClick={() => setActiveSection(s.key)}
+              className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium whitespace-nowrap transition-colors flex-1"
+              style={{
+                background: active ? 'var(--hover-accent)' : 'transparent',
+                color: active ? 'var(--gold-primary)' : 'var(--text-muted)',
+                border: `1px solid ${active ? 'var(--border-active)' : 'transparent'}`,
+              }}>
+              <Icon className="w-3.5 h-3.5" />
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
 
-            {/* Section Tabs — icons instead of emojis */}
-            <div className="flex gap-0.5 mb-2 overflow-x-auto">
-              {SECTIONS.map(s => {
-                const Icon = s.icon;
-                return (
-                  <button key={s.key} onClick={() => setActiveSection(s.key)}
-                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded text-[9px] font-mono tracking-wider whitespace-nowrap transition-all ${activeSection === s.key ? 'bg-[var(--hover-accent)] text-[var(--gold-primary)] border border-[var(--border-primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] border border-transparent'}`}>
-                    <Icon className="w-3 h-3" />
-                    {s.label}
-                  </button>
-                );
-              })}
+      {/* Supply-chain alerts */}
+      {markets.scm_alerts && markets.scm_alerts.length > 0 && (
+        <div className="mb-3 space-y-1.5">
+          {markets.scm_alerts.map((alert: string, i: number) => (
+            <div key={i} className="px-3 py-2 rounded-lg border text-[12px] leading-snug" style={{ borderColor: 'rgba(255,149,0,.4)', background: 'rgba(255,149,0,.08)', color: '#FFA63D' }}>
+              {alert}
             </div>
+          ))}
+        </div>
+      )}
 
-            {/* SCM Alerts from Markets API */}
-            {markets.scm_alerts && markets.scm_alerts.length > 0 && (
-              <div className="mb-2 space-y-1">
-                {markets.scm_alerts.map((alert: string, i: number) => (
-                  <div key={i} className="px-2 py-1.5 rounded border border-[#FF9500] bg-[#FF9500]/10 text-[#FF9500] text-[9px] font-mono leading-tight shadow-[0_0_8px_rgba(255,149,0,0.15)]">
-                    {alert}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Ticker List / Crowd odds */}
-            <div className="space-y-0.5 overflow-y-auto styled-scrollbar mt-2">
-              {activeSection === 'odds' ? (
-                odds.length ? (
-                  odds.map((o, i) => <OddRow key={`${o.src}-${i}`} o={o} />)
-                ) : (
-                  <div className="text-center py-3 text-[10px] font-mono text-[var(--text-muted)]">Reading the betting markets…</div>
-                )
-              ) : (
-                <>
-                  {markets[activeSection] && Object.entries(markets[activeSection]).map(([name, d]) => (
-                    <Ticker key={name} name={name} data={d} />
-                  ))}
-                  {(!markets[activeSection] || Object.keys(markets[activeSection]).length === 0) && (
-                    <div className="text-center py-3 text-[10px] font-mono text-[var(--text-muted)]">Loading {activeSection}...</div>
-                  )}
-                </>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      {/* Tickers / crowd odds */}
+      {activeSection === 'odds' ? (
+        <div className="flex flex-col gap-0.5">
+          {odds.length
+            ? odds.map((o, i) => <OddRow key={`${o.src}-${i}`} o={o} />)
+            : <div className="text-center py-6 text-[12px] text-[var(--text-muted)]">Reading the betting markets…</div>}
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-x-4 gap-y-0.5">
+          {markets[activeSection] && Object.entries(markets[activeSection]).map(([name, d]) => (
+            <Ticker key={name} name={name} data={d} />
+          ))}
+          {(!markets[activeSection] || Object.keys(markets[activeSection]).length === 0) && (
+            <div className="col-span-2 text-center py-6 text-[12px] text-[var(--text-muted)]">Loading {activeSection}…</div>
+          )}
+        </div>
+      )}
+    </div>
   );
-
-  if (maximized && mounted && typeof document !== 'undefined') {
-    return createPortal(content, document.body);
-  }
-
-  return content;
 }
