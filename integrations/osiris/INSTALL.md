@@ -23,7 +23,9 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `ChatBox.tsx` | `src/components/ChatBox.tsx` — chat with the oracle, or put one council persona on the line (speaker dropdown above the input; sends `persona` to POST /chat, answered in that voice by that persona's model) |
 | `SplashScreen.tsx` | `src/components/SplashScreen.tsx` — fish-around-the-eye load screen |
 | `HeadlineTicker.tsx` | `src/components/HeadlineTicker.tsx` — bottom world-headline ticker |
+| `MarketTicker.tsx` | `src/components/MarketTicker.tsx` — rolling market ticker (indices · futures · crypto · FX + the engine watchlist) stacked above the headline ticker; keyless quotes via `/api/quotes`, hover to pause. Rendered next to `<HeadlineTicker/>` in `page.tsx` |
 | `routes/engine-proxy-route.ts` | `src/app/api/engine/[...path]/route.ts` — same-origin proxy to the engine |
+| `routes/quotes-route.ts` | `src/app/api/quotes/route.ts` — arbitrary symbol quotes (Yahoo chart API, no key): `?symbols=AAPL,CL=F,BTC-USD` → price, day change %, intraday sparkline; 60s per-symbol cache. Feeds the market ticker + Watch tab |
 | `routes/polymarket-route.ts` | `src/app/api/polymarket/route.ts` — Polymarket crowd odds |
 | `routes/futures-route.ts` | `src/app/api/futures/route.ts` — futures + term structure (Yahoo chart API, no key): oil, gas, gold, grains, equity futures, VIX; ~6-month curve read (contango/backwardation); geo-anchored to supply regions |
 | `routes/gdacs-alerts-route.ts` | `src/app/api/gdacs-alerts/route.ts` — GDACS disaster alerts (UN, no key): Red/Orange/Green severity + coords (bbox-center fallback for polygon episodes) |
@@ -114,7 +116,11 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   (it renders inside `PanelModal` / the mobile sheet); segmented section tabs; 2-col ticker
   grid; an **ODDS** tab with crowd probabilities from Polymarket (real money) + Manifold,
   sorted by volume, each a clickable row with an animated YES% bar and source/volume
-  (fetches `/api/polymarket` + `/api/manifold` directly, refreshing every 3 min).
+  (fetches `/api/polymarket` + `/api/manifold` directly, refreshing every 3 min); and a
+  **WATCH** tab (the default): the engine-persisted watchlist (add/remove, sparkline,
+  price + day move per row via `/api/quotes`) plus **PYTHIA's Watch** — tickers the
+  oracle's live forecasts touch (`GET /api/engine/watch`), each with the forecast,
+  horizon and probability that flagged it.
 
 All UI talks to the engine only through `/api/engine/*`, which forwards to
 `PYTHIA_ENGINE_URL` (default `http://localhost:8088`).

@@ -292,6 +292,41 @@ async def loop(payload: dict = Body(default={})):
     return {"loop_enabled": STATE.loop_enabled}
 
 
+@app.get("/watch")
+async def watch():
+    """The market watch: the user's watchlist symbols + PYTHIA's Watch — tickers the
+    oracle's own live forecasts touch, each carrying the forecast that flagged it.
+    Prices come from the UI's keyless quote route; this endpoint is the *why*."""
+    from .tickers import watch_from_predictions
+    return {
+        "watchlist": list(STATE.watchlist),
+        "pythia_watch": watch_from_predictions(STATE.predictions),
+    }
+
+
+@app.post("/watchlist")
+async def watchlist_add(payload: dict = Body(...)):
+    """Add a symbol (Yahoo-style, e.g. AAPL, CL=F, BTC-USD) to the watchlist."""
+    sym = str((payload or {}).get("symbol", "")).strip().upper()
+    if not sym or len(sym) > 12 or not all(c.isalnum() or c in "^=-." for c in sym):
+        raise HTTPException(400, "provide a `symbol` like AAPL, CL=F or BTC-USD")
+    if sym not in STATE.watchlist:
+        if len(STATE.watchlist) >= 40:
+            raise HTTPException(400, "watchlist is full (40)")
+        STATE.watchlist.append(sym)
+        STATE.save_watchlist()
+    return {"watchlist": STATE.watchlist}
+
+
+@app.delete("/watchlist/{symbol}")
+async def watchlist_remove(symbol: str):
+    """Remove a symbol from the watchlist."""
+    sym = symbol.strip().upper()
+    STATE.watchlist = [s for s in STATE.watchlist if s != sym]
+    STATE.save_watchlist()
+    return {"watchlist": STATE.watchlist}
+
+
 @app.get("/personas")
 async def personas():
     """The swarm's persona roster — name + the lens each judges through. Drives the

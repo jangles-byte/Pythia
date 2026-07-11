@@ -49,10 +49,14 @@ PYTHIA does. It is an **oracle**: a single surface that takes in the entire live
 - **Draws the future on the globe** — every located forecast becomes a pulsing **forecast ring** (sized by probability, colored by horizon) so the map shows the *next 7 days*, not just the present. Click a ring to read the prophecy; flip on month/year rings from the ORACLE layer group. **Hurricane forecast cones** (NHC) and a **30-day flood outlook** (Copernicus GloFAS river-discharge forecasts for 22 major basins) draw nature's own futures alongside.
 - **Keeps score in public** — every forecast goes on the record the moment it's made (`runs/ledger.jsonl`). When its horizon expires an LLM judge grades it against the archived world. The deck's **track-record panel** (the target button) shows the running **Brier score, hit rate, a calibration chart, and recent verdicts** — per horizon, per swarm persona, *and per local model* (a live model bake-off). Forecasts that persist across passes show their **momentum** (▲▼ probability drift).
 - **Learns from its record** — the swarm's consensus is **Brier-weighted**: once a persona has enough resolved forecasts, its vote counts for more (or less) based on how right it has actually been.
-- **Answers "what if?"** — type `/whatif the Strait of Hormuz closes` in chat (or `POST /whatif`) and the oracle injects the hypothetical into the live world and forecasts the knock-on effects. Ephemeral — counterfactuals never touch the track record.
+- **Answers "what if?"** — the deck's **Hypothetical field** (or `POST /whatif`, or `/whatif …` in chat): the oracle injects your scenario into the live world, forecasts the knock-on effects, and the council personas *you check* deliberate on them. Ephemeral — counterfactuals never touch the track record.
+- **Lets you watch the argument** — the **Council Chamber** (gavel button) opens itself whenever a deliberation goes live: a vote matrix fills in voice-by-voice as each persona finishes arguing, and clicking any cell shows that voice's argument verbatim.
+- **Puts the future on a calendar** — every open forecast lands on the day its window closes; click a day for its docket, click a forecast for the deliberation.
+- **Rolls the tape** — a **market ticker** (indices · futures · crypto · FX + your watchlist) scrolls above the world-headline strip, priced keylessly.
+- **Watches your tickers — and picks its own** — the Markets panel's **Watch tab** holds your watchlist (anything Yahoo prices: `AAPL`, `CL=F`, `BTC-USD`, `EURUSD=X`) with sparklines and day moves, and **PYTHIA's Watch** cross-references the oracle's *own live forecasts* to the tickers they touch — defense on conflict forecasts, nat-gas on hurricane cones, grains on drought — each pick carrying the forecast, horizon and probability behind it.
 - **Pushes, not just serves** — register a **webhook** and the engine POSTs you high-probability forecasts after each pass and fresh high-salience world events as they appear.
 - **Deliberates as a swarm** — a council of four specialist agents (Strategist · Economist · Naturalist · Skeptic) re-scores every forecast through its own lens. PYTHIA surfaces their **consensus *and* their dissent**, flagging the forecasts where the swarm splits.
-- **Answers questions** — a chat that can see *every* live source and its own forecasts at once.
+- **Answers questions** — a chat that can see *every* live source and its own forecasts at once. A speaker dropdown puts **any council persona on the line** — the Skeptic answers in the Skeptic's voice, via the Skeptic's own model.
 - **Watches everything** — world news, conflict zones, **live Ukraine territory control / war fronts** (DeepStateMap), NWS storm & flood polygons, EONET disasters, wildfires, earthquakes, cyber threats, infrastructure, **global markets** (oil, indices, commodities, crypto), **futures & term structure** (WTI/Brent/gas/gold/grains/equity futures + the VIX, with a ~6-month contango/backwardation read — the market's own forecast, geo-anchored to the supply regions that drive it), and **Polymarket + Manifold** crowd odds — plus **GDACS disaster alerts** (Red/Orange/Green), **NHC hurricanes**, the **GloFAS flood outlook**, **internet outages** (IODA — a country going dark is often the first coup signal), **space weather** (NOAA SWPC), **Wikipedia attention spikes** (what humanity suddenly cares about), and a full **social & humanitarian** layer set: displacement/refugees, disease outbreaks, civil unrest, food insecurity, inflation, unemployment, GDP, extreme poverty, and internet censorship. **Every source is free and keyless.**
 - **Surfaces headlines** — big breaking-news ticker along the bottom; risk overlays drawn as outlined zones on the map.
 - **Is a cockpit, not a page** — pull up news feeds and chat as movable, resizable windows around a spinning globe (manual or event-snapping spin), and watch the world go on.
@@ -146,7 +150,8 @@ One JSON payload = your agent's situational awareness: a prose **summary** of th
 | `GET /state` | — | full state snapshot — predictions + world + runs + flags |
 | `GET /state/stream` | — | **SSE** — a snapshot, then live deltas as the world changes |
 | `POST /predict` | — | trigger a fresh forecast now → `{status}` |
-| `POST /chat` | `{ "message": "…", "history": [] }` | `{answer}` — ask anything; grounded in every live feed + current forecasts |
+| `POST /chat` | `{ "message": "…", "history": [], "persona": "Skeptic"? }` | `{answer, persona}` — ask anything; grounded in every live feed + current forecasts. Pass `persona` to get one council specialist, in its voice, via its own model |
+| `GET /personas` | — | the council roster — each persona's name + lens (drives the what-if checkboxes and the chat speaker picker) |
 | `POST /model` | `{ "model": "name" }` | switch the oracle's model at runtime |
 | `GET /models` | — | installed Ollama models + the current one |
 | `GET /swarm/models` | — | swarm personas, per-persona model overrides, the default model, and the models available |
@@ -154,7 +159,9 @@ One JSON payload = your agent's situational awareness: a prose **summary** of th
 | `POST /loop` | `{ "enabled": true }` | toggle continuous auto-forecasting |
 | `GET /scorecard` | — | **the track record** — Brier score, hit rate, per-horizon / per-persona / **per-model** accuracy, calibration bins, recent resolutions |
 | `POST /scorecard/resolve` | — | grade any due forecasts now (instead of waiting for the hourly judge) |
-| `POST /whatif` | `{ "scenario": "the Strait of Hormuz closes tonight" }` | counterfactual forecast — `{scenario, narrative, predictions}`; ephemeral, never ledgered |
+| `POST /whatif` | `{ "scenario": "…", "personas": ["Strategist", "Skeptic"]? }` | counterfactual forecast — `{scenario, narrative, predictions, personas}`; the listed personas deliberate the knock-ons; ephemeral, never ledgered |
+| `GET /watch` | — | **the market watch** — `watchlist` (your symbols) + `pythia_watch`: tickers the oracle's live forecasts touch, each with `{symbol, theme, why, horizon, probability}` |
+| `POST /watchlist` · `DELETE /watchlist/{symbol}` | `{ "symbol": "CL=F" }` | manage the watchlist (Yahoo-style symbols; persisted in `runs/watchlist.json`) |
 | `GET /webhooks` · `POST /webhooks` · `DELETE /webhooks?url=` | `{ "url", "min_probability": 0.7, "min_salience": 0.85 }` | outbound push — the engine POSTs `{kind: "forecasts"\|"events", …}` when thresholds are crossed |
 | `GET /docs` · `GET /openapi.json` | — | interactive Swagger UI + the full **OpenAPI spec** (self-discovery) |
 
@@ -166,7 +173,9 @@ One JSON payload = your agent's situational awareness: a prose **summary** of th
 
 The whole Agent API is also exposed as an **MCP server** (stdio), so Claude Code, Claude
 Desktop, or any MCP client gets PYTHIA as native tools — `world_brief`, `get_events`,
-`get_predictions`, `predict_now`, `ask_oracle`, `what_if`, `get_scorecard`:
+`get_predictions`, `predict_now`, `ask_oracle`, `what_if`, `get_scorecard`,
+`get_market_watch` (the tickers the oracle's live forecasts touch, with the forecast
+behind each):
 
 
 
@@ -193,6 +202,9 @@ curl 'http://localhost:8088/predictions?horizon=week&min_probability=0.6'
 # Ground a question in the live world
 curl -X POST http://localhost:8088/chat -H 'content-type: application/json' \
      -d '{"message":"What is most likely to escalate in the next 24 hours, and where?"}'
+
+# Which tickers do the oracle's live forecasts touch, and why?
+curl http://localhost:8088/watch
 
 # React in real time — stream world changes
 curl -N http://localhost:8088/state/stream

@@ -28,8 +28,9 @@ mcp = FastMCP(
         "feeds (conflict, disasters, markets, futures, displacement, disease, unrest, cyber) "
         "and forecasts what happens next across 24h/week/month/year horizons. Use world_brief "
         "for the current state of the planet, get_events for raw located signals, "
-        "get_predictions for forecasts, ask_oracle for grounded questions, and get_scorecard "
-        "for how accurate past forecasts actually were."
+        "get_predictions for forecasts, ask_oracle for grounded questions, get_scorecard "
+        "for how accurate past forecasts actually were, and get_market_watch for the "
+        "tickers the oracle's live forecasts touch (with the forecast behind each)."
     ),
 )
 
@@ -105,6 +106,15 @@ async def get_scorecard() -> dict:
     per-horizon and per-persona accuracy, calibration bins, and recent resolutions —
     every forecast is graded by an LLM judge once its horizon expires."""
     return await _get("/scorecard")
+
+
+@mcp.tool()
+async def get_market_watch() -> dict:
+    """The market watch: the user's watchlist symbols plus PYTHIA's Watch — the tickers
+    the oracle's own live forecasts touch (defense on conflict forecasts, nat-gas on
+    hurricane cones, grains on drought…), each entry carrying the forecast statement,
+    horizon and probability that flagged it. Symbols are Yahoo-style (CL=F, BTC-USD)."""
+    return await _get("/watch")
 
 
 def main() -> None:
