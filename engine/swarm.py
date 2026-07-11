@@ -11,6 +11,7 @@ import asyncio
 import json
 import logging
 
+from .config import CONFIG
 from .models import AgentView, Prediction, WorldBrief
 from .state import STATE
 
@@ -51,10 +52,13 @@ def _persona_messages(name: str, lens: str, brief_text: str, preds: list[Predict
     listing = "\n".join(f"{i}. [{p.horizon}] {p.statement}" for i, p in enumerate(preds))
     system = (
         f"You are the {name}, one specialist on PYTHIA's forecasting swarm. "
-        f"You judge the future strictly through the lens of {lens}. "
+        f"Your expertise is {lens} — use it as your evidence base and blind spot check. "
         f"You will be given a live world snapshot and a numbered list of candidate predictions. "
-        f"For EACH prediction give your OWN probability (0-100) and make your case in your own voice: "
-        f"1-2 sentences citing the specific signals (or absences) that drive your view, from your lens. "
+        f"For EACH prediction, estimate the probability (0-100) that THE EVENT ACTUALLY HAPPENS "
+        f"within its horizon — NOT how relevant it is to your domain. A storm you can't assess "
+        f"geopolitically is still likely if the weather data says so; defer to the evidence, then "
+        f"sharpen with what your lens uniquely sees. Make your case in your own voice: 1-2 sentences "
+        f"citing the specific signals (or absences) that drive your number. "
         f'Return ONLY a JSON array, one object per prediction: '
         f'{{"i": <index>, "p": <0-100>, "note": "<your 1-2 sentence argument>"}}. No prose, no markdown.'
     )
@@ -97,10 +101,12 @@ async def _ask(oracle, name: str, lens: str, brief_text: str,
     for brief_cap in (2600, 1100):
         try:
             text = await oracle._complete(_persona_messages(name, lens, brief_text[:brief_cap], preds),
-                                          max_tokens=1300, model=persona_model)
-        except Exception as e:  # noqa: BLE001
-            log.warning("swarm persona %s (%s) failed: %s", name, used_model, e)
-            return name, used_model, {}
+                                          max_tokens=CONFIG.swarm_max_tokens, model=persona_model)
+        except Exception as e:  # noqa: BLE001 — a transient local-model hiccup shouldn't drop the voice
+            log.warning("swarm persona %s (%s) errored (%s: %r) — %s", name, used_model,
+                        type(e).__name__, str(e),
+                        "retrying compacted" if brief_cap == 2600 else "giving up this pass")
+            continue          # retry with the smaller brief instead of losing the persona
         scored = _parse_scored(oracle, text, len(preds))
         if scored:
             return name, used_model, scored
@@ -111,16 +117,53 @@ async def _ask(oracle, name: str, lens: str, brief_text: str,
 
 
 async def deliberate(oracle, brief: WorldBrief | None, predictions: list[Prediction],
-                     on_stage=None) -> list[Prediction]:
+                     on_stage=None, personas: list[str] | None = None,
+                     context: str = "forecast") -> list[Prediction]:
     """Have the persona council weigh in; enrich each prediction with agent votes,
-    a consensus probability, and a `split` flag when they disagree sharply."""
+    a consensus probability, and a `split` flag when they disagree sharply.
+
+    `personas` optionally restricts the council to a subset of persona names (the
+    what-if field lets the user check which voices deliberate); None = the full council.
+    Progress is streamed into STATE.deliberation voice-by-voice so the UI can watch
+    the argument happen live."""
     if not predictions:
+        return predictions
+    active = PERSONAS if personas is None else [(n, l) for n, l in PERSONAS if n in personas]
+    if not active:                      # user unchecked everyone — skip the council this pass
         return predictions
     subset = predictions[:_MAX_PREDS]
     if on_stage:
-        await on_stage("deliberating", f"swarm of {len(PERSONAS)} weighing {len(subset)} forecasts")
+        await on_stage("deliberating", f"swarm of {len(active)} weighing {len(subset)} forecasts")
     brief_text = brief.text if brief else ""
-    results = await asyncio.gather(*[_ask(oracle, n, l, brief_text, subset) for n, l in PERSONAS])
+
+    # live chamber state — every voice starts "voting", flips to "done"/"silent" as it lands
+    import time as _t
+    delib: dict = {
+        "ts": int(_t.time() * 1000), "active": True, "context": context,
+        "statements": [{"statement": p.statement[:140], "horizon": p.horizon} for p in subset],
+        "voices": {n: {"model": STATE.swarm_models.get(n) or oracle.model,
+                       "status": "voting", "votes": [], "elapsed_ms": None}
+                   for n, _ in active},
+    }
+    STATE.set_deliberation(dict(delib))
+
+    # One heavy local model can't serve 4 personas at once — fire them off in bounded
+    # batches (default 1 = sequential) so nobody times out and every voice actually lands.
+    sem = asyncio.Semaphore(max(1, CONFIG.swarm_concurrency))
+
+    async def _voice(n: str, l: str):
+        async with sem:
+            t0 = _t.time()
+            name, used, scored = await _ask(oracle, n, l, brief_text, subset)
+            delib["voices"][n] = {
+                "model": used, "status": "done" if scored else "silent",
+                "votes": [{"i": i, "p": p, "note": note} for i, (p, note) in sorted(scored.items())],
+                "elapsed_ms": int((_t.time() - t0) * 1000),
+            }
+            STATE.set_deliberation(dict(delib))
+            return name, used, scored
+
+    results = await asyncio.gather(*[_voice(n, l) for n, l in active])
 
     weights = _persona_weights()
     if weights:
@@ -135,11 +178,17 @@ async def deliberate(oracle, brief: WorldBrief | None, predictions: list[Predict
             continue
         pred.agents = views
         ps = [v.probability for v in views]
-        if len(ps) >= 2:   # only let the council override the oracle when there's a real quorum
-            pred.base_probability = pred.probability
-            ws = [weights.get(v.name, 1.0) for v in views]
-            pred.probability = round(sum(w * p for w, p in zip(ws, ps)) / sum(ws), 2)
-            pred.split = (max(ps) - min(ps)) >= _SPLIT_SPREAD
+        # The headline number IS the council's consensus of the voices shown — so it can
+        # never disagree with them (a 90% headline over a lone 85% vote made no sense).
+        # Keep the oracle's own estimate as base_probability for the "oracle → council" delta.
+        pred.base_probability = pred.probability
+        ws = [weights.get(v.name, 1.0) for v in views]
+        pred.probability = round(sum(w * p for w, p in zip(ws, ps)) / sum(ws), 2)
+        pred.split = (max(ps) - min(ps)) >= _SPLIT_SPREAD
         enriched += 1
-    log.info("swarm deliberated %d/%d forecasts across %d personas", enriched, len(subset), len(PERSONAS))
+    delib["active"] = False
+    delib["consensus"] = [{"i": i, "p": p.probability, "base": p.base_probability, "split": p.split}
+                          for i, p in enumerate(subset)]
+    STATE.set_deliberation(dict(delib))
+    log.info("swarm deliberated %d/%d forecasts across %d personas", enriched, len(subset), len(active))
     return predictions

@@ -255,12 +255,25 @@ async def stream():
 
 @app.post("/chat")
 async def chat(payload: dict = Body(...)):
-    """Ask the oracle anything — it sees every live source + current predictions."""
+    """Ask the oracle anything — it sees every live source + current predictions.
+    Pass `persona` (e.g. "Strategist") to put one council specialist on the line,
+    answered in its voice by its own configured model."""
     from .runtime import intake, oracle
+    from .swarm import PERSONAS
     from .world_state import build_brief
-    msg = (payload or {}).get("message", "").strip()
+    payload = payload or {}
+    msg = payload.get("message", "").strip()
     if not msg:
         raise HTTPException(400, "provide `message`")
+    persona = None
+    model = None
+    want = str(payload.get("persona") or "").strip()
+    if want:
+        match = next(((n, l) for n, l in PERSONAS if n.lower() == want.lower()), None)
+        if match is None:
+            raise HTTPException(400, f"unknown persona {want!r} — one of {[n for n, _ in PERSONAS]}")
+        persona = match
+        model = STATE.swarm_models.get(match[0]) or None
     brief = STATE.world
     if brief is None:
         try:
@@ -268,8 +281,9 @@ async def chat(payload: dict = Body(...)):
             STATE.set_world(brief)
         except Exception:  # noqa: BLE001
             brief = None
-    answer = await oracle.chat(msg, brief, STATE.predictions, payload.get("history", []))
-    return {"answer": answer}
+    answer = await oracle.chat(msg, brief, STATE.predictions, payload.get("history", []),
+                               persona=persona, model=model)
+    return {"answer": answer, "persona": persona[0] if persona else None}
 
 
 @app.post("/loop")
@@ -278,16 +292,31 @@ async def loop(payload: dict = Body(default={})):
     return {"loop_enabled": STATE.loop_enabled}
 
 
+@app.get("/personas")
+async def personas():
+    """The swarm's persona roster — name + the lens each judges through. Drives the
+    what-if field's 'who deliberates' checkboxes."""
+    from .swarm import PERSONAS
+    return {"personas": [{"name": n, "lens": l} for n, l in PERSONAS]}
+
+
 @app.post("/whatif")
 async def whatif(payload: dict = Body(...)):
     """Counterfactual mode: 'assume X just happened' — the oracle forecasts the
-    knock-on effects grounded in the live world. Ephemeral: nothing is stored,
-    nothing enters the track record. Returns {scenario, narrative, predictions}."""
+    knock-on effects grounded in the live world, then (optionally) the chosen swarm
+    personas deliberate on those knock-ons. Ephemeral: nothing is stored, nothing
+    enters the track record. Returns {scenario, narrative, predictions, personas}."""
+    from .config import CONFIG
     from .runtime import intake, oracle
     from .world_state import build_brief
-    scenario = (payload or {}).get("scenario", "").strip()
+    payload = payload or {}
+    scenario = payload.get("scenario", "").strip()
     if not scenario:
         raise HTTPException(400, "provide `scenario`, e.g. {\"scenario\": \"the Strait of Hormuz closes tonight\"}")
+    # which personas the user checked; omit/empty list = no council (single-shot)
+    personas = payload.get("personas")
+    if personas is not None and not isinstance(personas, list):
+        personas = None
     brief = STATE.world
     if brief is None:
         try:
@@ -295,7 +324,16 @@ async def whatif(payload: dict = Body(...)):
             STATE.set_world(brief)
         except Exception:  # noqa: BLE001
             brief = None
-    return await oracle.what_if(scenario, brief)
+    scen, narrative, preds = await oracle.what_if(scenario, brief)
+    used = list(personas) if personas else []
+    if used and CONFIG.swarm_enabled and preds:
+        from .swarm import deliberate
+        try:
+            preds = await deliberate(oracle, brief, preds, personas=used)
+        except Exception as e:  # noqa: BLE001 — a stalled council shouldn't sink the what-if
+            log.warning("what-if deliberation skipped: %s", e)
+    return {"scenario": scen, "narrative": narrative,
+            "predictions": [p.model_dump() for p in preds], "personas": used}
 
 
 @app.get("/webhooks")

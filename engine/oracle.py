@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Awaitable, Callable, Optional
 
 import httpx
@@ -103,10 +104,18 @@ class Oracle:
             r = await c.post(f"{self.base}/chat/completions", json=body,
                              headers={"Authorization": f"Bearer {self.key}"})
             r.raise_for_status()
-            return r.json()["choices"][0]["message"]["content"]
+            msg = r.json()["choices"][0]["message"]
+            # Reasoning models (gemma4, qwen3, …) put their answer in `content` but
+            # stream chain-of-thought into a separate `reasoning` field. If the token
+            # budget was spent on CoT, `content` comes back empty — fall back to
+            # `reasoning` so JSON extraction still has something to parse.
+            return (msg.get("content") or "").strip() or (msg.get("reasoning") or "")
 
-    async def chat(self, question: str, brief, predictions, history=None) -> str:
-        """Answer a free-form question grounded in EVERY live source + current predictions."""
+    async def chat(self, question: str, brief, predictions, history=None,
+                   persona: tuple[str, str] | None = None, model: str | None = None) -> str:
+        """Answer a free-form question grounded in EVERY live source + current predictions.
+        `persona` = (name, lens) puts one council specialist on the line instead of the
+        oracle itself, answered by that persona's own model when `model` is set."""
         parts = []
         if brief:
             parts.append(f"=== LIVE WORLD DATA — {brief.event_count} signals across {len(brief.domains)} domains ===\n{brief.text}")
@@ -115,16 +124,23 @@ class Oracle:
                 f"- [{p.horizon}] {int(p.probability * 100)}% {p.statement}" + (f" — {p.reasoning}" if p.reasoning else "")
                 for p in predictions[:24]))
         context = "\n\n".join(parts) or "(no live data loaded yet — tell the user to run a forecast)"
-        sys = ("You are PYTHIA, an oracle watching the world through live global feeds (news, conflict, "
-               "weather/disasters, seismic, cyber, infrastructure, and Polymarket crowd odds). Answer the "
-               "user's question using the live data below and sound reasoning. Be specific and concise, cite "
-               "concrete signals, and give probabilities when it helps. If the data doesn't cover something, say so.")
+        if persona:
+            name, lens = persona
+            sys = (f"You are the {name}, one specialist on PYTHIA's forecasting council. Your expertise is "
+                   f"{lens} — answer in your own voice, through that lens, while staying grounded in the live "
+                   f"data below. Be specific and concise, cite concrete signals, give probabilities when it "
+                   f"helps, and say plainly when something is outside your lane or not covered by the data.")
+        else:
+            sys = ("You are PYTHIA, an oracle watching the world through live global feeds (news, conflict, "
+                   "weather/disasters, seismic, cyber, infrastructure, and Polymarket crowd odds). Answer the "
+                   "user's question using the live data below and sound reasoning. Be specific and concise, cite "
+                   "concrete signals, and give probabilities when it helps. If the data doesn't cover something, say so.")
         messages: list[dict] = [{"role": "system", "content": sys}]
         for h in (history or [])[-6:]:
             role = "assistant" if h.get("role") == "assistant" else "user"
             messages.append({"role": role, "content": str(h.get("content", ""))[:2000]})
         messages.append({"role": "user", "content": f"{context}\n\n— USER QUESTION —\n{question}"})
-        return await self._complete(messages, 800)
+        return await self._complete(messages, 800, model=model)
 
     async def judge(self, forecast: dict, evidence: list[str], current_brief: str) -> tuple[str, str]:
         """Grade one expired forecast against what actually happened.
@@ -148,7 +164,7 @@ class Oracle:
         )
         sys = "You are a strict, impartial resolution judge for a forecasting system. Output strictly JSON."
         text = await self._complete([{"role": "system", "content": sys},
-                                     {"role": "user", "content": prompt}], 220)
+                                     {"role": "user", "content": prompt}], CONFIG.judge_max_tokens)
         for chunk in self._extract_objects(text):
             try:
                 d = json.loads(chunk)
@@ -236,9 +252,11 @@ class Oracle:
             log.warning("oracle: no predictions parsed from: %s", text[:200])
         return preds
 
-    async def what_if(self, scenario: str, brief) -> dict:
+    async def what_if(self, scenario: str, brief) -> tuple[str, str, list[Prediction]]:
         """Counterfactual mode: inject a hypothetical event into the live world and
-        forecast the knock-on effects. Ephemeral — nothing is stored or ledgered."""
+        forecast the knock-on effects. Ephemeral — nothing is stored or ledgered.
+        Returns (cleaned scenario, narrative, knock-on Predictions) so the caller can
+        optionally hand the predictions to the swarm for deliberation."""
         base = (brief.text if brief else "(no live world data loaded)")[:4000]
         prompt = (
             f"=== LIVE WORLD SNAPSHOT ===\n{base}\n\n"
@@ -252,7 +270,7 @@ class Oracle:
             ", ... 4 to 6 predictions]}\nJSON only — no markdown, no commentary."
         )
         text = await self._complete([{"role": "system", "content": SYSTEM},
-                                     {"role": "user", "content": prompt}], 1200)
+                                     {"role": "user", "content": prompt}], CONFIG.whatif_max_tokens)
         narrative, preds = "", []
         for chunk in self._extract_objects(text):
             try:
@@ -263,7 +281,24 @@ class Oracle:
                 narrative = str(d.get("narrative", "")).strip()[:900]
                 preds = [p for p in (self._clean_pred(it, "") for it in d["predictions"]) if p]
                 break
+        # Salvage a truncated response (reasoning models can cut the JSON off before the
+        # wrapper's closing brace — then _extract_objects sees no balanced top-level object
+        # and the nested prediction objects are hidden). Parse from the predictions array
+        # onward, where each {...} is top-level again, and lift the narrative by regex.
+        if not preds:
+            lb = text.find("[")
+            for chunk in self._extract_objects(text[lb:] if lb != -1 else text):
+                try:
+                    o = json.loads(chunk)
+                except (ValueError, TypeError):
+                    continue
+                p = self._clean_pred(o, "")
+                if p:
+                    preds.append(p)
         if not preds:   # model skipped the wrapper and emitted bare prediction objects
             preds = self._parse(text, "")
-        return {"scenario": scenario.strip()[:400], "narrative": narrative,
-                "predictions": [p.model_dump() for p in preds]}
+        if not narrative:
+            m = re.search(r'"narrative"\s*:\s*"(.*?)"\s*,\s*"predictions"', text, re.S)
+            if m:
+                narrative = m.group(1).replace('\\"', '"').strip()[:900]
+        return scenario.strip()[:400], narrative, preds

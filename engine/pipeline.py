@@ -17,13 +17,21 @@ _lock = asyncio.Lock()
 
 def hydrate_from_ledger() -> int:
     """Wake up remembering: reload still-live forecasts from the ledger so the
-    deck and rings aren't blank while the first pass runs."""
+    deck and rings aren't blank while the first pass runs. Capped to the same
+    per-horizon budget as a real pass — the raw ledger tail spans several passes,
+    and uncapped it floods the deck with ~2× the forecasts after every restart."""
+    from .config import CONFIG
     from .models import AgentView
     from .runtime import ledger
     if STATE.predictions:
         return 0
+    per_horizon: dict[str, int] = {}
     preds = []
-    for f in ledger.open_recent():
+    for f in ledger.open_recent(limit=48):     # newest first; wide net, then cap
+        n = per_horizon.get(f["horizon"], 0)
+        if n >= CONFIG.predictions_per_horizon:
+            continue
+        per_horizon[f["horizon"]] = n + 1
         preds.append(Prediction(
             id=f["id"], statement=f["statement"], horizon=f["horizon"],
             probability=f["probability"], base_probability=f.get("base_probability"),

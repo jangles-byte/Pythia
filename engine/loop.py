@@ -52,10 +52,12 @@ class OracleLoop:
                 await asyncio.sleep(10)
 
 
-async def resolve_due(max_judged: int = 6) -> int:
+async def resolve_due(max_judged: int | None = None) -> int:
     """Grade expired forecasts: LLM-judge the due ones (bounded per pass so the
     local model isn't hogged), void the ones long past their grace window."""
     from .runtime import ledger, oracle
+    if max_judged is None:
+        max_judged = CONFIG.resolve_max_per_pass
     due = ledger.due()
     if not due:
         return 0

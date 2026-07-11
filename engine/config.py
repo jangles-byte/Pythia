@@ -80,9 +80,21 @@ class Config:
     # max events kept per sensing pass after salience-ranking. Higher = quieter domains
     # (space weather, Green disaster alerts) survive the cut and stay visible to agents.
     event_cap: int = field(default_factory=lambda: _i("EVENT_CAP", 500))
+    # token budget for a what-if pass — narrative + 4-6 knock-on predictions. Reasoning
+    # models burn ~1300 tokens (mostly hidden chain-of-thought) here, so keep generous
+    # headroom or the JSON truncates mid-answer (see JUDGE_MAX_TOKENS).
+    whatif_max_tokens: int = field(default_factory=lambda: _i("WHATIF_MAX_TOKENS", 2400))
 
     # ── Swarm (a council of LLM personas deliberates each forecast) ──
     swarm_enabled: bool = field(default_factory=lambda: _b("SWARM_ENABLED", True))
+    # per-persona scoring token budget. Reasoning models spend most of it on hidden
+    # chain-of-thought, so a tight cap truncates the votes (personas end up scoring
+    # only the first prediction or none) — keep generous (see JUDGE_MAX_TOKENS).
+    swarm_max_tokens: int = field(default_factory=lambda: _i("SWARM_MAX_TOKENS", 2400))
+    # how many personas hit the local model at once. Default 1 (sequential) is the
+    # reliable choice for a single heavy model — 4 concurrent 12B calls starve each
+    # other and most drop out ("only 1 opinion"). Raise it only for small/fast models.
+    swarm_concurrency: int = field(default_factory=lambda: _i("SWARM_CONCURRENCY", 1))
     # per-persona model seeds, e.g. SWARM_MODELS=Strategist=llama3.1:70b,Skeptic=qwen3:8b
     # (UI picks are saved to runs/swarm_models.json and win over these)
     swarm_models: dict = field(default_factory=lambda: {
@@ -94,6 +106,12 @@ class Config:
     # ── Track record (persist forecasts, judge them when the horizon expires) ──
     track_enabled: bool = field(default_factory=lambda: _b("TRACK_RECORD_ENABLED", True))
     resolve_interval_sec: int = field(default_factory=lambda: _i("RESOLVE_INTERVAL_SEC", 3600))
+    # The judge's token budget must be generous: reasoning models (gemma4, qwen3, …)
+    # spend tokens on a hidden chain-of-thought *before* the answer, so a tight cap
+    # returns an empty verdict and the forecast never resolves. 700 fits CoT + JSON.
+    judge_max_tokens: int = field(default_factory=lambda: _i("JUDGE_MAX_TOKENS", 700))
+    # forecasts LLM-judged per resolve pass (voiding long-dead ones is unlimited)
+    resolve_max_per_pass: int = field(default_factory=lambda: _i("RESOLVE_MAX_PER_PASS", 12))
 
     def summary(self) -> dict:
         return {

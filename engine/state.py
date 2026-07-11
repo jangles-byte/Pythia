@@ -20,6 +20,9 @@ class EngineState:
         self.swarm_models: dict[str, str] = dict(CONFIG.swarm_models)
         self.swarm_models.update(self._load_swarm_models())
         self.runs: "OrderedDict[str, RunRecord]" = OrderedDict()
+        # live view of the council at work: voices flip from "voting" to "done" as
+        # they land, so the UI can watch the argument happen. Keeps the last one.
+        self.deliberation: dict = {}
         self.generating: bool = False
         self.loop_enabled: bool = False
         self.last_run_ms: Optional[int] = None
@@ -79,6 +82,10 @@ class EngineState:
             self.runs.popitem(last=False)
         self.publish("run", run.model_dump())
 
+    def set_deliberation(self, delib: dict) -> None:
+        self.deliberation = delib
+        self.publish("deliberation", delib)
+
     def set_generating(self, on: bool) -> None:
         self.generating = on
         self.publish("generating", {"generating": on})
@@ -98,6 +105,7 @@ class EngineState:
             "world": self.world.model_dump() if self.world else None,
             "predictions": [p.model_dump() for p in self.predictions],
             "runs": [r.model_dump() for r in list(self.runs.values())[-8:]],
+            "deliberation": self.deliberation,
         }
 
     @staticmethod
