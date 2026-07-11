@@ -113,6 +113,12 @@ class Config:
     # forecasts LLM-judged per resolve pass (voiding long-dead ones is unlimited)
     resolve_max_per_pass: int = field(default_factory=lambda: _i("RESOLVE_MAX_PER_PASS", 12))
 
+    # ── Alerts & Morning Brief ──
+    alert_interval_sec: int = field(default_factory=lambda: _i("ALERT_INTERVAL_SEC", 60))
+    brief_time: str = field(default_factory=lambda: os.environ.get("MORNING_BRIEF_TIME", "07:30"))
+    brief_enabled: bool = field(default_factory=lambda: _b("MORNING_BRIEF_ENABLED", True))
+    brief_max_tokens: int = field(default_factory=lambda: _i("BRIEF_MAX_TOKENS", 2600))
+
     def summary(self) -> dict:
         return {
             "osiris_url": self.osiris_url,

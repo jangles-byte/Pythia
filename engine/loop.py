@@ -106,6 +106,54 @@ class ResolveLoop:
             await asyncio.sleep(CONFIG.resolve_interval_sec)
 
 
+class AlertLoop:
+    """Evaluates the user's alert rules against the live world on an interval."""
+    def __init__(self) -> None:
+        self._task: asyncio.Task | None = None
+
+    def start(self) -> None:
+        if self._task is None:
+            self._task = asyncio.create_task(self._run(), name="alert-loop")
+
+    async def _run(self) -> None:
+        await asyncio.sleep(30)   # let the first sensing pass land
+        while True:
+            try:
+                from . import alerts
+                await alerts.evaluate()
+            except Exception as e:  # noqa: BLE001
+                log.warning("alert loop failed: %s", e)
+            await asyncio.sleep(CONFIG.alert_interval_sec)
+
+
+class BriefLoop:
+    """Writes the Morning Brief once a day at the configured local time."""
+    def __init__(self) -> None:
+        self._task: asyncio.Task | None = None
+
+    def start(self) -> None:
+        if self._task is None:
+            self._task = asyncio.create_task(self._run(), name="brief-loop")
+
+    async def _run(self) -> None:
+        import time as _t
+        from . import brief
+        await asyncio.sleep(120)   # boot first; a brief needs a sensed world
+        while True:
+            try:
+                cfg = brief.get_config()
+                today = _t.strftime("%Y-%m-%d")
+                last = brief.latest()
+                if (cfg["enabled"] and (last is None or last["date"] != today)
+                        and _t.strftime("%H:%M") >= cfg["time"] and not STATE.generating):
+                    await brief.generate(trigger="scheduled")
+            except Exception as e:  # noqa: BLE001
+                log.warning("brief loop failed: %s", e)
+            await asyncio.sleep(60)
+
+
 LOOP = OracleLoop()
 SENSE = SenseLoop()
 RESOLVE = ResolveLoop()
+ALERTS = AlertLoop()
+BRIEF = BriefLoop()

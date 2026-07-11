@@ -54,7 +54,10 @@ PYTHIA does. It is an **oracle**: a single surface that takes in the entire live
 - **Puts the future on a calendar** — every open forecast lands on the day its window closes; click a day for its docket, click a forecast for the deliberation.
 - **Rolls the tape** — a **market ticker** (indices · futures · crypto · FX + your watchlist) scrolls above the world-headline strip, priced keylessly.
 - **Watches your tickers — and picks its own** — the Markets panel's **Watch tab** holds your watchlist (anything Yahoo prices: `AAPL`, `CL=F`, `BTC-USD`, `EURUSD=X`) with sparklines and day moves, and **PYTHIA's Watch** cross-references the oracle's *own live forecasts* to the tickers they touch — defense on conflict forecasts, nat-gas on hurricane cones, grains on drought — each pick carrying the forecast, horizon and probability behind it.
-- **Pushes, not just serves** — register a **webhook** and the engine POSTs you high-probability forecasts after each pass and fresh high-salience world events as they appear.
+- **Taps you on the shoulder** — **signal rules**: "alert me when… an earthquake ≥ M6 hits / CL=F moves ±3% / the VIX crosses 25 / a forecast lands above 85% / any event matches my keywords." The engine evaluates every minute; hits land in the Signals feed, your **browser notifications**, and every webhook.
+- **Writes your Morning Brief** — once a day at your hour (or on demand), the oracle writes a 60-second digest: what changed overnight, which forecasts resolve today, how the watchlist moved, and what to watch. Saved to `runs/briefs/`, surfaced in the deck, pushed to notifications + webhooks.
+- **Runs a radar** — an always-on strip of the strangest thing happening in each domain right now; click a chip and the globe flies there.
+- **Pushes, not just serves** — register a **webhook** and the engine POSTs you high-probability forecasts after each pass, fresh high-salience world events as they appear, and every fired signal rule.
 - **Deliberates as a swarm** — a council of four specialist agents (Strategist · Economist · Naturalist · Skeptic) re-scores every forecast through its own lens. PYTHIA surfaces their **consensus *and* their dissent**, flagging the forecasts where the swarm splits.
 - **Answers questions** — a chat that can see *every* live source and its own forecasts at once. A speaker dropdown puts **any council persona on the line** — the Skeptic answers in the Skeptic's voice, via the Skeptic's own model.
 - **Watches everything** — world news, conflict zones, **live Ukraine territory control / war fronts** (DeepStateMap), NWS storm & flood polygons, EONET disasters, wildfires, earthquakes, cyber threats, infrastructure, **global markets** (oil, indices, commodities, crypto), **futures & term structure** (WTI/Brent/gas/gold/grains/equity futures + the VIX, with a ~6-month contango/backwardation read — the market's own forecast, geo-anchored to the supply regions that drive it), and **Polymarket + Manifold** crowd odds — plus **GDACS disaster alerts** (Red/Orange/Green), **NHC hurricanes**, the **GloFAS flood outlook**, **internet outages** (IODA — a country going dark is often the first coup signal), **space weather** (NOAA SWPC), **Wikipedia attention spikes** (what humanity suddenly cares about), and a full **social & humanitarian** layer set: displacement/refugees, disease outbreaks, civil unrest, food insecurity, inflation, unemployment, GDP, extreme poverty, and internet censorship. **Every source is free and keyless.**
@@ -162,7 +165,10 @@ One JSON payload = your agent's situational awareness: a prose **summary** of th
 | `POST /whatif` | `{ "scenario": "…", "personas": ["Strategist", "Skeptic"]? }` | counterfactual forecast — `{scenario, narrative, predictions, personas}`; the listed personas deliberate the knock-ons; ephemeral, never ledgered |
 | `GET /watch` | — | **the market watch** — `watchlist` (your symbols) + `pythia_watch`: tickers the oracle's live forecasts touch, each with `{symbol, theme, why, horizon, probability}` |
 | `POST /watchlist` · `DELETE /watchlist/{symbol}` | `{ "symbol": "CL=F" }` | manage the watchlist (Yahoo-style symbols; persisted in `runs/watchlist.json`) |
-| `GET /webhooks` · `POST /webhooks` · `DELETE /webhooks?url=` | `{ "url", "min_probability": 0.7, "min_salience": 0.85 }` | outbound push — the engine POSTs `{kind: "forecasts"\|"events", …}` when thresholds are crossed |
+| `GET /alerts` · `POST /alerts` · `DELETE /alerts/{id}` | `{ "kind": "quake"\|"market"\|"vix"\|"forecast"\|"event", "name", "params": {…} }` | **signal rules** — evaluated every minute against the live world; params per kind: quake `{min_magnitude}`, market `{symbol, move_percent}`, vix `{level}`, forecast `{min_probability, horizon?, keywords?}`, event `{keywords, domain?, min_salience}` |
+| `GET /alerts/feed` | `since` (ms), `limit` | fired signals + Morning Briefs — what the UI polls for browser notifications |
+| `GET /brief` · `POST /brief/run` · `POST /brief/config` | `{ "time": "07:30", "enabled": true }` | **the Morning Brief** — latest text + history + schedule; `run` writes one now |
+| `GET /webhooks` · `POST /webhooks` · `DELETE /webhooks?url=` | `{ "url", "min_probability": 0.7, "min_salience": 0.85 }` | outbound push — the engine POSTs `{kind: "forecasts"\|"events"\|"alerts", …}` when thresholds are crossed or a signal rule fires |
 | `GET /docs` · `GET /openapi.json` | — | interactive Swagger UI + the full **OpenAPI spec** (self-discovery) |
 
 ### Object shapes
@@ -205,6 +211,15 @@ curl -X POST http://localhost:8088/chat -H 'content-type: application/json' \
 
 # Which tickers do the oracle's live forecasts touch, and why?
 curl http://localhost:8088/watch
+
+# Tap me when oil moves 3% — or any quake ≥ M6
+curl -X POST http://localhost:8088/alerts -H 'content-type: application/json' \
+     -d '{"kind":"market","name":"Oil ±3%","params":{"symbol":"CL=F","move_percent":3}}'
+curl -X POST http://localhost:8088/alerts -H 'content-type: application/json' \
+     -d '{"kind":"quake","name":"Big quakes","params":{"min_magnitude":6}}'
+
+# Write today's Morning Brief right now
+curl -X POST http://localhost:8088/brief/run
 
 # React in real time — stream world changes
 curl -N http://localhost:8088/state/stream

@@ -8,13 +8,15 @@
  */
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Radio, Loader2, Globe2, Hexagon, Target, FlaskConical, Gavel, CalendarDays } from 'lucide-react';
+import { Sparkles, Radio, Loader2, Globe2, Hexagon, Target, FlaskConical, Gavel, CalendarDays, Sunrise } from 'lucide-react';
 import DeliberationModal from './DeliberationModal';
 import SwarmConfig from './SwarmConfig';
 import ScorecardPanel from './ScorecardPanel';
 import WhatIfPanel from './WhatIfPanel';
 import CouncilChamber, { type Delib } from './CouncilChamber';
 import ForecastCalendar from './ForecastCalendar';
+import BriefPanel from './BriefPanel';
+import RadarStrip from './RadarStrip';
 
 type Agent = { name: string; probability: number; note?: string };
 type Prediction = { id: string; statement: string; horizon: string; probability: number; reasoning: string; location?: string; lat?: number | null; lng?: number | null; agents?: Agent[]; base_probability?: number | null; prev_probability?: number | null; split?: boolean; ts?: number };
@@ -76,6 +78,7 @@ export default function PythiaPanel({ mobile = false, embedded = false, onLocate
   const [showWhatIf, setShowWhatIf] = useState(false);
   const [showChamber, setShowChamber] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showBrief, setShowBrief] = useState(false);
   const [score, setScore] = useState<Score | null>(null);
 
   // the chamber opens itself when a deliberation goes live — that's the show
@@ -140,6 +143,7 @@ export default function PythiaPanel({ mobile = false, embedded = false, onLocate
               : <>· updated {timeago(snap.last_run_ms)}</>}
           </span>
         </span>
+        <ToolButton active={showBrief} onClick={() => setShowBrief(s => !s)} title="Morning Brief — the daily digest, on your schedule" icon={<Sunrise className="w-3.5 h-3.5" />} label="Brief" />
         <ToolButton active={showWhatIf} onClick={() => setShowWhatIf(s => !s)} title="Ask a hypothetical — the council deliberates the fallout" icon={<FlaskConical className="w-3.5 h-3.5" />} label="What if" />
         <ToolButton active={showChamber} onClick={() => setShowChamber(s => !s)} title="Council chamber — watch the deliberation live, vote by vote" icon={<Gavel className="w-3.5 h-3.5" />} label="Chamber" activeColor={deliberating ? 'var(--alert-red)' : undefined} />
         <ToolButton active={showCalendar} onClick={() => setShowCalendar(s => !s)} title="Calendar — when each forecast comes due" icon={<CalendarDays className="w-3.5 h-3.5" />} label="Calendar" />
@@ -177,6 +181,8 @@ export default function PythiaPanel({ mobile = false, embedded = false, onLocate
         </div>
       ) : null}
 
+      <RadarStrip onLocate={onLocate} />
+      {showBrief && <BriefPanel />}
       {showSwarm && <SwarmConfig />}
       {showScore && <ScorecardPanel />}
       {showWhatIf && <WhatIfPanel />}

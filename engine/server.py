@@ -18,11 +18,13 @@ log = logging.getLogger("pythia.server")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from .loop import LOOP, RESOLVE, SENSE
+    from .loop import ALERTS, BRIEF, LOOP, RESOLVE, SENSE
     from .pipeline import run_prediction
     LOOP.start()
     SENSE.start()   # keep live events fresh between forecasts
     RESOLVE.start()  # grade forecasts once their horizon expires
+    ALERTS.start()   # evaluate user alert rules against the live world
+    BRIEF.start()    # the daily Morning Brief, at the configured hour
     log.info("PYTHIA oracle up | %s", CONFIG.summary())
 
     async def _boot():
@@ -325,6 +327,69 @@ async def watchlist_remove(symbol: str):
     STATE.watchlist = [s for s in STATE.watchlist if s != sym]
     STATE.save_watchlist()
     return {"watchlist": STATE.watchlist}
+
+
+@app.get("/alerts")
+async def alerts_list():
+    """The user's alert rules + the recent fired-alert feed size."""
+    from . import alerts
+    return {"rules": alerts.RULES, "kinds": list(alerts.KINDS), "feed_size": len(alerts.FEED)}
+
+
+@app.post("/alerts")
+async def alerts_upsert(payload: dict = Body(...)):
+    """Create or update an alert rule. Kinds: event {keywords, domain?, min_salience},
+    quake {min_magnitude}, market {symbol, move_percent}, vix {level},
+    forecast {min_probability, horizon?, keywords?}. Include `id` to update."""
+    from . import alerts
+    try:
+        return alerts.upsert_rule(payload or {})
+    except (ValueError, TypeError) as e:
+        raise HTTPException(400, str(e))
+
+
+@app.delete("/alerts/{rule_id}")
+async def alerts_delete(rule_id: str):
+    from . import alerts
+    if not alerts.remove_rule(rule_id):
+        raise HTTPException(404, "no such rule")
+    return {"status": "ok"}
+
+
+@app.get("/alerts/feed")
+async def alerts_feed(since: int = 0, limit: int = 50):
+    """Fired alerts (and Morning Briefs), newest last — the UI polls this for
+    browser notifications. `since` = only items with ts > since (epoch ms)."""
+    from . import alerts
+    items = [a for a in alerts.FEED if a["ts"] > since]
+    return {"alerts": items[-max(1, min(200, limit)):], "now": __import__("time").time_ns() // 1_000_000}
+
+
+@app.get("/brief")
+async def brief_get():
+    """The Morning Brief — latest text + schedule config + history of dates."""
+    from . import brief
+    return {"config": brief.get_config(), "latest": brief.latest(), "history": brief.history()}
+
+
+@app.post("/brief/run")
+async def brief_run():
+    """Write the brief now instead of waiting for the schedule."""
+    from . import brief
+    try:
+        return await brief.generate(trigger="manual")
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(503, f"brief generation failed: {e}")
+
+
+@app.post("/brief/config")
+async def brief_config(payload: dict = Body(...)):
+    """Set the daily schedule: {"time": "07:30", "enabled": true}."""
+    from . import brief
+    try:
+        return brief.set_config(payload.get("time"), payload.get("enabled"))
+    except (ValueError, TypeError) as e:
+        raise HTTPException(400, str(e))
 
 
 @app.get("/personas")

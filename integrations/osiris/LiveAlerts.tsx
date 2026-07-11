@@ -3,8 +3,9 @@
 /** Live alerts — high-salience events from every feed, plus 20+ live news streams.
  *  Renders inside PanelModal (desktop) or the mobile sheet — the container
  *  provides the chrome, so this is just the content. */
-import { useState } from 'react';
-import { MapPin, ExternalLink, AlertTriangle, Newspaper, Clock, Radio } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { MapPin, ExternalLink, AlertTriangle, Newspaper, Clock, Radio, BellRing, Sunrise } from 'lucide-react';
+import SignalRules from './SignalRules';
 
 interface LiveAlertsProps {
   data: any;
@@ -22,13 +23,33 @@ const RISK_COLORS: Record<string, string> = {
 
 const FILTERS = [
   { key: 'all', label: 'All' },
+  { key: 'signals', label: 'Signals' },
   { key: 'news', label: 'News' },
   { key: 'quakes', label: 'Quakes' },
   { key: 'feeds', label: 'Live TV' },
 ] as const;
 
+type Fired = { id: string; ts: number; title: string; body: string; rule_name: string; kind: string; lat?: number | null; lng?: number | null };
+
 export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsProps) {
-  const [filter, setFilter] = useState<'all' | 'news' | 'quakes' | 'feeds'>('all');
+  const [filter, setFilter] = useState<'all' | 'signals' | 'news' | 'quakes' | 'feeds'>('all');
+  const [fired, setFired] = useState<Fired[]>([]);
+
+  // fired-signal feed (rules + morning briefs), newest first
+  useEffect(() => {
+    let stop = false;
+    const load = async () => {
+      try {
+        const r = await fetch('/api/engine/alerts/feed?limit=60');
+        if (!r.ok) return;
+        const j = await r.json();
+        if (!stop) setFired((j.alerts || []).slice().reverse());
+      } catch { /* engine offline */ }
+    };
+    load();
+    const iv = setInterval(load, 45000);
+    return () => { stop = true; clearInterval(iv); };
+  }, []);
 
   // Built-in live feeds — verified video IDs (synced with /api/live-news)
   const BUILTIN_FEEDS = [
@@ -117,6 +138,8 @@ export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsPr
 
   return (
     <div className="flex flex-col">
+      <SignalRules />
+
       {/* Filter segmented control */}
       <div className="flex items-center gap-1 mb-3 rounded-xl p-1" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid var(--border-secondary)' }}>
         {FILTERS.map(f => {
@@ -139,8 +162,37 @@ export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsPr
         })}
       </div>
 
+      {/* Fired signals */}
+      {filter === 'signals' && (
+        <div className="flex flex-col gap-2">
+          {fired.map((a) => (
+            <div key={a.id}
+              onClick={() => { if (a.lat != null && a.lng != null) onLocate(a.lat, a.lng); }}
+              className="p-3 rounded-xl border border-[var(--border-secondary)] hover:border-[var(--border-active)] transition-colors"
+              style={{ background: 'rgba(255,255,255,.02)', cursor: a.lat != null ? 'pointer' : 'default' }}>
+              <div className="flex items-start gap-3">
+                {a.kind === 'brief' ? <Sunrise className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'var(--gold-primary)' }} />
+                  : <BellRing className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'var(--cyan-primary)' }} />}
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] text-[var(--text-primary)] leading-snug">{a.title}</div>
+                  {a.body && <div className="text-[11px] text-[var(--text-muted)] leading-snug mt-0.5 line-clamp-2">{a.body}</div>}
+                  <div className="text-[11px] text-[var(--text-muted)] mt-1">
+                    {a.rule_name} · {new Date(a.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          {!fired.length && (
+            <div className="text-center py-6 text-[12px] text-[var(--text-muted)]">
+              Nothing fired yet — add a rule above and PYTHIA taps you when it trips.
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Alert list */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2" style={{ display: filter === 'signals' ? 'none' : undefined }}>
         {filtered.map((alert, i) => {
           const Icon = getIcon(alert.type);
           const sevColor = RISK_COLORS[alert.severity] || '#FFD700';

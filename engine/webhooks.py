@@ -8,6 +8,7 @@ runs/webhooks.json. Fire-and-forget: a dead endpoint never slows the oracle.
 Payloads:
   {"kind": "forecasts", "ts": <ms>, "forecasts": [{statement, horizon, probability, location, lat, lng, reasoning}]}
   {"kind": "events",    "ts": <ms>, "events":    [{title, category, source, salience, lat, lng}]}
+  {"kind": "alerts",    "ts": <ms>, "alerts":    [{rule_name, kind, title, body, lat, lng, ts}]}
 """
 from __future__ import annotations
 
@@ -80,6 +81,18 @@ def fire_forecasts(preds: list) -> None:
                for p in preds if p.probability >= hook["min_probability"]]
         if sel:
             asyncio.create_task(_post(hook["url"], {"kind": "forecasts", "ts": now_ms(), "forecasts": sel}))
+
+
+def fire_alerts(items: list[dict]) -> None:
+    """A user-defined alert rule fired — push to every hook, no thresholds:
+    these are explicit rules, so the subscriber asked for exactly this."""
+    if not items:
+        return
+    body = {"kind": "alerts", "ts": now_ms(),
+            "alerts": [{k: it.get(k) for k in ("rule_name", "kind", "title", "body", "lat", "lng", "ts")}
+                       for it in items]}
+    for hook in HOOKS:
+        asyncio.create_task(_post(hook["url"], body))
 
 
 def fire_events(events: list) -> None:

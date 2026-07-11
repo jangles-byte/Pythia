@@ -21,7 +21,11 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `CreditsModal.tsx` | `src/components/CreditsModal.tsx` — credits |
 | `FloatingWindow.tsx` | `src/components/FloatingWindow.tsx` — movable/resizable window shell |
 | `ChatBox.tsx` | `src/components/ChatBox.tsx` — chat with the oracle, or put one council persona on the line (speaker dropdown above the input; sends `persona` to POST /chat, answered in that voice by that persona's model) |
-| `SplashScreen.tsx` | `src/components/SplashScreen.tsx` — fish-around-the-eye load screen |
+| `SplashScreen.tsx` | `src/components/SplashScreen.tsx` — the halftone opening: a full-screen dot grid where dots grow in place to form a 3D eye with a rotating globe iris (continents, blink, glint); PYTHIA wordmark resolves beneath |
+| `SignalRules.tsx` | `src/components/SignalRules.tsx` — the "tap me on the shoulder when…" rule builder (quake ≥ M / market move ±% / VIX level / forecast ≥ prob / keyword event) at the top of the Live Alerts panel; drives `/api/engine/alerts` |
+| `SignalNotifier.tsx` | `src/components/SignalNotifier.tsx` — invisible always-mounted poller: turns fired rules + Morning Briefs (`/api/engine/alerts/feed`) into browser notifications. Rendered next to the tickers in `page.tsx` |
+| `BriefPanel.tsx` | `src/components/BriefPanel.tsx` — the Morning Brief in the deck (sunrise button): latest digest, write-it-now, daily schedule (time + on/off). Imported by `PythiaPanel.tsx` |
+| `RadarStrip.tsx` | `src/components/RadarStrip.tsx` — always-on radar chips in the deck: the highest-salience live event per domain, click to fly there. Imported by `PythiaPanel.tsx` |
 | `HeadlineTicker.tsx` | `src/components/HeadlineTicker.tsx` — bottom world-headline ticker |
 | `MarketTicker.tsx` | `src/components/MarketTicker.tsx` — rolling market ticker (indices · futures · crypto · FX + the engine watchlist) stacked above the headline ticker; keyless quotes via `/api/quotes`, hover to pause. Rendered next to `<HeadlineTicker/>` in `page.tsx` |
 | `routes/engine-proxy-route.ts` | `src/app/api/engine/[...path]/route.ts` — same-origin proxy to the engine |
