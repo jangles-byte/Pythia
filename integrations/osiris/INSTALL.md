@@ -61,7 +61,8 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `lib/countryCentroids.ts` | `src/lib/countryCentroids.ts` — shared ISO3/ISO2/name → centroid for country layers |
 
 ## Edits to existing Osiris files (high level)
-- `src/app/page.tsx` — **3D altitude:** `orbits3d` in `activeLayers` (default false), a Rocket tool-strip button toggling it, and `orbits3d` added to the satellite + flights fetch gates so the data loads when it's on.
+- `src/app/page.tsx` — **3D altitude:** `orbits3d` in `activeLayers` (**default true**), a Rocket tool-strip button toggling it, and `orbits3d` added to the satellite + flights fetch gates so the data loads when it's on.
+  **Boot defaults (2026-07):** every layer in `activeLayers` defaults **on** except `terrain_3d` (heavy 3D buildings/terrain, stays off); globe `spin` defaults to `{ mode: 'rotate', speed: 3 }` (gentle auto-spin). The spin control is a 3-way segmented toggle — **Off · Spin · Snap** (rotate = continuous, snap = 'smart' jump-to-events) — instead of a single cycling button.
 - `src/app/page.tsx` — render `<PythiaStatus/>`, the floating windows, `<CreditsModal/>`;
   a right-toolbar with Layers/Chat/Markets/Alerts/PYTHIA(Eye)/Search buttons; globe-spin
   control + a **light/dark theme toggle** (Sun) by the 2D/Sat toggles, persisted to
@@ -114,6 +115,7 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   red `hurr-cone-fill`/`hurr-cone-line` polygons with `hurr-center`/`hurr-label` storm
   points, and `flood-circles` sized/shaded by the GloFAS risk ratio (≥1.5 shown);
   click popups for both.
+- `src/components/LayerPanel.tsx` — a **3D Off-Earth View** toggle in the SPACE group (`orbits3d`) turns the 3D altitude layer on/off from the satellites tab;
 - `src/components/LayerPanel.tsx` — added "Storm / Flood Zones", "Conflict / War Zones"
   and "War Front / Territory" toggles; a new SOCIAL group of 9 keyless layers (Displacement,
   Disease Outbreaks, Inflation, Censorship, Civil Unrest, Food Insecurity, Unemployment,
