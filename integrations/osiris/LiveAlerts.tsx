@@ -4,8 +4,9 @@
  *  Renders inside PanelModal (desktop) or the mobile sheet — the container
  *  provides the chrome, so this is just the content. */
 import { useEffect, useState } from 'react';
-import { MapPin, ExternalLink, AlertTriangle, Newspaper, Clock, Radio, BellRing, Sunrise } from 'lucide-react';
+import { MapPin, ExternalLink, AlertTriangle, Newspaper, Clock, Radio, BellRing, Sunrise, Video } from 'lucide-react';
 import SignalRules from './SignalRules';
+import CamsNearby from './CamsNearby';
 
 interface LiveAlertsProps {
   data: any;
@@ -34,6 +35,7 @@ type Fired = { id: string; ts: number; title: string; body: string; rule_name: s
 export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsProps) {
   const [filter, setFilter] = useState<'all' | 'signals' | 'news' | 'quakes' | 'feeds'>('all');
   const [fired, setFired] = useState<Fired[]>([]);
+  const [camsAt, setCamsAt] = useState<{ lat: number; lng: number; label: string } | null>(null);
 
   // fired-signal feed (rules + morning briefs), newest first
   useEffect(() => {
@@ -224,17 +226,17 @@ export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsPr
                       )}
                       {alert.type === 'feed' && <span className="flex items-center gap-1" style={{ color: '#FF4081' }}><Radio className="w-3 h-3" /> live</span>}
                     </div>
-                    {alert.url && (
-                      <a
-                        href={alert.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[11px] flex items-center gap-1 text-[var(--cyan-primary)] hover:underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        source <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
+                    <span className="flex items-center gap-2">
+                      {alert.lat !== undefined && alert.lng !== undefined && (
+                        <button onClick={(e) => { e.stopPropagation(); setCamsAt({ lat: alert.lat, lng: alert.lng, label: (alert.title || alert.description || 'this event').slice(0, 40) }); }}
+                          className="text-[11px] flex items-center gap-1 text-[var(--gold-primary)] hover:underline"><Video className="w-3 h-3" /> cams</button>
+                      )}
+                      {alert.url && (
+                        <a href={alert.url} target="_blank" rel="noopener noreferrer"
+                          className="text-[11px] flex items-center gap-1 text-[var(--cyan-primary)] hover:underline"
+                          onClick={(e) => e.stopPropagation()}>source <ExternalLink className="w-3 h-3" /></a>
+                      )}
+                    </span>
                   </div>
                 </div>
                 {alert.lat !== undefined && (
@@ -248,6 +250,7 @@ export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsPr
           <div className="text-center py-6 text-[12px] text-[var(--text-muted)]">No alerts for this filter</div>
         )}
       </div>
+      {camsAt && <CamsNearby lat={camsAt.lat} lng={camsAt.lng} label={camsAt.label} onClose={() => setCamsAt(null)} />}
     </div>
   );
 }

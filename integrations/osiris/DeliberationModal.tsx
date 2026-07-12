@@ -8,8 +8,10 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Hexagon, TrendingUp, TrendingDown, ImageDown } from 'lucide-react';
+import { useState as _useState } from 'react';
+import { X, MapPin, Hexagon, TrendingUp, TrendingDown, ImageDown, Video } from 'lucide-react';
 import { downloadShareCard } from '@/lib/shareCard';
+import CamsNearby from './CamsNearby';
 
 type Agent = { name: string; probability: number; note?: string; model?: string };
 type Prediction = {
@@ -47,6 +49,7 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
   onLocate?: (lat: number, lng: number) => void;
 }) {
   const [mounted, setMounted] = useState(false);
+  const [showCams, setShowCams] = _useState(false);
   useEffect(() => setMounted(true), []);
   const p = prediction;
   const color = p ? (HORIZON_COLOR[p.horizon] || 'var(--gold-primary)') : 'var(--gold-primary)';
@@ -199,13 +202,19 @@ export default function DeliberationModal({ prediction, onClose, onLocate }: {
               <div className="flex items-center justify-between gap-2 pt-3 border-t border-[var(--border-secondary)]">
                 <span className="text-[12px] flex items-center gap-1.5" style={{ color }}><MapPin className="w-3.5 h-3.5" /> {p.location}</span>
                 {p.lat != null && p.lng != null && (
-                  <button
-                    onClick={() => { onLocate?.(p.lat as number, p.lng as number); onClose(); }}
-                    className="text-[11px] font-medium px-3 py-1.5 rounded-lg transition-colors hover:brightness-125"
-                    style={{ background: 'var(--hover-accent)', color: 'var(--gold-primary)', border: '1px solid var(--border-secondary)' }}
-                  >Fly to on globe →</button>
+                  <span className="flex items-center gap-1.5">
+                    <button onClick={() => setShowCams(true)}
+                      className="text-[11px] font-medium px-3 py-1.5 rounded-lg transition-colors hover:brightness-125 flex items-center gap-1"
+                      style={{ background: 'var(--hover-accent)', color: 'var(--gold-primary)', border: '1px solid var(--border-secondary)' }}><Video className="w-3.5 h-3.5" /> Cams near</button>
+                    <button onClick={() => { onLocate?.(p.lat as number, p.lng as number); onClose(); }}
+                      className="text-[11px] font-medium px-3 py-1.5 rounded-lg transition-colors hover:brightness-125"
+                      style={{ background: 'var(--hover-accent)', color: 'var(--gold-primary)', border: '1px solid var(--border-secondary)' }}>Fly to on globe →</button>
+                  </span>
                 )}
               </div>
+            )}
+            {showCams && p.lat != null && p.lng != null && (
+              <CamsNearby lat={p.lat} lng={p.lng} label={p.location || p.statement.slice(0, 40)} onClose={() => setShowCams(false)} />
             )}
           </motion.div>
         </motion.div>

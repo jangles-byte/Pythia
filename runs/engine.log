@@ -1,0 +1,1709 @@
+INFO:     Started server process [37181]
+INFO:     Waiting for application startup.
+2026-07-11 19:34:50,445 pythia.server INFO PYTHIA oracle up | {'osiris_url': 'http://localhost:3000', 'llm_base_url': 'http://localhost:11434/v1', 'llm_model': 'gemma4:e2b-mlx', 'horizons': ['24h', 'week', 'month', 'year'], 'loop_interval_sec': 900, 'event_cap': 500}
+2026-07-11 19:34:50,468 pythia.ledger INFO ledger loaded: 2088 records, 1476 forecasts (441 resolved)
+2026-07-11 19:34:50,483 pythia.pipeline INFO hydrated 15 live forecasts from the ledger
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8088 (Press CTRL+C to quit)
+2026-07-11 19:34:50,519 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:34:50,553 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:34:50,590 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:34:50,593 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:34:50,606 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:34:50,624 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:34:50,627 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:34:50,653 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:34:50,719 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,094 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,096 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,131 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,317 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,345 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,352 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,370 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,411 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,523 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,549 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,560 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,568 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63821 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:34:51,635 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,643 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63819 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:34:51,751 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,805 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:34:51,904 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:34:52,022 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:34:52,034 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:34:52,260 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:34:52,552 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 19:34:52,566 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:34:52,604 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,614 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,618 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,619 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,622 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,632 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,636 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,638 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,642 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,670 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,689 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,793 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,897 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,900 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,928 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,989 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:34:54,998 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,002 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,017 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,031 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,034 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,120 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,214 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,337 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,380 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,423 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,528 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,593 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:34:55,731 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63907 - "GET /health HTTP/1.1" 200 OK
+2026-07-11 19:34:56,108 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63909 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:34:57,255 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:35:01,342 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+2026-07-11 19:35:01,626 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:35:01,637 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63914 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:35:05,521 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63931 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63934 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:35:06,651 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63932 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:35:09,581 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+2026-07-11 19:35:10,625 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+2026-07-11 19:35:11,627 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:35:11,637 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63944 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:35:14,638 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63953 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:35:21,625 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:35:21,637 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:63956 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63972 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:35:29,553 pythia.pipeline INFO [run_1b8f285561] sensing: reading Osiris feeds
+2026-07-11 19:35:29,647 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:35:29,678 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:35:29,679 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:35:29,683 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:35:29,687 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:35:29,689 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:35:29,694 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,019 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,042 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,089 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,098 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,110 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,254 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,259 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,261 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,263 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,362 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,524 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,567 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,595 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,644 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,654 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,812 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:35:30,916 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:35:31,092 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:35:31,138 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:35:31,244 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:35:31,628 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:35:31,638 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64174 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:35:33,092 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 19:35:33,228 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:35:33,790 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64194 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64199 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64194 - "GET /predictions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64200 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:35:36,680 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64197 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64206 - "GET /drift HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64207 - "GET /agent/view HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64208 - "GET /alerts HTTP/1.1" 200 OK
+2026-07-11 19:35:41,628 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:35:41,642 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64216 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:35:44,622 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64227 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:35:49,693 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+2026-07-11 19:35:51,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:35:51,637 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64230 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64244 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:36:01,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:36:01,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64248 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64254 - "GET /agent/events?domain=aviation&limit=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64255 - "GET /agent/events?source=cisa-kev&limit=3 HTTP/1.1" 200 OK
+2026-07-11 19:36:04,582 pythia.pipeline INFO [run_1b8f285561] thinking: 396 signals -> oracle
+2026-07-11 19:36:04,582 pythia.pipeline INFO [run_1b8f285561] thinking: asking gemma4:e2b-mlx
+INFO:     127.0.0.1:64289 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64292 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:36:06,660 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64291 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:36:11,699 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:36:11,721 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64315 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64326 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64331 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:36:21,635 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:36:21,645 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64330 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64344 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:36:31,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:36:31,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64346 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64368 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64431 - "GET /predictions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64432 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:36:36,775 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64430 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:36:39,852 httpx INFO HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 19:36:39,855 pythia.oracle INFO oracle produced 6 predictions
+2026-07-11 19:36:39,857 pythia.pipeline INFO [run_1b8f285561] deliberating: swarm of 4 weighing 6 forecasts
+2026-07-11 19:36:41,619 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:36:41,622 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64490 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64516 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:36:51,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:36:51,622 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64518 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:36:55,711 httpx INFO HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64534 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:37:01,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:37:01,625 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64536 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64553 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64558 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64559 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:37:06,654 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64557 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:37:09,023 httpx INFO HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 19:37:11,620 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:37:11,624 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64570 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64578 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:37:21,619 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:37:21,619 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64584 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:37:23,952 httpx INFO HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64602 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:37:31,620 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:37:31,622 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64604 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64620 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64624 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:37:36,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64623 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64630 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:37:37,454 httpx INFO HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 19:37:37,460 pythia.swarm INFO swarm weights (Brier-earned): {'Strategist': 0.96, 'Economist': 0.92, 'Naturalist': 1.1, 'Skeptic': 1.01}
+2026-07-11 19:37:37,460 pythia.swarm INFO swarm deliberated 6/6 forecasts across 4 personas
+2026-07-11 19:37:37,471 pythia.pipeline INFO [run_1b8f285561] done: 6 predictions
+2026-07-11 19:37:41,647 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:37:41,663 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64645 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64655 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64660 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:37:51,631 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:37:51,643 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64659 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64714 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:38:01,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:38:01,634 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64720 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64734 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64738 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:38:06,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64737 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:38:11,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:38:11,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64746 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64754 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:38:21,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:38:21,635 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64756 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:38:25,627 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:38:25,629 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:38:25,634 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:38:25,647 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:38:25,649 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:38:25,760 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:38:25,829 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:38:25,873 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:38:25,988 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 19:38:26,222 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:38:26,270 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:38:26,304 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:38:26,320 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:38:26,375 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:38:26,543 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,053 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64946 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:38:27,275 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,350 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,361 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,363 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,409 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,468 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,474 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,624 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,635 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,689 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:38:27,876 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:38:28,155 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:38:28,294 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:38:31,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:38:31,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64951 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:38:32,749 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64973 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64977 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64980 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:38:36,653 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64974 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64973 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:38:40,541 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+2026-07-11 19:38:41,625 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:38:41,636 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65063 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:38:45,647 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65078 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:38:51,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:38:51,634 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65080 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65094 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:39:01,618 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:39:01,625 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65099 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65114 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65117 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:39:06,660 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65115 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:39:11,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:39:11,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65129 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65137 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65142 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:39:21,630 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:39:21,642 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65141 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65156 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:39:31,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:39:31,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65158 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65179 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65183 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65185 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:39:36,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65182 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:39:41,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:39:41,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65194 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65204 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:39:51,626 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:39:51,640 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65206 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65220 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:40:01,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:40:01,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65222 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65238 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65242 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65244 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:40:06,661 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65241 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:40:11,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:40:11,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65252 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65261 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:40:21,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:40:21,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65263 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65279 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:40:31,625 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:40:31,634 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65281 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65314 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65314 - "GET /predictions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65361 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:40:36,713 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65360 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:40:41,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:40:41,636 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65391 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65401 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65406 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:40:51,632 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:40:51,646 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65405 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65418 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:41:01,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:41:01,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65422 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65436 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65440 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:41:06,654 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65439 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:41:11,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:41:11,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65448 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65456 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:41:21,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:41:21,637 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65458 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65474 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:41:31,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:41:31,637 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65476 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65493 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:41:36,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65494 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65500 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65501 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65493 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:41:41,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:41:41,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65513 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65523 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:41:51,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:41:51,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65525 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49156 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:42:00,654 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:42:00,682 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:42:00,683 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:42:00,690 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:42:00,698 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:42:00,699 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:42:00,700 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:42:00,851 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:42:00,923 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,070 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,094 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,134 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,186 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,371 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,391 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,417 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,433 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,449 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,452 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,453 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,459 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,487 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,628 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,635 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49330 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:42:01,740 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,876 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:42:01,898 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 19:42:02,071 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:42:02,220 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:42:02,604 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49348 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49350 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:42:06,646 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49349 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:42:06,970 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+2026-07-11 19:42:11,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:42:11,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49359 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:42:15,590 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49368 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:42:20,700 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49374 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:42:21,628 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:42:21,640 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49372 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49389 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:42:31,620 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:42:31,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49392 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49447 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49472 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:42:36,701 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49471 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49478 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:42:41,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:42:41,635 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49503 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49514 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:42:51,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:42:51,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49516 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49531 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:43:01,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:43:01,637 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49534 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49550 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49555 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49556 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:43:06,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49554 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:43:11,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:43:11,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49564 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49573 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:43:21,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:43:21,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49575 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49589 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:43:31,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:43:31,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49593 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49611 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49615 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49616 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:43:36,658 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49612 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:43:41,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:43:41,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49625 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49635 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49640 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:43:51,630 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:43:51,642 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49638 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49652 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:44:01,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:44:01,634 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49656 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49671 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:44:06,646 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49673 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:44:11,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:44:11,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49682 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49690 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:44:21,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:44:21,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49692 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49706 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:44:31,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:44:31,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49710 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49731 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49735 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49736 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:44:36,669 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49732 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49731 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:44:41,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:44:41,636 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49820 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49830 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:44:51,625 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:44:51,638 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49832 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49846 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:45:01,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:45:01,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49850 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49865 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49868 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:45:06,643 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49867 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:45:11,620 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:45:11,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49876 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49884 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49889 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:45:21,628 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:45:21,641 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49888 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49903 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:45:31,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:45:31,627 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:49905 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:45:35,677 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:45:35,679 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:45:35,681 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:45:35,685 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:45:35,693 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:45:35,825 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:45:35,984 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:45:35,988 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,131 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,142 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,189 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,268 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,395 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,421 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,631 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50091 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50095 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:45:36,654 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50097 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:45:36,674 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50094 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:45:36,707 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,719 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,728 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,764 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,765 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,784 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,788 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:45:36,983 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:45:37,042 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:45:37,237 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:45:37,301 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:45:37,857 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 19:45:39,728 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:45:41,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:45:41,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50108 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:45:42,503 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50117 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:45:50,614 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+2026-07-11 19:45:51,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:45:51,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50121 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:45:55,689 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50136 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:46:01,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:46:01,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50139 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50162 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50166 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50169 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:46:06,647 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50164 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:46:11,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:46:11,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50176 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50184 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:46:21,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:46:21,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50186 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50201 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:46:31,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:46:31,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50204 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50251 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50289 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:46:36,695 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50291 - "GET /predictions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50256 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:46:41,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:46:41,635 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50329 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50337 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50354 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:46:51,627 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:46:51,635 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50348 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50362 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:47:01,625 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:47:01,638 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50371 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50386 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50389 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:47:06,664 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50387 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:47:11,627 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:47:11,637 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50397 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50405 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:47:21,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:47:21,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50407 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50426 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:47:31,625 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:47:31,634 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50429 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50445 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50452 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50453 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50445 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:47:36,665 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50449 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:47:41,629 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:47:41,638 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50479 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50489 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:47:51,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:47:51,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50495 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50508 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:48:01,628 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:48:01,638 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50511 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50525 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50529 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:48:06,656 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50528 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:48:11,625 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:48:11,635 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50541 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50549 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50558 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:48:21,630 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:48:21,634 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50552 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50567 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:48:31,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:48:31,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50570 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50594 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50598 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50594 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:48:36,701 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50597 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:48:41,626 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:48:41,636 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50670 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50680 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:48:51,619 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:48:51,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50682 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50695 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:49:01,630 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:49:01,639 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50704 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50720 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50724 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50726 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:49:06,663 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50723 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:49:10,705 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,710 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,712 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,716 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,725 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,727 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,827 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,869 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,871 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:49:10,977 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,004 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,108 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,266 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,367 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,483 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,497 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,533 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,542 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,585 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,595 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,705 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,723 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50905 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:49:11,844 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,846 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:49:11,861 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:49:12,037 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:49:12,038 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:49:12,088 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:49:12,101 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:49:12,698 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 19:49:13,929 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+2026-07-11 19:49:14,184 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50933 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:49:21,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:49:21,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50940 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:49:25,634 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50955 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:49:30,727 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+2026-07-11 19:49:31,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:49:31,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50960 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50976 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50980 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50984 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:49:36,663 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50979 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:49:41,619 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:49:41,629 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51001 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51015 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51020 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:49:51,630 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:49:51,642 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51019 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51031 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:50:01,629 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:50:01,639 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51035 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51049 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51053 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:50:06,664 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51052 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:50:11,624 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:50:11,634 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51065 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51074 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:50:21,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:50:21,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51076 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51091 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:50:31,627 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:50:31,638 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51094 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51114 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51121 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51122 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:50:36,664 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51118 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51114 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:50:41,622 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:50:41,633 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51216 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51226 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:50:51,623 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:50:51,632 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51228 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51241 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:51:01,628 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:51:01,639 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51248 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51263 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51266 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:51:06,658 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51264 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:51:11,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:51:11,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51274 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51282 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51287 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:51:21,639 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:51:21,643 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51286 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51304 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:51:31,633 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:51:31,647 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51307 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51323 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51327 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51329 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:51:36,677 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51326 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:51:41,626 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:51:41,640 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51338 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51348 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:51:51,621 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:51:51,631 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51350 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51363 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:52:01,625 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:52:01,635 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51366 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51383 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51387 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51388 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:52:06,668 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51384 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:52:11,635 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:52:11,642 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51396 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51404 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:52:21,640 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:52:21,651 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51406 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51427 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:52:31,642 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:52:31,649 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51430 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51447 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51447 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:52:36,712 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51448 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51513 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:52:41,643 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:52:41,653 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51556 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:52:45,753 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:52:45,754 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:52:45,756 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:52:45,769 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:52:45,772 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:52:45,993 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,120 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,137 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,141 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,479 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,615 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,617 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,679 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,683 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,716 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51740 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:52:46,777 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,779 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,843 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,861 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,878 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,911 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:52:46,959 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:52:47,091 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:52:47,096 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:52:47,272 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:52:47,315 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:52:47,678 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 19:52:48,176 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:52:48,601 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+2026-07-11 19:52:48,912 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51752 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:52:51,649 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:52:51,656 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51746 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51761 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:53:00,692 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+2026-07-11 19:53:01,649 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:53:01,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51767 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:53:05,776 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51783 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51786 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:53:06,675 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51785 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:53:11,646 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:53:11,655 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51798 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51807 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:53:21,646 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:53:21,656 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51810 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51825 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:53:31,642 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:53:31,651 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51829 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51849 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51859 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51860 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51849 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:53:36,685 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51851 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:53:41,650 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:53:41,661 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51869 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51880 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:53:51,652 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:53:51,662 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51882 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51899 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:54:01,649 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:54:01,660 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51902 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51919 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51923 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:54:06,689 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51922 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:54:11,643 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:54:11,654 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51931 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51940 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51948 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:54:21,656 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:54:21,667 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51947 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51963 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:54:31,647 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:54:31,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51965 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51983 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:54:36,677 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51984 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51983 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51983 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:54:41,654 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:54:41,664 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52089 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52104 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:54:51,650 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:54:51,663 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52106 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52119 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:55:01,644 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:55:01,653 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52121 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52142 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52146 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52148 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:55:06,688 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52145 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:55:11,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:55:11,658 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52156 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52164 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:55:21,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:55:21,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52166 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52182 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:55:31,644 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:55:31,656 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52190 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52208 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52208 - "GET /predictions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52214 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:55:36,687 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52210 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:55:41,646 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:55:41,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52221 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52232 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52245 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:55:51,664 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:55:51,673 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52244 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52258 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:56:01,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:56:01,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52260 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52276 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52279 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:56:06,687 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52278 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:56:11,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:56:11,662 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52287 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52307 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:56:20,786 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,795 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,796 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,806 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,819 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,822 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,825 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,898 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,937 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,938 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 19:56:20,990 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,070 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,090 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,320 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,518 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,559 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,630 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,639 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,646 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,654 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,655 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52469 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:56:21,666 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,674 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,726 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,742 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,757 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:56:21,965 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:56:22,181 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:56:22,208 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:56:22,360 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:56:22,768 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52487 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:56:29,105 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+2026-07-11 19:56:31,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:56:31,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52499 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:56:35,704 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52526 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52530 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52526 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:56:36,691 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52529 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52526 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:56:40,817 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+2026-07-11 19:56:41,654 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:56:41,668 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52620 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52630 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:56:51,650 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:56:51,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52632 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52646 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:57:01,649 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:57:01,658 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52652 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52669 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52673 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:57:06,688 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52672 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:57:11,649 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:57:11,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52682 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52695 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52703 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:57:21,656 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:57:21,666 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52701 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52717 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:57:31,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:57:31,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52719 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52738 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52738 - "GET /predictions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52746 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:57:36,685 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52739 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:57:41,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:57:41,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52763 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52778 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:57:51,649 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:57:51,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52783 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52796 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:58:01,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:58:01,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52798 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52820 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52825 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:58:06,690 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52821 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:58:11,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:58:11,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52833 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52841 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:58:21,646 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:58:21,657 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52843 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:58:31,660 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:58:31,666 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52864 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52881 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52881 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:58:36,733 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52887 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52952 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 19:58:41,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:58:41,658 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52984 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52994 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53006 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:58:51,696 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+2026-07-11 19:58:51,700 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53004 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53022 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:59:01,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:59:01,662 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53024 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53040 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53043 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:59:06,683 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53042 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 19:59:11,652 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:59:11,664 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53071 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53080 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:59:21,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:59:21,661 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53087 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53102 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:59:31,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:59:31,661 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53104 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53127 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53128 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 19:59:36,737 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53124 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 19:59:41,784 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:59:41,803 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53178 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53216 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:59:51,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 19:59:51,663 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53220 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:59:56,050 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 19:59:56,512 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 19:59:56,737 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 19:59:56,810 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 19:59:56,812 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 19:59:56,932 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 19:59:56,933 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,155 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,170 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,172 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,308 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53422 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 19:59:57,384 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,391 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,399 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,412 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,421 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,845 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 19:59:57,891 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 19:59:58,241 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 19:59:58,247 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 19:59:58,575 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 19:59:58,591 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 19:59:58,741 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 19:59:59,075 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 19:59:59,079 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 19:59:59,264 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 19:59:59,295 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 20:00:00,504 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 20:00:01,249 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 20:00:01,654 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:00:01,665 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53445 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53466 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53469 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:00:06,680 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53467 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:00:06,864 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+2026-07-11 20:00:10,781 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+2026-07-11 20:00:11,652 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:00:11,663 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53478 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:00:16,168 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53487 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53491 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:00:21,658 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:00:21,673 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53490 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53507 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:00:31,653 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:00:31,664 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53515 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53545 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53545 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:00:36,726 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53549 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53602 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 20:00:41,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:00:41,661 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53611 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53621 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:00:51,654 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:00:51,666 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53623 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53640 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:01:01,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:01:01,662 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53642 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53681 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53686 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53687 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:01:06,695 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53684 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:01:11,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:01:11,662 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53725 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53735 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:01:21,650 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:01:21,665 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53741 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53756 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:01:31,659 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:01:31,671 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53764 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53781 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53781 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 20:01:36,675 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53782 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53786 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:01:41,650 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:01:41,660 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53804 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53818 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53822 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:01:51,663 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:01:51,680 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53821 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53834 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:02:01,652 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:02:01,663 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53836 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53855 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53858 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:02:06,683 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53856 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:02:11,652 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:02:11,665 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53867 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53875 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:02:21,652 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:02:21,664 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53877 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53892 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:02:31,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:02:31,662 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53898 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53918 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53922 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53926 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:02:36,721 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53921 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53918 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:02:41,657 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:02:41,665 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54006 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54016 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:02:51,654 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:02:51,665 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54018 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54035 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54044 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:03:01,639 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:03:01,652 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54044 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54118 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:03:06,683 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54119 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:03:11,651 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:03:11,661 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54128 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54134 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54149 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:03:21,657 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:03:21,662 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54143 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54159 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54163 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:03:30,803 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 20:03:30,816 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 20:03:30,826 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 20:03:30,828 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 20:03:30,829 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 20:03:30,864 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 20:03:30,917 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,043 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,072 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,122 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,182 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,298 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,338 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,655 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,661 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,662 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54163 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:03:31,664 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,693 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,717 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,722 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,725 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,736 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 20:03:31,930 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 20:03:32,033 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 20:03:32,077 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 20:03:32,213 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 20:03:32,274 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 20:03:32,346 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 20:03:32,485 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 20:03:32,501 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 20:03:32,812 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54345 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54348 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 20:03:36,685 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54346 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:03:38,207 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+2026-07-11 20:03:41,657 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:03:41,665 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54359 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:03:45,750 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54373 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:03:50,832 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+2026-07-11 20:03:51,655 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:03:51,665 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54376 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54388 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54392 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:04:01,657 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:04:01,667 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54392 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54404 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54404 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:04:06,672 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54405 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:04:11,649 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:04:11,659 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54418 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54424 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:04:21,650 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:04:21,661 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54427 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54440 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54448 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:04:31,648 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:04:31,660 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54448 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54448 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54448 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54487 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:04:35,394 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54486 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54448 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:04:42,081 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+2026-07-11 20:04:42,090 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54714 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54714 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:04:50,358 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:04:50,369 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54733 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54750 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:05:00,362 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:05:00,372 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54754 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54771 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54772 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:05:05,394 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54768 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:05:10,360 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:05:10,370 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54781 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54790 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54798 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:05:20,367 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:05:20,381 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54797 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54811 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:05:30,354 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:05:30,366 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54814 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54836 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54837 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54839 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:05:35,393 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54830 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:05:40,349 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:05:40,358 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54846 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54861 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:05:50,361 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:05:50,370 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54863 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54876 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:06:00,356 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:06:00,366 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54878 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54901 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54902 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54904 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:06:05,399 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54898 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:06:10,362 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:06:10,375 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54913 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54921 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:06:20,351 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:06:20,361 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54923 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54942 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:06:30,356 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:06:30,366 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54945 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:06:35,369 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54961 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54967 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54961 - "GET /predictions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55032 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 20:06:40,357 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:06:40,365 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55068 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55081 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55085 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:06:50,366 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:06:50,381 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55084 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55096 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:07:00,359 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:07:00,368 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55098 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55115 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55116 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:07:05,381 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55112 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:07:05,935 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 20:07:05,957 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 20:07:05,964 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,246 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,263 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,286 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,364 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,525 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,531 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,690 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,699 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,941 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 20:07:06,985 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,014 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,146 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,196 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,244 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,252 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,320 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,357 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,373 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,390 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,398 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,604 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,625 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,758 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,860 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 20:07:07,935 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+2026-07-11 20:07:08,166 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 20:07:10,353 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:07:10,366 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55324 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:07:11,225 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55334 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:07:20,351 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:07:20,361 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55342 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:07:20,784 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55358 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:07:25,980 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+2026-07-11 20:07:30,356 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:07:30,365 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55365 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55384 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55388 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55389 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:07:35,386 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55381 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55381 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:07:40,353 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:07:40,364 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55402 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55413 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:07:50,358 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:07:50,368 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55419 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55432 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:08:00,354 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:08:00,364 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55435 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55492 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55493 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:08:05,383 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55489 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:08:10,365 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:08:10,381 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55503 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55520 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55525 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:08:20,366 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:08:20,377 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55524 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55538 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:08:30,356 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:08:30,364 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55540 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:08:35,430 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55579 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55624 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55625 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55626 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:08:40,359 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:08:40,373 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55693 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55704 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:08:50,362 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:08:50,373 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55706 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55719 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:09:00,363 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:09:00,374 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55721 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55743 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55746 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55747 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:09:05,397 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55742 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:09:10,405 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:09:10,419 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55755 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55764 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:09:20,362 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:09:20,374 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55766 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55785 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:09:30,359 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:09:30,368 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55788 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55807 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55808 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 20:09:35,400 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55804 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55816 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:09:40,363 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:09:40,374 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55823 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55835 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55843 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:09:50,364 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:09:50,378 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55842 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55854 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:10:00,355 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:10:00,371 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55856 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55873 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55874 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:10:05,392 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55870 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:10:10,360 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:10:10,371 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55882 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55896 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:10:20,363 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:10:20,378 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55898 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55913 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:10:30,356 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:10:30,366 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55915 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55941 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55941 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55945 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 20:10:35,392 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55938 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55938 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:10:40,362 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:10:40,375 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56105 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:10:40,853 httpx INFO HTTP Request: GET http://localhost:3000/api/futures "HTTP/1.1 200 OK"
+2026-07-11 20:10:40,857 httpx INFO HTTP Request: GET http://localhost:3000/api/flood-outlook "HTTP/1.1 200 OK"
+2026-07-11 20:10:40,865 httpx INFO HTTP Request: GET http://localhost:3000/api/crypto "HTTP/1.1 200 OK"
+2026-07-11 20:10:40,879 httpx INFO HTTP Request: GET http://localhost:3000/api/unrest "HTTP/1.1 200 OK"
+2026-07-11 20:10:40,881 httpx INFO HTTP Request: GET http://localhost:3000/api/faa-status "HTTP/1.1 200 OK"
+2026-07-11 20:10:40,883 httpx INFO HTTP Request: GET http://localhost:3000/api/kev "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,027 httpx INFO HTTP Request: GET http://localhost:3000/api/earthquakes "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,064 httpx INFO HTTP Request: GET http://localhost:3000/api/infrastructure "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,071 httpx INFO HTTP Request: GET http://localhost:3000/api/country-risk "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,152 httpx INFO HTTP Request: GET http://localhost:3000/api/manifold "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,372 httpx INFO HTTP Request: GET http://localhost:3000/api/markets "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,386 httpx INFO HTTP Request: GET http://localhost:3000/api/polymarket "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,392 httpx INFO HTTP Request: GET http://localhost:3000/api/wiki-attention "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,393 httpx INFO HTTP Request: GET http://localhost:3000/api/news "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,461 httpx INFO HTTP Request: GET http://localhost:3000/api/hurricanes "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,500 httpx INFO HTTP Request: GET http://localhost:3000/api/air-quality "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,577 httpx INFO HTTP Request: GET http://localhost:3000/api/health-outbreaks "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,732 httpx INFO HTTP Request: GET http://localhost:3000/api/space-weather "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,761 httpx INFO HTTP Request: GET http://localhost:3000/api/economy "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,787 httpx INFO HTTP Request: GET http://localhost:3000/api/frontlines "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,861 httpx INFO HTTP Request: GET http://localhost:3000/api/poverty "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,875 httpx INFO HTTP Request: GET http://localhost:3000/api/gdp-growth "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,881 httpx INFO HTTP Request: GET http://localhost:3000/api/unemployment "HTTP/1.1 200 OK"
+2026-07-11 20:10:41,938 httpx INFO HTTP Request: GET http://localhost:3000/api/displacement "HTTP/1.1 200 OK"
+2026-07-11 20:10:42,090 httpx INFO HTTP Request: GET http://localhost:3000/api/cyber-threats "HTTP/1.1 200 OK"
+2026-07-11 20:10:42,237 httpx INFO HTTP Request: GET http://localhost:3000/api/ioda "HTTP/1.1 200 OK"
+2026-07-11 20:10:43,633 httpx INFO HTTP Request: GET http://localhost:3000/api/gdacs-alerts "HTTP/1.1 200 OK"
+2026-07-11 20:10:43,712 httpx INFO HTTP Request: GET http://localhost:3000/api/fires "HTTP/1.1 200 OK"
+2026-07-11 20:10:43,736 httpx INFO HTTP Request: GET http://localhost:3000/api/weather "HTTP/1.1 200 OK"
+2026-07-11 20:10:43,920 httpx INFO HTTP Request: GET http://localhost:3000/api/censorship "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56244 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:10:50,361 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:10:50,370 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56247 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56261 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:10:55,814 httpx INFO HTTP Request: GET http://localhost:3000/api/gdelt "HTTP/1.1 200 OK"
+2026-07-11 20:11:00,355 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:11:00,365 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56265 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:11:00,883 httpx INFO HTTP Request: GET http://localhost:3000/api/food-security "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56282 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56284 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:11:05,394 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56281 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:11:10,350 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:11:10,359 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56292 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56302 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56306 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:11:20,366 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:11:20,377 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56305 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56319 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:11:30,360 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:11:30,372 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56321 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56339 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56343 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56345 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:11:35,407 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56338 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:11:40,360 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:11:40,370 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56352 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56363 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:11:50,360 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:11:50,371 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56365 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56378 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:12:00,362 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:12:00,373 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56380 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56398 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56401 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56402 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:12:05,396 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56397 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:12:10,362 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:12:10,371 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56410 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56419 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:12:20,364 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:12:20,376 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56421 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56439 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:12:30,360 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:12:30,370 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56443 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56470 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56470 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:12:35,443 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56469 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56530 - "GET /watch HTTP/1.1" 200 OK
+2026-07-11 20:12:40,354 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:12:40,363 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56641 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56651 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56659 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:12:50,360 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:12:50,366 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56653 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56666 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:13:00,364 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:13:00,374 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56668 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56685 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56686 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:13:05,396 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56682 - "GET /models HTTP/1.1" 200 OK
+2026-07-11 20:13:10,363 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:13:10,377 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56694 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56702 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:13:20,356 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:13:20,366 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56704 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56719 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:13:30,359 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:13:30,369 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56721 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56742 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56745 - "GET /watch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56746 - "GET /alerts/feed?since=1783769465610 HTTP/1.1" 200 OK
+2026-07-11 20:13:35,398 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56737 - "GET /models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56737 - "GET /predictions HTTP/1.1" 200 OK
+2026-07-11 20:13:40,359 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:13:40,370 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56757 - "GET /links HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /links HTTP/1.1" 200 OK
+2026-07-11 20:13:50,347 httpx INFO HTTP Request: GET http://localhost:3000/api/health "HTTP/1.1 200 OK"
+2026-07-11 20:13:50,361 httpx INFO HTTP Request: GET http://localhost:11434/v1/models "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:56770 - "GET /links HTTP/1.1" 200 OK

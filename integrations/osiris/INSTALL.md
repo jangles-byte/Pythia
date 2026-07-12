@@ -35,6 +35,9 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `HeadlineTicker.tsx` | `src/components/HeadlineTicker.tsx` — bottom world-headline ticker |
 | `MarketTicker.tsx` | `src/components/MarketTicker.tsx` — rolling market ticker (indices · futures · crypto · FX + the engine watchlist) stacked above the headline ticker; keyless quotes via `/api/quotes`, hover to pause. Rendered next to `<HeadlineTicker/>` in `page.tsx` |
 | `routes/engine-proxy-route.ts` | `src/app/api/engine/[...path]/route.ts` — same-origin proxy to the engine |
+| `CamsNearby.tsx` | `src/components/CamsNearby.tsx` — "cameras near this location" modal: nearest public cams as an auto-refreshing still grid, click to enlarge. Opened from `LiveAlerts` (cams link) + `DeliberationModal` (Cams near). Uses `/api/cams?near=` |
+| `SatelliteView.tsx` | `src/components/SatelliteView.tsx` — live NOAA GOES imagery window (East/West · CONUS/full-disk/mesoscale), 2-min refresh. Rendered via the `'satellite'` FloatingWindow kind in `page.tsx` |
+| `routes/cams-route.ts` | `src/app/api/cams/route.ts` — public camera directory (no keys): Caltrans (12 CA districts) + NYC TMC + London TfL + Ontario/Alberta 511 + DelDOT + NZ NZTA, ~4,000 cams normalized to `{name,lat,lng,img,video,src}`. `?near=lat,lng&radius_km=&limit=` returns nearest. Merged into the map's CCTV layer in `page.tsx` |
 | `routes/quotes-route.ts` | `src/app/api/quotes/route.ts` — arbitrary symbol quotes (Yahoo chart API, no key): `?symbols=AAPL,CL=F,BTC-USD` → price, day change %, intraday sparkline; 60s per-symbol cache. Feeds the market ticker + Watch tab |
 | `routes/polymarket-route.ts` | `src/app/api/polymarket/route.ts` — Polymarket crowd odds |
 | `routes/futures-route.ts` | `src/app/api/futures/route.ts` — futures + term structure (Yahoo chart API, no key): oil, gas, gold, grains, equity futures, VIX; ~6-month curve read (contango/backwardation); geo-anchored to supply regions |
