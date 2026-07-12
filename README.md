@@ -43,6 +43,20 @@ PYTHIA does. It is an **oracle**: a single surface that takes in the entire live
 
 **[Osiris](https://github.com/simplifaisoul/osiris)** — *a real-time global intelligence dashboard.* Osiris provides the live 3D globe and the feed layer PYTHIA watches: breaking news, GDELT geopolitics, armed conflict, NWS storm/flood warning zones, EONET disasters, wildfires, earthquakes, cyber threats, critical infrastructure, and more — plus **Polymarket** crowd probabilities as forecasting anchors.
 
+## Recently added
+
+A wave of features turning PYTHIA from "watch the world" into a tool you keep open all day — all still **local & keyless**:
+
+- 🛰 **3D altitude** — satellites and aircraft lift off the globe to their *real* elevation as floating dots (live TLE / ADS-B altitude). On by default; toggle **Off Earth / On Earth** from the satellites tab.
+- 📹 **Cameras** — click **Cams near** on any event or forecast to pull the nearest of **4,000+ public cameras** (Caltrans, NYC, London, Ontario, Alberta, Delaware, NZ) into a live grid, plus a **14-view NOAA GOES** satellite window.
+- 🔔 **Signal rules + notifications** — "tap me when a quake ≥ M6 hits / oil moves ±3% / VIX > 25 / a forecast crosses 85% / a keyword appears." Fires to the Signals feed, browser notifications, and webhooks.
+- ☀ **Morning Brief** — a daily, on-schedule oracle digest: overnight developments, what resolves today, watchlist moves, what to watch.
+- 📈 **Markets** — a rolling ticker, a **Watch tab** (your symbols with sparklines) and **PYTHIA's Watch** (the tickers the oracle's *own* forecasts touch, with the why), a floating always-on-top ticker window, and vastly expanded symbol lists.
+- ⚖ **Council Chamber** — watch the swarm deliberate live, vote-by-vote, and read each persona's argument; **persona chat** puts any specialist on the line in its own voice.
+- 📉 **Drift charts** — a sparkline on every forecast showing how its probability moved across passes; hard swings flagged.
+- 📅 **Calendar** · 📺 **`/tv` kiosk mode** · 📍 **My Patch** (pin your region) · 🖼 **share cards** (branded PNG of any forecast or brief).
+- 🌐 **New feeds** — CISA KEV (actively-exploited CVEs), FAA airspace status (ground stops/delays), plus futures/term-structure, IODA outages, Wikipedia attention, and NOAA space weather.
+
 ## What PYTHIA does
 
 - **Forecasts the future** from the live world, grouped by horizon, each prediction carrying a probability, its reasoning, and a location — **click one and the globe flies there.**
