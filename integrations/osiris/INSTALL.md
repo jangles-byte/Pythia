@@ -61,6 +61,7 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `lib/countryCentroids.ts` | `src/lib/countryCentroids.ts` — shared ISO3/ISO2/name → centroid for country layers |
 
 ## Edits to existing Osiris files (high level)
+- `src/app/page.tsx` — **3D altitude:** `orbits3d` in `activeLayers` (default false), a Rocket tool-strip button toggling it, and `orbits3d` added to the satellite + flights fetch gates so the data loads when it's on.
 - `src/app/page.tsx` — render `<PythiaStatus/>`, the floating windows, `<CreditsModal/>`;
   a right-toolbar with Layers/Chat/Markets/Alerts/PYTHIA(Eye)/Search buttons; globe-spin
   control + a **light/dark theme toggle** (Sun) by the 2D/Sat toggles, persisted to
@@ -87,6 +88,14 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   "any data landed" (`dataVersion > 0`) as live, since not every fetch path sets
   `backendStatus`.
 - `src/app/layout.tsx` — load the Doto + JetBrains Mono Google Fonts.
+- `src/components/OsirisMap.tsx` — **3D altitude layer (2026-07):** two `geojson` sources
+  `alt-sats` + `alt-air` and matching `fill-extrusion` layers (`alt-sats-ext`/`alt-air-ext`)
+  that raise satellites & aircraft off the globe. A `useEffect` keyed on `activeLayers.orbits3d`
+  builds thin square "needle" polygons whose `fill-extrusion-height` is the object's real
+  altitude (satellites: `alt`km × 1000, clamped 6,000km so GEO stays on-screen while LEO is
+  near-true; aircraft: `alt` is **meters**, × ~22 exaggeration to lift the thin air layer below
+  LEO), downsampling satellites to ~2,200. Click handlers on both layers show name + altitude;
+  the effect tilts the camera to pitch 58 so the needles are visible. `setVis(['alt-sats-ext','alt-air-ext'], orbits3d)`.
 - `src/components/OsirisMap.tsx` — `nws-alerts` + `frontlines` polygon sources with
   `nws-fill`/`nws-outline` and `frontline-fill`/`frontline-line` layers; a `displacement`
   source + `displacement-circles` layer (sized by people displaced); social `economy`/
