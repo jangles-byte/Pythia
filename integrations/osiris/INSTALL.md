@@ -36,7 +36,7 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `MarketTicker.tsx` | `src/components/MarketTicker.tsx` — rolling market ticker (indices · futures · crypto · FX + the engine watchlist) stacked above the headline ticker; keyless quotes via `/api/quotes`, hover to pause. Rendered next to `<HeadlineTicker/>` in `page.tsx` |
 | `routes/engine-proxy-route.ts` | `src/app/api/engine/[...path]/route.ts` — same-origin proxy to the engine |
 | `CamsNearby.tsx` | `src/components/CamsNearby.tsx` — "cameras near this location" modal: nearest public cams as an auto-refreshing still grid, click to enlarge. Opened from `LiveAlerts` (cams link) + `DeliberationModal` (Cams near). Uses `/api/cams?near=` |
-| `SatelliteView.tsx` | `src/components/SatelliteView.tsx` — live NOAA GOES imagery window (East/West · CONUS/full-disk/mesoscale), 2-min refresh. Rendered via the `'satellite'` FloatingWindow kind in `page.tsx` |
+| `SatelliteView.tsx` | `src/components/SatelliteView.tsx` — live NOAA GOES imagery window — 14 views (East/West CONUS + full-disk, regional sectors ne/se/taw/psw/hi, mesoscale M1/M2, and IR/AirMass/Sandwich bands), 2-min refresh. Rendered via the `'satellite'` FloatingWindow kind in `page.tsx` |
 | `routes/cams-route.ts` | `src/app/api/cams/route.ts` — public camera directory (no keys): Caltrans (12 CA districts) + NYC TMC + London TfL + Ontario/Alberta 511 + DelDOT + NZ NZTA, ~4,000 cams normalized to `{name,lat,lng,img,video,src}`. `?near=lat,lng&radius_km=&limit=` returns nearest. Merged into the map's CCTV layer in `page.tsx` |
 | `routes/quotes-route.ts` | `src/app/api/quotes/route.ts` — arbitrary symbol quotes (Yahoo chart API, no key): `?symbols=AAPL,CL=F,BTC-USD` → price, day change %, intraday sparkline; 60s per-symbol cache. Feeds the market ticker + Watch tab |
 | `routes/polymarket-route.ts` | `src/app/api/polymarket/route.ts` — Polymarket crowd odds |
@@ -91,11 +91,12 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 - `src/components/OsirisMap.tsx` — **3D altitude layer (2026-07):** two `geojson` sources
   `alt-sats` + `alt-air` and matching `fill-extrusion` layers (`alt-sats-ext`/`alt-air-ext`)
   that raise satellites & aircraft off the globe. A `useEffect` keyed on `activeLayers.orbits3d`
-  builds thin square "needle" polygons whose `fill-extrusion-height` is the object's real
-  altitude (satellites: `alt`km × 1000, clamped 6,000km so GEO stays on-screen while LEO is
-  near-true; aircraft: `alt` is **meters**, × ~22 exaggeration to lift the thin air layer below
-  LEO), downsampling satellites to ~2,200. Click handlers on both layers show name + altitude;
-  the effect tilts the camera to pitch 58 so the needles are visible. `setVis(['alt-sats-ext','alt-air-ext'], orbits3d)`.
+  builds small octagonal chips whose `fill-extrusion-base` is set AT the object's real altitude
+  (and `-height` = base + ~16km), so the dots **float off the surface with no line down and no
+  forced camera tilt**. Satellites: `alt`km × 1000, clamped 6,000km so GEO stays on-screen while
+  LEO is near-true; aircraft: `alt` is **meters**, × ~22 exaggeration to lift the thin air layer
+  below LEO; satellites downsampled to ~2,200. Click handlers on both layers show name + altitude.
+  `setVis(['alt-sats-ext','alt-air-ext'], orbits3d)`.
 - `src/components/OsirisMap.tsx` — `nws-alerts` + `frontlines` polygon sources with
   `nws-fill`/`nws-outline` and `frontline-fill`/`frontline-line` layers; a `displacement`
   source + `displacement-circles` layer (sized by people displaced); social `economy`/
