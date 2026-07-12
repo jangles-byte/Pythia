@@ -52,6 +52,7 @@ FEEDS = [
     ("/api/unemployment", "wb-unemployment", "economy"),
     ("/api/gdp-growth", "wb-gdp", "economy"),
     ("/api/poverty", "wb-poverty", "economy"),
+    ("/api/edgar", "sec-edgar", "markets"),
 ]
 
 # Words that raise an event's salience (drives auto-scan selection).
@@ -409,6 +410,43 @@ def _faa_events(data: dict) -> list[WorldEvent]:
     return out
 
 
+def _edgar_events(data: dict) -> list[WorldEvent]:
+    """SEC EDGAR tape → the high-conviction slice only. Insider BUYS matter (people
+    sell for many reasons but buy for one), and big SELLS ($1M+) flag distribution.
+    Routine grants/exercises are noise and dropped. 8-K volume becomes one rollup."""
+    out: list[WorldEvent] = []
+    for x in (data.get("insider") or []):
+        act, val = x.get("action"), int(x.get("value") or 0)
+        buy = act == "BUY"
+        big_sell = act == "SELL" and val >= 1_000_000
+        if not (buy or big_sell):
+            continue
+        tick = x.get("ticker") or "?"
+        vm = f"${val/1e6:.1f}M" if val >= 1_000_000 else (f"${val/1e3:.0f}K" if val >= 1000 else "")
+        out.append(WorldEvent(
+            title=f"Insider {act.lower()}: {tick} — {x.get('owner', '')}"[:240],
+            summary=(f"{x.get('company', '')} · {act} {int(x.get('shares') or 0):,} sh"
+                     + (f" ({vm})" if vm else "") + " · SEC Form 4")[:2000],
+            category="markets", source="sec-edgar", lat=None, lng=None,
+            url=x.get("url"),
+            # insider buys are the rarer, stronger tell; scale a sell by its size
+            salience=(0.72 if buy else min(0.8, 0.55 + val / 20_000_000)),
+            raw={},
+        ))
+    events = data.get("events") or []
+    if events:
+        names = ", ".join(e.get("company", "") for e in events[:6] if e.get("company"))
+        out.append(WorldEvent(
+            title=f"Material events: {len(events)} 8-K filings on the tape"[:240],
+            summary=(f"Recent 8-Ks (material corporate events): {names}"
+                     + ("…" if len(events) > 6 else ""))[:2000],
+            category="markets", source="sec-edgar", lat=None, lng=None,
+            url="https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=8-K",
+            salience=0.4, raw={},
+        ))
+    return out
+
+
 def _unrest_events(data: dict) -> list[WorldEvent]:
     """GDELT protest hotspots → a summary signal + the top locations (with coords)."""
     out = _summary_signal(data, "unrest", "unrest", "Protest hotspots (GDELT)")
@@ -473,6 +511,8 @@ class OsirisIntake:
                     out.extend(_kev_events(data))
                 elif source == "faa":
                     out.extend(_faa_events(data))
+                elif source == "sec-edgar":
+                    out.extend(_edgar_events(data))
                 elif source == "hungermap":
                     out.extend(_summary_signal(data, "hungermap", "food", "Food insecurity — worst-hit"))
                 elif source == "wb-unemployment":
