@@ -26,30 +26,37 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
 async function awarded(): Promise<Award[]> {
   const end = new Date();
   const start = new Date(Date.now() - 45 * 86_400_000);
-  const r = await fetch('https://api.usaspending.gov/api/v2/search/spending_by_award/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      filters: {
-        award_type_codes: ['A', 'B', 'C', 'D'],   // definitive contracts + IDVs
-        time_period: [{ start_date: iso(start), end_date: iso(end) }],
-      },
-      fields: ['Award ID', 'Recipient Name', 'Award Amount', 'Awarding Agency', 'Description',
-               'Start Date', 'generated_internal_id'],
-      sort: 'Award Amount', order: 'desc', limit: AWARD_LIMIT,
-    }),
-    signal: AbortSignal.timeout(15000), cache: 'no-store',
+  const body = JSON.stringify({
+    filters: {
+      award_type_codes: ['A', 'B', 'C', 'D'],   // definitive contracts + IDVs
+      time_period: [{ start_date: iso(start), end_date: iso(end) }],
+    },
+    fields: ['Award ID', 'Recipient Name', 'Award Amount', 'Awarding Agency', 'Description',
+             'Start Date', 'generated_internal_id'],
+    sort: 'Award Amount', order: 'desc', limit: AWARD_LIMIT,
   });
-  if (!r.ok) return [];
-  const d = await r.json();
-  return (d.results || []).map((x: any): Award => ({
-    recipient: x['Recipient Name'] || '—',
-    amount: Number(x['Award Amount'] || 0),
-    agency: x['Awarding Agency'] || '',
-    description: (x['Description'] || '').slice(0, 240),
-    date: x['Start Date'] || '',
-    url: x['generated_internal_id'] ? `https://www.usaspending.gov/award/${x['generated_internal_id']}` : 'https://www.usaspending.gov',
-  }));
+  // one retry — USASpending occasionally stalls, and we must not let a single slow
+  // response cache an empty Awarded tab
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await fetch('https://api.usaspending.gov/api/v2/search/spending_by_award/', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body,
+        signal: AbortSignal.timeout(20000), cache: 'no-store',
+      });
+      if (!r.ok) continue;
+      const d = await r.json();
+      const rows = (d.results || []).map((x: any): Award => ({
+        recipient: x['Recipient Name'] || '—',
+        amount: Number(x['Award Amount'] || 0),
+        agency: x['Awarding Agency'] || '',
+        description: (x['Description'] || '').slice(0, 240),
+        date: x['Start Date'] || '',
+        url: x['generated_internal_id'] ? `https://www.usaspending.gov/award/${x['generated_internal_id']}` : 'https://www.usaspending.gov',
+      }));
+      if (rows.length) return rows;
+    } catch { /* retry */ }
+  }
+  return [];
 }
 
 async function open(): Promise<Opp[]> {
@@ -87,8 +94,17 @@ export async function GET() {
   if (cache && Date.now() - cache.ts < TTL) return NextResponse.json(cache.body);
   try {
     const body = await build();
-    cache = { ts: Date.now(), body };
-    return NextResponse.json(body);
+    // Never cache a partial result — one slow source (USASpending OR Grants.gov) used to
+    // poison the 30-min cache with an empty tab. Only a full result is cached; on a partial,
+    // backfill the missing tab from the last good cache and don't overwrite it.
+    const full = body.awarded.length > 0 && body.open.length > 0;
+    if (full) { cache = { ts: Date.now(), body }; return NextResponse.json(body); }
+    if (cache) return NextResponse.json({
+      awarded: body.awarded.length ? body.awarded : cache.body.awarded,
+      open: body.open.length ? body.open : cache.body.open,
+      ts: cache.body.ts,
+    });
+    return NextResponse.json(body); // first-ever call, partial — return best-effort, don't cache
   } catch (e) {
     if (cache) return NextResponse.json(cache.body);
     return NextResponse.json({ error: String(e), awarded: [], open: [] }, { status: 502 });
