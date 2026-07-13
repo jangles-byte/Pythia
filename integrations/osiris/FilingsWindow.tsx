@@ -57,20 +57,19 @@ export default function FilingsWindow() {
   const rows = insider.filter(x =>
     filter === 'all' ? true : filter === 'buys' ? x.action === 'BUY' : x.action === 'SELL');
 
-  const Pill = ({ id, children }: { id: typeof tab; children: React.ReactNode }) => (
-    <button onClick={() => setTab(id)}
-      className={`px-2.5 py-1 rounded-full text-[10px] font-mono tracking-wide transition-colors ${
-        tab === id ? 'bg-[var(--gold-primary)]/20 text-[var(--gold-primary)]' : 'text-[var(--text-muted)] hover:bg-[var(--hover-accent)]'}`}>
-      {children}
-    </button>
-  );
-
   return (
     <div className="flex flex-col h-full text-[var(--text-primary)]">
-      {/* tabs */}
+      {/* Tabs inlined (NOT a nested component): the floating window re-renders on
+          mousedown to raise itself, which would remount a nested component between
+          press and release and swallow the click. */}
       <div className="flex items-center gap-1 px-2 py-1.5 border-b border-[var(--border-subtle)]">
-        <Pill id="insider">INSIDER · {insider.length}</Pill>
-        <Pill id="events">8-K · {events.length}</Pill>
+        {(['insider', 'events'] as const).map(id => (
+          <button key={id} type="button" onClick={() => setTab(id)}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-mono tracking-wide transition-colors ${
+              tab === id ? 'bg-[var(--gold-primary)]/20 text-[var(--gold-primary)]' : 'text-[var(--text-muted)] hover:bg-[var(--hover-accent)]'}`}>
+            {id === 'insider' ? `INSIDER · ${insider.length}` : `8-K · ${events.length}`}
+          </button>
+        ))}
         <span className="ml-auto text-[9px] font-mono text-[var(--text-muted)] pr-1">
           {ts ? 'SEC EDGAR · ' + new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
         </span>

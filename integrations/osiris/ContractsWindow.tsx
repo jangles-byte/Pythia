@@ -79,19 +79,23 @@ export default function ContractsWindow() {
   const allExpanded = secs.length > 0 && secs.every(g => expanded.has(g.agency));
   const setAll = () => setExpanded(allExpanded ? new Set() : new Set(secs.map(g => g.agency)));
 
-  const Pill = ({ id, icon: Icon, children }: { id: typeof tab; icon: typeof Landmark; children: React.ReactNode }) => (
-    <button onClick={() => setTab(id)}
-      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-wide transition-colors ${
-        tab === id ? 'bg-[var(--gold-primary)]/20 text-[var(--gold-primary)]' : 'text-[var(--text-muted)] hover:bg-[var(--hover-accent)]'}`}>
-      <Icon className="w-3 h-3" />{children}
-    </button>
-  );
-
   return (
     <div className="flex flex-col h-full text-[var(--text-primary)]">
+      {/* Tab buttons are inlined (NOT a nested component) on purpose: the floating
+          window re-renders on mousedown to raise itself, and a nested component would
+          be remounted between press and release, eating the click. */}
       <div className="flex items-center gap-1 px-2 py-1.5 border-b border-[var(--border-subtle)]">
-        <Pill id="awarded" icon={Landmark}>AWARDED · {awarded.length}</Pill>
-        <Pill id="open" icon={FileClock}>OPEN · {open.length}</Pill>
+        {(['awarded', 'open'] as const).map(id => {
+          const Icon = id === 'awarded' ? Landmark : FileClock;
+          const label = id === 'awarded' ? `AWARDED · ${awarded.length}` : `OPEN · ${open.length}`;
+          return (
+            <button key={id} type="button" onClick={() => setTab(id)}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-wide transition-colors ${
+                tab === id ? 'bg-[var(--gold-primary)]/20 text-[var(--gold-primary)]' : 'text-[var(--text-muted)] hover:bg-[var(--hover-accent)]'}`}>
+              <Icon className="w-3 h-3" />{label}
+            </button>
+          );
+        })}
         <span className="ml-auto text-[9px] font-mono text-[var(--text-muted)] pr-1">
           {ts ? new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
         </span>
