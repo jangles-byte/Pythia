@@ -58,6 +58,9 @@ FEEDS = [
     ("/api/grid", "grid", "energy"),
     ("/api/wastewater", "wastewater", "health"),
     ("/api/climate", "climate", "climate"),
+    ("/api/geohazards", "geohazards", "disaster"),
+    ("/api/ofac", "ofac", "geopolitical"),
+    ("/api/hackernews", "hackernews", "attention"),
 ]
 
 # Words that raise an event's salience (drives auto-scan selection).
@@ -452,6 +455,67 @@ def _edgar_events(data: dict) -> list[WorldEvent]:
     return out
 
 
+def _geohazards_events(data: dict) -> list[WorldEvent]:
+    """Volcanoes + tsunamis → located natural-hazard events. Volcano salience tracks
+    the aviation color code (red > orange > yellow); tsunami salience tracks the
+    message level (warning > advisory > watch), with plain info statements dropped."""
+    out: list[WorldEvent] = []
+    vcol = {"RED": 0.92, "ORANGE": 0.75, "YELLOW": 0.55, "GREEN": 0.3}
+    for v in (data.get("volcanoes") or []):
+        out.append(WorldEvent(
+            title=f"Volcano {v.get('color', '')}/{v.get('level', '')}: {v.get('name', '')}"[:240],
+            summary=(f"{v.get('name', '')} — aviation color {v.get('color', '')}, alert {v.get('level', '')} "
+                     f"({v.get('observatory', '')}). USGS elevated volcano notice.")[:2000],
+            category="disaster", source="geohazards", lat=v.get("lat"), lng=v.get("lng"),
+            url=v.get("url"), salience=vcol.get(v.get("color", ""), 0.5), raw={},
+        ))
+    tlev = {"WARNING": 0.95, "ADVISORY": 0.72, "WATCH": 0.6}
+    for t in (data.get("tsunamis") or []):
+        lvl = t.get("level", "")
+        if lvl == "INFORMATION":
+            continue  # routine "no tsunami threat" statements are noise
+        out.append(WorldEvent(
+            title=f"Tsunami {lvl}: {t.get('title', '')}"[:240],
+            summary=(f"NOAA Tsunami Warning Center — {t.get('title', '')} (issued {t.get('issued', '')}).")[:2000],
+            category="disaster", source="geohazards", lat=None, lng=None,
+            url=t.get("url"), salience=tlev.get(lvl, 0.5), raw={},
+        ))
+    return out
+
+
+def _ofac_events(data: dict) -> list[WorldEvent]:
+    """OFAC recent actions → geopolitical/markets signal. A new designation names the
+    countries, entities and sectors the US just sanctioned; de-listings and licenses
+    matter less. Coordless — the value is the named target, not a place."""
+    sal = {"DESIGNATION": 0.66, "REMOVAL": 0.52, "LICENSE": 0.42, "GUIDANCE": 0.32, "ACTION": 0.45}
+    out: list[WorldEvent] = []
+    for a in (data.get("actions") or [])[:12]:
+        out.append(WorldEvent(
+            title=f"OFAC {a.get('kind', '')}: {a.get('title', '')}"[:240],
+            summary=(f"US Treasury OFAC — {a.get('title', '')} ({a.get('date', '')}).")[:2000],
+            category="geopolitical", source="ofac", lat=None, lng=None,
+            url=a.get("url"), salience=sal.get(a.get("kind", ""), 0.45), raw={},
+        ))
+    return out
+
+
+def _hackernews_events(data: dict) -> list[WorldEvent]:
+    """Hacker News front page → tech attention pulse (coordless). One rollup of what the
+    builder world is fixated on, plus any breakout story as its own low-salience signal."""
+    stories = data.get("stories") or []
+    if not stories:
+        return []
+    out: list[WorldEvent] = []
+    top = "; ".join(s.get("title", "") for s in stories[:5])
+    out.append(WorldEvent(
+        title=f"Tech pulse: {stories[0].get('title', '')}"[:240],
+        summary=(f"Hacker News front page — top: {top}.")[:2000],
+        category="attention", source="hackernews", lat=None, lng=None,
+        url="https://news.ycombinator.com", salience=0.34, raw={},
+    ))
+    return out
+
+
 def _climate_events(data: dict) -> list[WorldEvent]:
     """Climate dials → seasonal context. ENSO phase steers global weather (and grain,
     energy, insurance risk) months ahead; US drought coverage drives water, ag and
@@ -678,6 +742,12 @@ class OsirisIntake:
                     out.extend(_wastewater_events(data))
                 elif source == "climate":
                     out.extend(_climate_events(data))
+                elif source == "geohazards":
+                    out.extend(_geohazards_events(data))
+                elif source == "ofac":
+                    out.extend(_ofac_events(data))
+                elif source == "hackernews":
+                    out.extend(_hackernews_events(data))
                 elif source == "hungermap":
                     out.extend(_summary_signal(data, "hungermap", "food", "Food insecurity — worst-hit"))
                 elif source == "wb-unemployment":

@@ -64,7 +64,8 @@ A wave of features turning PYTHIA from "watch the world" into a tool you keep op
 - ⚖ **Council Chamber** — watch the swarm deliberate live, vote-by-vote, and read each persona's argument; **persona chat** puts any specialist on the line in its own voice.
 - 📉 **Drift charts** — a sparkline on every forecast showing how its probability moved across passes; hard swings flagged.
 - 📅 **Calendar** · 📺 **`/tv` kiosk mode** · 📍 **My Patch** (pin your region) · 🖼 **share cards** (branded PNG of any forecast or brief).
-- 🌐 **Earlier feeds** — CISA KEV (actively-exploited CVEs), FAA airspace status (ground stops/delays), plus futures/term-structure, IODA outages, Wikipedia attention, and NOAA space weather. **Everything is free and keyless — now ~40 live feeds, 39 of them fused into the oracle.**
+- 🌋 **Natural hazards + sanctions + tech** — USGS volcanoes (coords via Smithsonian GVP) + NOAA tsunamis, **OFAC** sanctions actions, and the **Hacker News** tech-attention pulse.
+- 🌐 **Earlier feeds** — CISA KEV (actively-exploited CVEs), FAA airspace status (ground stops/delays), plus futures/term-structure, IODA outages, Wikipedia attention, and NOAA space weather. **Everything is free and keyless — now ~45 live feeds, 42 of them fused into the oracle.**
 
 ## What PYTHIA does
 
@@ -124,6 +125,8 @@ PYTHIA fuses dozens of live, no-key feeds into a single world-state. Toggle any 
 - **Natural hazards** — earthquakes (USGS), NWS storm & flood warning polygons, EONET disasters, wildfires (FIRMS), **NHC hurricanes** + **GloFAS flood outlook**, **NOAA space weather**, severe weather, radiation monitors.
 - **Markets & money** — oil, indices, commodities, crypto, FX, **futures & term structure** (contango/backwardation), **Polymarket + Manifold + Kalshi** crowd odds as forecasting anchors, the **SEC EDGAR** tape (insider Form 4 buys/sells + 8-K events, all public companies — insider *buying* is a rare, high-conviction tell the oracle weights), and **federal money** (awarded contracts via USASpending + open opportunities via Grants.gov).
 - **Energy & climate** — live **power-grid** carbon intensity + generation mix (GB National Grid, California CAISO — a fossil-heavy, high-intensity grid signals demand stress), **ENSO / Oceanic Niño Index** (El Niño / La Niña), and the **US Drought Monitor**.
+- **Volcanoes & tsunamis** — USGS elevated **volcano** alert levels (coordinates joined from the Smithsonian GVP database) and NOAA **tsunami** warning-center messages — the natural-hazard layer that rounds out quakes, storms, fires and floods.
+- **Sanctions & attention** — **OFAC** recent actions (new US Treasury designations, de-listings, licenses — a named geopolitical/markets signal) and the **Hacker News** front page (tech-attention pulse, alongside Wikipedia attention).
 - **Social & humanitarian** — forced displacement & refugees (UNHCR), disease outbreaks (WHO), **CDC wastewater early warning** (leads clinical cases ~1–2 weeks), food insecurity (WFP HungerMap), inflation, unemployment, GDP growth & extreme poverty (World Bank), internet censorship (OONI), **country-level internet outages** (IODA), **Wikipedia attention spikes**.
 - **Movement & eyes** — flights (commercial / private / military) and satellites (**raise-able to real 3D altitude**), maritime traffic & chokepoints, **FAA airspace status** (ground stops/delays), surveillance balloons, live news streams, and **4,000+ public traffic/agency cameras** (Caltrans, NYC, London, Ontario, Alberta, Delaware, NZ) + **live NOAA GOES satellite imagery**.
 

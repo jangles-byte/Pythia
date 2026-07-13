@@ -29,7 +29,7 @@ for (const k of ['nws_alerts', 'frontlines', 'displacement', 'economy', 'censors
                  'unrest', 'food', 'unemployment', 'gdp', 'poverty', 'hurricanes', 'flood']) EMPTY_DATA[k] = { features: [] };
 
 type Card = { id: number; slot: string; kind: string; life: number; node: React.ReactNode };
-type Pools = { cams: any[]; news: any[]; quotes: any[]; alerts: any[]; quakes: any[]; live: any[]; preds: any[] };
+type Pools = { cams: any[]; news: any[]; quotes: any[]; alerts: any[]; quakes: any[]; live: any[]; preds: any[]; hn: any[]; volcanoes: any[]; sanctions: any[] };
 
 const CORNERS = ['tl', 'tr', 'bl', 'br'];
 const BANNERS = ['top', 'bottom'];
@@ -73,7 +73,7 @@ export default function TVPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [now, setNow] = useState('');
   const [fly, setFly] = useState<{ lat: number; lng: number; zoom: number; ts: number } | null>(null);
-  const pools = useRef<Pools>({ cams: [], news: [], quotes: [], alerts: [], quakes: [], live: [], preds: [] });
+  const pools = useRef<Pools>({ cams: [], news: [], quotes: [], alerts: [], quakes: [], live: [], preds: [], hn: [], volcanoes: [], sanctions: [] });
   const idc = useRef(0);
 
   useEffect(() => {
@@ -87,9 +87,10 @@ export default function TVPage() {
   // ── feed loaders ───────────────────────────────────────────────────────
   const loadAll = useCallback(async () => {
     const j = (p: string) => fetch(p).then(r => (r.ok ? r.json() : null)).catch(() => null);
-    const [cams, news, quotes, alerts, quakes, live, state] = await Promise.all([
+    const [cams, news, quotes, alerts, quakes, live, state, hn, geo, ofac] = await Promise.all([
       j('/api/cams'), j('/api/news'), j(`/api/quotes?symbols=${TICKERS.join(',')}`),
       j('/api/nws-alerts'), j('/api/earthquakes'), j('/api/live-news'), j('/api/engine/state'),
+      j('/api/hackernews'), j('/api/geohazards'), j('/api/ofac'),
     ]);
     const P = pools.current;
     if (cams) P.cams = (cams.cams || (Array.isArray(cams) ? cams : [])).filter((c: any) => c.img);
@@ -100,6 +101,9 @@ export default function TVPage() {
     if (live?.feeds) P.live = live.feeds.filter((f: any) => f.embed_allowed);
     if (state?.predictions) P.preds = state.predictions;
     else if (Array.isArray(state?.forecasts)) P.preds = state.forecasts;
+    if (hn?.stories) P.hn = hn.stories;
+    if (geo?.volcanoes) P.volcanoes = geo.volcanoes;
+    if (ofac?.actions) P.sanctions = ofac.actions;
   }, []);
 
   useEffect(() => { loadAll(); const iv = setInterval(loadAll, 90_000); return () => clearInterval(iv); }, [loadAll]);
@@ -178,6 +182,29 @@ export default function TVPage() {
         <div className="flex items-center justify-between"><Tag color="var(--gold-primary)">◉ PYTHIA FORECAST</Tag>
           <span className="text-[15px] font-bold text-[var(--gold-primary)]">{prob}%</span></div>
         <div className="mt-1 text-[13px] text-white/90 leading-snug line-clamp-2">{stmt}</div>
+      </div></Frame>;
+    } },
+    { kind: 'volcano', slot: 'corner', life: 10000, make: () => {
+      const v: any = pick(pools.current.volcanoes); if (!v) return null;
+      const col = v.color === 'RED' ? '#FF1744' : v.color === 'ORANGE' ? '#FF6D00' : '#FFC400';
+      return <Frame w={260}><div className="p-3">
+        <Tag color={col}>▲ VOLCANO · {v.color}</Tag>
+        <div className="mt-1 text-[15px] text-white font-semibold truncate">{v.name}</div>
+        <div className="text-[10px] text-white/60 font-mono">{v.level} · {v.observatory}</div>
+      </div></Frame>;
+    } },
+    { kind: 'sanctions', slot: 'banner', life: 12000, make: () => {
+      const a: any = pick(pools.current.sanctions); if (!a) return null;
+      return <Frame w={500}><div className="px-4 py-3">
+        <Tag color="#E040FB">§ OFAC · {a.kind} · {a.date}</Tag>
+        <div className="mt-1 text-[13px] text-white/90 leading-snug line-clamp-2">{a.title}</div>
+      </div></Frame>;
+    } },
+    { kind: 'tech', slot: 'banner', life: 11000, make: () => {
+      const s: any = pick(pools.current.hn); if (!s) return null;
+      return <Frame w={480}><div className="px-4 py-3">
+        <Tag color="#FF9800">◈ HACKER NEWS · {s.points}▲</Tag>
+        <div className="mt-1 text-[13px] text-white/90 leading-snug line-clamp-2">{s.title}</div>
       </div></Frame>;
     } },
   ];
