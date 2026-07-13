@@ -60,8 +60,9 @@ export default function ContractsWindow() {
         {loading && <div className="p-4 text-center text-[10px] font-mono text-[var(--text-muted)]">pulling the federal tape…</div>}
 
         {tab === 'awarded' && awarded.map((x, i) => (
-          <a key={i} href={x.url} target="_blank" rel="noreferrer"
-            className="group flex items-center gap-2 px-2.5 py-1.5 border-b border-[var(--border-subtle)]/50 hover:bg-[var(--hover-accent)]">
+          <a key={i} href={x.url} target="_blank" rel="noopener noreferrer" title={x.url}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="group flex items-center gap-2 px-2.5 py-1.5 border-b border-[var(--border-subtle)]/50 hover:bg-[var(--hover-accent)] cursor-pointer">
             <span className="w-16 text-[11px] font-mono font-bold shrink-0 text-[var(--alert-green)]">{money(x.amount)}</span>
             <div className="flex-1 min-w-0">
               <div className="text-[11px] truncate leading-tight">{x.recipient}</div>
@@ -72,8 +73,9 @@ export default function ContractsWindow() {
         ))}
 
         {tab === 'open' && open.map((x, i) => (
-          <a key={i} href={x.url} target="_blank" rel="noreferrer"
-            className="group flex items-center gap-2 px-2.5 py-1.5 border-b border-[var(--border-subtle)]/50 hover:bg-[var(--hover-accent)]">
+          <a key={i} href={x.url} target="_blank" rel="noopener noreferrer" title={x.url}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="group flex items-center gap-2 px-2.5 py-1.5 border-b border-[var(--border-subtle)]/50 hover:bg-[var(--hover-accent)] cursor-pointer">
             <div className="flex-1 min-w-0">
               <div className="text-[11px] truncate leading-tight">{x.title}</div>
               <div className="text-[9px] text-[var(--text-muted)] truncate leading-tight">{x.agency}</div>

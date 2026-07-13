@@ -14,6 +14,10 @@ export const dynamic = 'force-dynamic';
 type Award = { recipient: string; amount: number; agency: string; description: string; date: string; url: string };
 type Opp = { title: string; agency: string; number: string; posted: string; close: string; url: string };
 
+// No artificial caps — pull the full award page and every posted opportunity.
+const AWARD_LIMIT = 100;   // USASpending's max page size (top-by-$ covers all the big ones)
+const OPP_ROWS = 3000;     // grants.gov: request more than the ~1.3k typically posted
+
 let cache: { ts: number; body: any } | null = null;
 const TTL = 30 * 60_000; // 30 min — federal filings move slowly
 
@@ -32,7 +36,7 @@ async function awarded(): Promise<Award[]> {
       },
       fields: ['Award ID', 'Recipient Name', 'Award Amount', 'Awarding Agency', 'Description',
                'Start Date', 'generated_internal_id'],
-      sort: 'Award Amount', order: 'desc', limit: 30,
+      sort: 'Award Amount', order: 'desc', limit: AWARD_LIMIT,
     }),
     signal: AbortSignal.timeout(15000), cache: 'no-store',
   });
@@ -53,8 +57,8 @@ async function open(): Promise<Opp[]> {
   const r = await fetch('https://api.grants.gov/v1/api/search2', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rows: 25, keyword: '', oppStatuses: 'posted' }),
-    signal: AbortSignal.timeout(15000), cache: 'no-store',
+    body: JSON.stringify({ rows: OPP_ROWS, keyword: '', oppStatuses: 'posted' }),
+    signal: AbortSignal.timeout(20000), cache: 'no-store',
   });
   if (!r.ok) return [];
   const d = await r.json();
