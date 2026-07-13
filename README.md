@@ -47,7 +47,15 @@ PYTHIA does. It is an **oracle**: a single surface that takes in the entire live
 
 A wave of features turning PYTHIA from "watch the world" into a tool you keep open all day — all still **local & keyless**:
 
-- 🏛 **SEC filings tape** — a floating, placeable window streaming **live insider trades (Form 4)** — buy / sell / grant, enriched with company, ticker, and dollar value — and **material events (8-K)** across *all* public companies, straight from EDGAR (keyless). The oracle ingests the high-conviction slice too: insider **buys** and **$1M+ sells** become world-events, so a cluster-buy can move a forecast.
+- 🏦 **Regulatory & capital-flow feeds** — the intelligence layer nobody fuses into a free oracle, all keyless:
+  - **SEC filings tape** (floating, placeable window) — live insider trades (Form 4: buy/sell/grant with company, ticker, $ value) + material events (8-K) across *all* public companies. The oracle ingests the high-conviction slice: insider **buys** and **$1M+ sells** become world-events, so a cluster-buy can move a forecast.
+  - **Federal money** (floating window) — **awarded** federal contracts (USASpending) and **open** funding opportunities (Grants.gov), with links.
+  - **Kalshi** — CFTC-regulated event-contract odds, a third real-money forecast anchor alongside Polymarket + Manifold.
+  - **Energy & power grid** — live carbon intensity + generation mix (GB National Grid, California CAISO); a fossil-heavy, high-intensity grid is a demand-stress tell.
+  - **Public-health early warning** — CDC wastewater surveillance (leads clinical cases ~1–2 weeks), ranked by viral activity and trend.
+  - **Climate dials** — NOAA ENSO / Oceanic Niño Index (El Niño / La Niña) + US Drought Monitor coverage.
+- 🖥 **Display Mode** — one click drops PYTHIA into the full-screen `/tv` kiosk (auto-rotating forecast / signals / brief / market boards) for a wall display or second monitor.
+- 🌀 **Spin yields to your hand** — the auto-rotating globe now pauses the instant you grab it so you can look around freely, and resumes a half-second after you let go.
 - 🛰 **3D altitude** — satellites and aircraft lift off the globe to their *real* elevation as floating dots (live TLE / ADS-B altitude). On by default; toggle **Off Earth / On Earth** from the satellites tab.
 - 📹 **Cameras** — click **Cams near** on any event or forecast to pull the nearest of **4,000+ public cameras** (Caltrans, NYC, London, Ontario, Alberta, Delaware, NZ) into a live grid, plus a **14-view NOAA GOES** satellite window.
 - 🔔 **Signal rules + notifications** — "tap me when a quake ≥ M6 hits / oil moves ±3% / VIX > 25 / a forecast crosses 85% / a keyword appears." Fires to the Signals feed, browser notifications, and webhooks.
@@ -56,7 +64,7 @@ A wave of features turning PYTHIA from "watch the world" into a tool you keep op
 - ⚖ **Council Chamber** — watch the swarm deliberate live, vote-by-vote, and read each persona's argument; **persona chat** puts any specialist on the line in its own voice.
 - 📉 **Drift charts** — a sparkline on every forecast showing how its probability moved across passes; hard swings flagged.
 - 📅 **Calendar** · 📺 **`/tv` kiosk mode** · 📍 **My Patch** (pin your region) · 🖼 **share cards** (branded PNG of any forecast or brief).
-- 🌐 **New feeds** — **SEC EDGAR** (insider trades + 8-Ks, all companies), CISA KEV (actively-exploited CVEs), FAA airspace status (ground stops/delays), plus futures/term-structure, IODA outages, Wikipedia attention, and NOAA space weather.
+- 🌐 **Earlier feeds** — CISA KEV (actively-exploited CVEs), FAA airspace status (ground stops/delays), plus futures/term-structure, IODA outages, Wikipedia attention, and NOAA space weather. **Everything is free and keyless — now ~40 live feeds, 39 of them fused into the oracle.**
 
 ## What PYTHIA does
 
@@ -114,8 +122,9 @@ PYTHIA fuses dozens of live, no-key feeds into a single world-state. Toggle any 
 
 - **Conflict & security** — armed-conflict events (GDELT), live Ukraine territory control & war fronts (DeepStateMap), civil unrest & protests, cyber-threat / malware networks, **CISA KEV** (CVEs being actively exploited right now), GPS jamming, critical & nuclear infrastructure.
 - **Natural hazards** — earthquakes (USGS), NWS storm & flood warning polygons, EONET disasters, wildfires (FIRMS), **NHC hurricanes** + **GloFAS flood outlook**, **NOAA space weather**, severe weather, radiation monitors.
-- **Markets** — oil, indices, commodities, crypto, FX, **futures & term structure** (contango/backwardation), **Polymarket + Manifold** crowd odds as forecasting anchors, and the **SEC EDGAR** tape (insider Form 4 buys/sells + 8-K material events, all public companies — insider *buying* is a rare, high-conviction tell the oracle weights).
-- **Social & humanitarian** — forced displacement & refugees (UNHCR), disease outbreaks (WHO), food insecurity (WFP HungerMap), inflation, unemployment, GDP growth & extreme poverty (World Bank), internet censorship (OONI), **country-level internet outages** (IODA), **Wikipedia attention spikes**.
+- **Markets & money** — oil, indices, commodities, crypto, FX, **futures & term structure** (contango/backwardation), **Polymarket + Manifold + Kalshi** crowd odds as forecasting anchors, the **SEC EDGAR** tape (insider Form 4 buys/sells + 8-K events, all public companies — insider *buying* is a rare, high-conviction tell the oracle weights), and **federal money** (awarded contracts via USASpending + open opportunities via Grants.gov).
+- **Energy & climate** — live **power-grid** carbon intensity + generation mix (GB National Grid, California CAISO — a fossil-heavy, high-intensity grid signals demand stress), **ENSO / Oceanic Niño Index** (El Niño / La Niña), and the **US Drought Monitor**.
+- **Social & humanitarian** — forced displacement & refugees (UNHCR), disease outbreaks (WHO), **CDC wastewater early warning** (leads clinical cases ~1–2 weeks), food insecurity (WFP HungerMap), inflation, unemployment, GDP growth & extreme poverty (World Bank), internet censorship (OONI), **country-level internet outages** (IODA), **Wikipedia attention spikes**.
 - **Movement & eyes** — flights (commercial / private / military) and satellites (**raise-able to real 3D altitude**), maritime traffic & chokepoints, **FAA airspace status** (ground stops/delays), surveillance balloons, live news streams, and **4,000+ public traffic/agency cameras** (Caltrans, NYC, London, Ontario, Alberta, Delaware, NZ) + **live NOAA GOES satellite imagery**.
 
 No API keys. No accounts. No cost.

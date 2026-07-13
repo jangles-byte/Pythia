@@ -53,6 +53,11 @@ FEEDS = [
     ("/api/gdp-growth", "wb-gdp", "economy"),
     ("/api/poverty", "wb-poverty", "economy"),
     ("/api/edgar", "sec-edgar", "markets"),
+    ("/api/usaspending", "usaspending", "economy"),
+    ("/api/kalshi", "kalshi", "market-odds"),
+    ("/api/grid", "grid", "energy"),
+    ("/api/wastewater", "wastewater", "health"),
+    ("/api/climate", "climate", "climate"),
 ]
 
 # Words that raise an event's salience (drives auto-scan selection).
@@ -447,6 +452,156 @@ def _edgar_events(data: dict) -> list[WorldEvent]:
     return out
 
 
+def _climate_events(data: dict) -> list[WorldEvent]:
+    """Climate dials → seasonal context. ENSO phase steers global weather (and grain,
+    energy, insurance risk) months ahead; US drought coverage drives water, ag and
+    wildfire outlooks. Non-neutral ENSO and wide severe-drought coverage carry weight."""
+    out: list[WorldEvent] = []
+    e = data.get("enso")
+    if e:
+        ph = e.get("phase", "Neutral")
+        oni = e.get("oni", 0) or 0
+        trend = e.get("trend", 0) or 0
+        arrow = "strengthening" if trend > 0.05 else ("weakening" if trend < -0.05 else "steady")
+        strong = "Strong" in ph
+        out.append(WorldEvent(
+            title=f"ENSO: {ph} (ONI {oni:+.2f}, {arrow})"[:240],
+            summary=(f"NOAA CPC Oceanic Niño Index {oni:+.2f} for {e.get('season', '')} — "
+                     f"{ph}, {arrow}. ENSO phase steers seasonal weather, grain and energy risk worldwide.")[:2000],
+            category="climate", source="climate", lat=None, lng=None,
+            url="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php",
+            salience=round(min(0.75, (0.62 if strong else 0.5 if ph != "Neutral" else 0.38) + abs(trend) * 0.2), 3),
+            raw={},
+        ))
+    d = data.get("drought")
+    if d:
+        any_d = d.get("anyDrought", 0) or 0
+        sev = d.get("severePlus", 0) or 0
+        ext = d.get("extremePlus", 0) or 0
+        out.append(WorldEvent(
+            title=f"US drought: {any_d:.0f}% of CONUS, {sev:.0f}% severe+"[:240],
+            summary=(f"US Drought Monitor as of {d.get('asOf', '')}: {any_d:.0f}% of the "
+                     f"Lower 48 in drought (D0+), {sev:.0f}% severe or worse (D2+), "
+                     f"{ext:.0f}% extreme+ (D3+). Drives water, crop and wildfire outlooks.")[:2000],
+            category="climate", source="climate", lat=None, lng=None,
+            url="https://droughtmonitor.unl.edu",
+            salience=round(min(0.72, 0.38 + (sev / 100) * 0.3 + (ext / 100) * 0.15), 3),
+            raw={},
+        ))
+    return out
+
+
+def _wastewater_events(data: dict) -> list[WorldEvent]:
+    """CDC wastewater surveillance → disease early warning (leads clinical cases ~1–2wk).
+    Honest about the reporting date: if CDC's series is lagging, salience is capped low so
+    the oracle treats a stale reading as context, not a live signal."""
+    nat = data.get("national")
+    if not nat:
+        return []
+    as_of = data.get("as_of") or data.get("asOf") or ""
+    stale_days = 999.0
+    try:
+        import time as _t
+        from .models import now_ms as _now
+        as_ms = _t.mktime(_t.strptime(as_of[:10], "%Y-%m-%d")) * 1000
+        stale_days = (_now() - as_ms) / 86_400_000
+    except (ValueError, TypeError):
+        pass
+    fresh = stale_days <= 21
+    pctile = nat.get("percentile", 0) or 0
+    rising = nat.get("risingPct", 0) or 0
+    top = ", ".join(f"{r.get('jurisdiction')} ({r.get('percentile')})"
+                    for r in (data.get("regions") or [])[:5])
+    # only a fresh, elevated, rising signal earns real salience
+    sal = 0.3
+    if fresh:
+        sal = round(min(0.78, 0.35 + (pctile / 100) * 0.3 + (rising / 100) * 0.15), 3)
+    return [WorldEvent(
+        title=(f"Wastewater viral activity {pctile:.0f}th pctile, {rising}% of sites rising "
+               f"(CDC NWSS, as of {as_of})")[:240],
+        summary=(f"CDC wastewater SARS-CoV-2 surveillance as of {as_of}: national activity "
+                 f"{pctile:.0f}th percentile vs site history, {rising}% of sites trending up. "
+                 f"Highest: {top}."
+                 + ("" if fresh else " [CDC series lagging — treat as latest-available, not live.]"))[:2000],
+        category="health", source="wastewater", lat=None, lng=None,
+        url="https://www.cdc.gov/nwss/rv/COVID19-nationaltrend.html",
+        salience=sal, raw={},
+    )]
+
+
+def _grid_events(data: dict) -> list[WorldEvent]:
+    """Power grids → stress signal. A grid leaning hard on fossil peakers with high
+    carbon intensity is straining to meet demand (heat/cold, industrial load); a clean,
+    renewable-heavy grid has slack. Salience rises with carbon intensity and fossil share."""
+    idx_boost = {"very high": 0.26, "high": 0.18, "moderate": 0.08, "low": 0.0, "very low": 0.0}
+    out: list[WorldEvent] = []
+    for g in (data.get("grids") or []):
+        region = g.get("region", "Grid")
+        fossil = g.get("fossilPct", 0) or 0
+        clean = g.get("cleanPct", 0) or 0
+        index = (g.get("index") or "").lower()
+        inten = g.get("intensity")
+        dem = g.get("demandMW")
+        bits = [f"{clean}% clean", f"{fossil}% fossil"]
+        if inten:
+            bits.append(f"carbon {inten} gCO₂/kWh ({index})")
+        if dem:
+            bits.append(f"{dem/1000:.1f} GW demand")
+        out.append(WorldEvent(
+            title=f"{region} grid: {', '.join(bits[:2])}"[:240],
+            summary=(f"{region} power grid — " + " · ".join(bits) + ".")[:2000],
+            category="energy", source="grid", lat=None, lng=None,
+            url="https://api.carbonintensity.org.uk" if "Britain" in region else "https://www.caiso.com/todays-outlook",
+            salience=round(min(0.72, 0.36 + idx_boost.get(index, 0.0) + (fossil / 100) * 0.2), 3),
+            raw={},
+        ))
+    return out
+
+
+def _kalshi_events(data: dict) -> list[WorldEvent]:
+    """Kalshi regulated event contracts → forecasting anchors (like Polymarket/Manifold).
+    The yes-price is a real-money crowd probability; the most-traded, most-contested
+    markets carry the most information, so weight salience by volume and closeness to a
+    coin-flip (a 50/50 market is where the crowd is genuinely uncertain)."""
+    out: list[WorldEvent] = []
+    mkts = sorted(data.get("markets") or [], key=lambda m: m.get("volume", 0), reverse=True)
+    vmax = max((m.get("volume", 0) for m in mkts[:25]), default=0) or 1
+    for m in mkts[:25]:
+        prob = float(m.get("prob") or 0)
+        contested = 1 - abs(prob - 0.5) * 2          # 1 at 50/50, 0 at the extremes
+        vshare = (m.get("volume", 0) or 0) / vmax
+        out.append(WorldEvent(
+            title=f"Kalshi {round(prob*100)}%: {m.get('question', '')}"[:240],
+            summary=(f"[{m.get('category', 'market')}] Regulated crowd odds {round(prob*100)}% "
+                     f"· closes {m.get('close', '')}. Real-money forecast anchor.")[:2000],
+            category="market-odds", source="kalshi", lat=None, lng=None,
+            url=m.get("url"),
+            salience=round(min(0.8, 0.42 + 0.25 * vshare + 0.13 * contested), 3),
+            raw={},
+        ))
+    return out
+
+
+def _usaspending_events(data: dict) -> list[WorldEvent]:
+    """Federal money → light context for the oracle. The top-by-amount awards are
+    mostly recurring lab/IDV ceilings (not fresh news), so this is a single low-salience
+    summary of where federal contract dollars and open opportunities are flowing —
+    the browsable detail lives in the Contracts window, not the world brief."""
+    aw = data.get("awarded") or []
+    op = data.get("open") or []
+    if not aw and not op:
+        return []
+    top = ", ".join(f"{a.get('recipient', '')[:28]} ({a.get('agency', '')[:18]})"
+                    for a in aw[:5] if a.get("recipient"))
+    return [WorldEvent(
+        title=f"Federal contracts: {len(aw)} recent awards · {len(op)} open opportunities"[:240],
+        summary=(f"Largest recent federal awards — {top}. "
+                 f"{len(op)} open funding opportunities (Grants.gov).")[:2000],
+        category="economy", source="usaspending", lat=None, lng=None,
+        url="https://www.usaspending.gov", salience=0.42, raw={},
+    )]
+
+
 def _unrest_events(data: dict) -> list[WorldEvent]:
     """GDELT protest hotspots → a summary signal + the top locations (with coords)."""
     out = _summary_signal(data, "unrest", "unrest", "Protest hotspots (GDELT)")
@@ -513,6 +668,16 @@ class OsirisIntake:
                     out.extend(_faa_events(data))
                 elif source == "sec-edgar":
                     out.extend(_edgar_events(data))
+                elif source == "usaspending":
+                    out.extend(_usaspending_events(data))
+                elif source == "kalshi":
+                    out.extend(_kalshi_events(data))
+                elif source == "grid":
+                    out.extend(_grid_events(data))
+                elif source == "wastewater":
+                    out.extend(_wastewater_events(data))
+                elif source == "climate":
+                    out.extend(_climate_events(data))
                 elif source == "hungermap":
                     out.extend(_summary_signal(data, "hungermap", "food", "Food insecurity — worst-hit"))
                 elif source == "wb-unemployment":
