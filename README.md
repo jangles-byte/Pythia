@@ -54,7 +54,7 @@ A wave of features turning PYTHIA from "watch the world" into a tool you keep op
   - **Energy & power grid** — live carbon intensity + generation mix (GB National Grid, California CAISO); a fossil-heavy, high-intensity grid is a demand-stress tell.
   - **Public-health early warning** — CDC wastewater surveillance (leads clinical cases ~1–2 weeks), ranked by viral activity and trend.
   - **Climate dials** — NOAA ENSO / Oceanic Niño Index (El Niño / La Niña) + US Drought Monitor coverage.
-- 🖥 **Display Mode** — one click drops PYTHIA into the full-screen `/tv` kiosk (auto-rotating forecast / signals / brief / market boards) for a wall display or second monitor.
+- 🖥 **Display Mode** — one click drops PYTHIA into an ambient full-screen kiosk: a slow, equatorial **spinning globe** with live intel from *every* feed — street cams, GOES weather, headlines, markets, storms, quakes, live TV news, oracle forecasts — **fading in and out at random** across the corners and banners. Built to leave up on a wall.
 - 🌀 **Spin yields to your hand** — the auto-rotating globe now pauses the instant you grab it so you can look around freely, and resumes a half-second after you let go.
 - 🛰 **3D altitude** — satellites and aircraft lift off the globe to their *real* elevation as floating dots (live TLE / ADS-B altitude). On by default; toggle **Off Earth / On Earth** from the satellites tab.
 - 📹 **Cameras** — click **Cams near** on any event or forecast to pull the nearest of **4,000+ public cameras** (Caltrans, NYC, London, Ontario, Alberta, Delaware, NZ) into a live grid, plus a **14-view NOAA GOES** satellite window.
