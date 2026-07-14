@@ -123,6 +123,7 @@ export async function GET() {
     return NextResponse.json(body);
   } catch (e) {
     if (cache) return NextResponse.json(cache.body);
-    return NextResponse.json({ error: String(e), insider: [], events: [] }, { status: 502 });
+    // graceful empty (not 502) so a cold-start blip is a quiet "no data this cycle"
+    return NextResponse.json({ error: String(e), insider: [], events: [] }, { status: 200 });
   }
 }

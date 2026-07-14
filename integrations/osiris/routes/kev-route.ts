@@ -36,6 +36,6 @@ export async function GET() {
     return NextResponse.json(body);
   } catch (e) {
     if (cache) return NextResponse.json(cache.body);
-    return NextResponse.json({ error: String(e), vulns: [] }, { status: 502 });
+    return NextResponse.json({ error: String(e), vulns: [] }, { status: 200 });
   }
 }
