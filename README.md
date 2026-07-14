@@ -64,7 +64,8 @@ A wave of features turning PYTHIA from "watch the world" into a tool you keep op
 - ⚖ **Council Chamber** — watch the swarm deliberate live, vote-by-vote, and read each persona's argument; **persona chat** puts any specialist on the line in its own voice.
 - 📉 **Drift charts** — a sparkline on every forecast showing how its probability moved across passes; hard swings flagged.
 - 📅 **Calendar** · 📺 **`/tv` kiosk mode** · 📍 **My Patch** (pin your region) · 🖼 **share cards** (branded PNG of any forecast or brief).
-- 🌋 **Natural hazards + sanctions + tech** — USGS volcanoes (coords via Smithsonian GVP) + NOAA tsunamis, **OFAC** sanctions actions, and the **Hacker News** tech-attention pulse.
+- 🌋 **Natural hazards + sanctions + tech** — USGS volcanoes (coords via Smithsonian GVP, now a **map layer + toggle**) + NOAA tsunamis, **OFAC** sanctions actions, and the **Hacker News** tech-attention pulse.
+- 🎛 **Nothing hidden** — a layer audit closed the gaps: volcanoes got a real map layer, the comms/intel lattice got proper toggles (default off), dead layers were removed, and a new floating **Signals** window lists every *non-map* feed (odds, grid, wastewater, climate, sanctions, tech, space weather, airspace) with its latest value — so nothing lives only in the oracle brief.
 - 🌐 **Earlier feeds** — CISA KEV (actively-exploited CVEs), FAA airspace status (ground stops/delays), plus futures/term-structure, IODA outages, Wikipedia attention, and NOAA space weather. **Everything is free and keyless — now ~45 live feeds, 42 of them fused into the oracle.**
 
 ## What PYTHIA does
