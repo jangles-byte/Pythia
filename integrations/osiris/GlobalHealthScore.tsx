@@ -28,7 +28,7 @@ export default function GlobalHealthScore() {
   const band = bandOf(d.score);
 
   return (
-    <div className="fixed z-[300] top-[68px] left-3 w-[172px] font-mono">
+    <div className="fixed z-[300] top-[104px] left-3 w-[172px] font-mono">
       <button onClick={() => setOpen(o => !o)}
         className="w-full glass-panel rounded-xl px-3 py-2 flex items-center gap-2.5 text-left hover:brightness-110 transition"
         style={{ borderTop: `2px solid ${band.c}` }}>
