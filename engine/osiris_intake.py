@@ -121,26 +121,31 @@ def _coord(d: dict):
     return (lat, lng)
 
 
-def _salience(title: str, summary: str, raw: dict) -> float:
+# A feed's risk scale CANNOT be inferred from the value: 8 means 8/10 from the
+# news route but 8/100 from country-risk, and guessing wrong INVERTS the ranking
+# — which is the whole bug this map exists to kill. So each producer declares its
+# own scale, keyed by source. An unlisted source is IGNORED rather than guessed:
+# dropping a signal is recoverable, inverting one is not.
+#   news -> scoreRisk() in osiris news/route.ts: int, starts at 1, +2 per risk
+#           keyword, capped at 10.
+#   risk -> osiris country-risk/route.ts: 0-100 (floats occur, e.g. 66.6).
+RISK_SCALE = {
+    "news": 10.0,
+    "risk": 100.0,
+}
+
+
+def _salience(title: str, summary: str, raw: dict, source: str = "") -> float:
     text = f"{title} {summary}".lower()
     score = 0.4
     for word, weight in _HOT.items():
         if word in text:
             score = max(score, weight)
-    # honor an upstream risk score if Osiris provided one.
-    # Scales in the wild: news scoreRisk() emits int 1-10 (starts at 1, +2 per
-    # keyword, capped 10); other feeds use 0-1 fractions or 0-100. The old
-    # `rs / (100 if rs > 1 else 1)` inverted the 1-10 scale: risk 1 (noise)
-    # scored 1.0 while risk 9 (missile attack) scored 0.09.
+    # Honor an upstream risk score ONLY when we know that source's scale.
     rs = raw.get("risk_score") or raw.get("severity_score")
-    if isinstance(rs, (int, float)) and not isinstance(rs, bool) and rs > 0:
-        if rs > 10:                          # 0-100 scale
-            norm = float(rs) / 100.0
-        elif rs > 1 or isinstance(rs, int):  # 1-10 scale (int 1 is the scale floor)
-            norm = float(rs) / 10.0
-        else:                                # 0-1 fraction
-            norm = float(rs)
-        score = max(score, min(1.0, norm))
+    scale = RISK_SCALE.get(source)
+    if scale and isinstance(rs, (int, float)) and not isinstance(rs, bool) and rs > 0:
+        score = max(score, min(1.0, float(rs) / scale))
     return round(min(1.0, score), 2)
 
 
@@ -200,7 +205,7 @@ def _to_event(d: dict, source: str, category: str) -> WorldEvent | None:
         lat=lat,
         lng=lng,
         url=_text(d, "url", "link", "feed_url"),
-        salience=_salience(title, summary, d),
+        salience=_salience(title, summary, d, source),
         raw={k: d[k] for k in list(d)[:25]},
     )
     ts = _event_ts(d)
