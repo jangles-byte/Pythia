@@ -62,6 +62,12 @@ FEEDS = [
     ("/api/ofac", "ofac", "geopolitical"),
     ("/api/hackernews", "hackernews", "attention"),
     ("/api/planet-vitals", "planet-vitals", "environment"),
+    # ── the "eyes": position/imagery layers, summarized so the oracle sees them too ──
+    ("/api/flights", "flights", "movement"),
+    ("/api/maritime", "maritime", "maritime"),
+    ("/api/radiation", "radiation", "environment"),
+    ("/api/satellites", "satellites", "space"),
+    ("/api/balloons", "balloons", "movement"),
 ]
 
 # Words that raise an event's salience (drives auto-scan selection).
@@ -531,6 +537,89 @@ def _planet_vitals_events(data: dict) -> list[WorldEvent]:
     return out
 
 
+def _flights_events(data: dict) -> list[WorldEvent]:
+    """Air picture → a military-activity summary (visibility only) plus GPS-jamming
+    zones, which ARE a security signal (jamming clusters near conflict)."""
+    out: list[WorldEvent] = []
+    mil = data.get("military_flights") or []
+    if mil:
+        out.append(WorldEvent(
+            title=f"Military air activity: {len(mil)} military aircraft airborne",
+            summary=f"{len(mil)} military aircraft currently tracked worldwide (ADS-B).",
+            category="movement", source="flights", lat=None, lng=None,
+            salience=round(min(0.58, 0.30 + len(mil) / 700), 3), raw={}))  # surge = louder
+    for j in (data.get("gps_jamming") or [])[:12]:
+        out.append(WorldEvent(
+            title=f"GPS jamming: {j.get('region') or j.get('name') or 'zone'}"[:240],
+            summary="GPS/GNSS interference detected — often co-located with conflict or exercises.",
+            category="conflict", source="gps-jamming", lat=j.get("lat"), lng=j.get("lng"),
+            url="https://gpsjam.org", salience=0.72, raw={}))
+    return out
+
+
+def _maritime_events(data: dict) -> list[WorldEvent]:
+    """Sea chokepoints + port congestion → geopolitical/economic signal (a strained
+    Hormuz or Suez, or a badly congested port, ripples through everything)."""
+    out: list[WorldEvent] = []
+    crisk = {"CRITICAL": 0.82, "HIGH": 0.62, "ELEVATED": 0.5}
+    for c in (data.get("chokepoints") or []):
+        if c.get("risk") in crisk:
+            out.append(WorldEvent(
+                title=f"Chokepoint {c.get('risk')}: {c.get('name', '')}"[:240],
+                summary=f"{c.get('name', '')} — {c.get('traffic', '')}. Maritime chokepoint at elevated risk.",
+                category="geopolitical", source="maritime", lat=c.get("lat"), lng=c.get("lng"),
+                salience=crisk[c["risk"]], raw={}))
+    for p in (data.get("ports") or []):
+        if p.get("congestion") in ("SEVERE", "CONGESTED"):
+            out.append(WorldEvent(
+                title=f"Port {p.get('congestion')}: {p.get('name', '')}"[:240],
+                summary=f"{p.get('name', '')} ({p.get('country', '')}) — dwell {p.get('dwell_time', '?')}.",
+                category="economy", source="maritime", lat=p.get("lat"), lng=p.get("lng"),
+                salience=0.6 if p["congestion"] == "SEVERE" else 0.48, raw={}))
+    return out[:12]
+
+
+def _radiation_events(data: dict) -> list[WorldEvent]:
+    """Radiation monitors → only the elevated ones matter (a spike can mean a nuclear
+    incident); routine background is skipped."""
+    sal = {"DANGER": 0.88, "WARNING": 0.66}
+    out: list[WorldEvent] = []
+    for s in (data.get("stations") or []):
+        if s.get("status") in sal:
+            out.append(WorldEvent(
+                title=f"Radiation {s.get('status')}: {s.get('name', '')} — {s.get('reading', '?')} nSv/h"[:240],
+                summary=f"{s.get('network', 'monitor')} sensor reading {s.get('reading', '?')} nSv/h ({s.get('status')}).",
+                category="environment", source="radiation", lat=s.get("lat"), lng=s.get("lng"),
+                salience=sal[s["status"]], raw={}))
+    return out[:10]
+
+
+def _satellites_events(data: dict) -> list[WorldEvent]:
+    """Orbital picture → one visibility summary (not a health signal, so category 'space'
+    is outside the score's pillars)."""
+    total = data.get("total") or 0
+    if not total:
+        return []
+    cc = data.get("category_counts") or {}
+    return [WorldEvent(
+        title=f"Orbital tracking: {total:,} objects ({cc.get('military', 0)} military/intel)",
+        summary=(f"{total:,} tracked objects — {cc.get('comms', 0)} comms, {cc.get('navigation', 0)} nav, "
+                 f"{cc.get('earth_obs', 0)} earth-obs, {cc.get('military', 0)} military/intel.")[:2000],
+        category="space", source="satellites", lat=None, lng=None, salience=0.3, raw={})]
+
+
+def _balloons_events(data: dict) -> list[WorldEvent]:
+    """Upper-air balloons/radiosondes → one visibility summary (category 'movement',
+    outside the score)."""
+    n = data.get("total") or len(data.get("balloons") or [])
+    if not n:
+        return []
+    return [WorldEvent(
+        title=f"Upper-air: {n} weather balloons / radiosondes aloft",
+        summary=f"{n} active radiosondes reporting upper-air observations (SondeHub).",
+        category="movement", source="balloons", lat=None, lng=None, salience=0.25, raw={})]
+
+
 def _hackernews_events(data: dict) -> list[WorldEvent]:
     """Hacker News front page → tech attention pulse (coordless). One rollup of what the
     builder world is fixated on, plus any breakout story as its own low-salience signal."""
@@ -727,7 +816,10 @@ class OsirisIntake:
         try:
             # generous: Next.js compiles each route on first hit (cold start), and a few
             # feeds (e.g. /api/unrest aggregates many GDELT files) are slow until cached.
-            r = await c.get(f"{self.base}{path}", timeout=35)
+            # 15s cap: feeds run concurrently, so the cycle is bounded by the slowest
+            # one. Capping keeps a single slow/hanging upstream from stalling the whole
+            # sensing pass (and thus keeps STATE.events fresh for the agents).
+            r = await c.get(f"{self.base}{path}", timeout=15)
             if r.status_code < 400:
                 data = r.json()
                 if source in ("markets", "crypto"):
@@ -782,6 +874,16 @@ class OsirisIntake:
                     out.extend(_hackernews_events(data))
                 elif source == "planet-vitals":
                     out.extend(_planet_vitals_events(data))
+                elif source == "flights":
+                    out.extend(_flights_events(data))
+                elif source == "maritime":
+                    out.extend(_maritime_events(data))
+                elif source == "radiation":
+                    out.extend(_radiation_events(data))
+                elif source == "satellites":
+                    out.extend(_satellites_events(data))
+                elif source == "balloons":
+                    out.extend(_balloons_events(data))
                 elif source == "hungermap":
                     out.extend(_summary_signal(data, "hungermap", "food", "Food insecurity — worst-hit"))
                 elif source == "wb-unemployment":

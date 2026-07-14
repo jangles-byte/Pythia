@@ -20,9 +20,10 @@ _STORE = Path("runs/health_score.json")
 
 # Six pillars → the event categories that feed each, and each pillar's weight in the
 # global blend (weights sum to 1.0). Categories come from engine/osiris_intake.py.
-# Meta / static categories excluded from scoring: `news` (generic headlines that already
-# overlap every domain), `attention` (Wikipedia/HN meta-interest), `infrastructure`
-# (static facility list). They're context, not a planetary-health domain.
+# Meta / static / visibility categories excluded from scoring: `news` (generic headlines
+# that already overlap every domain), `attention` (Wikipedia/HN meta-interest),
+# `infrastructure` (static facility list), `movement` (flight/balloon counts) and `space`
+# (satellite counts). The oracle still sees them; they're context, not a health domain.
 PILLARS: dict[str, dict] = {
     "Conflict & Security":   {"cats": {"conflict", "geopolitical", "unrest", "cyber", "instability"}, "weight": 0.22},
     "Natural Hazards":       {"cats": {"seismic", "weather", "wildfire", "disaster", "hurricane", "flood-outlook", "aviation"}, "weight": 0.20},
