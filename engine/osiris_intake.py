@@ -126,10 +126,20 @@ def _salience(title: str, summary: str, raw: dict) -> float:
     for word, weight in _HOT.items():
         if word in text:
             score = max(score, weight)
-    # honor an upstream risk score if Osiris provided one
+    # honor an upstream risk score if Osiris provided one.
+    # Scales in the wild: news scoreRisk() emits int 1-10 (starts at 1, +2 per
+    # keyword, capped 10); other feeds use 0-1 fractions or 0-100. The old
+    # `rs / (100 if rs > 1 else 1)` inverted the 1-10 scale: risk 1 (noise)
+    # scored 1.0 while risk 9 (missile attack) scored 0.09.
     rs = raw.get("risk_score") or raw.get("severity_score")
-    if isinstance(rs, (int, float)):
-        score = max(score, min(1.0, float(rs) / (100.0 if rs > 1 else 1.0)))
+    if isinstance(rs, (int, float)) and not isinstance(rs, bool) and rs > 0:
+        if rs > 10:                          # 0-100 scale
+            norm = float(rs) / 100.0
+        elif rs > 1 or isinstance(rs, int):  # 1-10 scale (int 1 is the scale floor)
+            norm = float(rs) / 10.0
+        else:                                # 0-1 fraction
+            norm = float(rs)
+        score = max(score, min(1.0, norm))
     return round(min(1.0, score), 2)
 
 
