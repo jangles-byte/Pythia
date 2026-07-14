@@ -103,13 +103,21 @@ def _text(d: dict, *keys: str) -> str:
 def _coord(d: dict):
     lat = d.get("lat") or d.get("latitude")
     lng = d.get("lng") or d.get("lon") or d.get("longitude")
-    coords = d.get("coords") or (d.get("geometry") or {}).get("coordinates")
-    if (lat is None or lng is None) and isinstance(coords, (list, tuple)) and len(coords) >= 2:
-        lng, lat = coords[0], coords[1]  # GeoJSON [lng, lat]
+    if lat is None or lng is None:
+        geo = (d.get("geometry") or {}).get("coordinates")
+        if isinstance(geo, (list, tuple)) and len(geo) >= 2:
+            lng, lat = geo[0], geo[1]      # GeoJSON is [lng, lat]
+    if lat is None or lng is None:
+        coords = d.get("coords")
+        if isinstance(coords, (list, tuple)) and len(coords) >= 2:
+            lat, lng = coords[0], coords[1]  # Osiris `coords` is [lat, lng] (see news route)
     try:
-        return (float(lat), float(lng)) if lat is not None and lng is not None else (None, None)
+        lat, lng = float(lat), float(lng)
     except (TypeError, ValueError):
         return (None, None)
+    if abs(lat) > 90 or abs(lng) > 180:
+        return (None, None)
+    return (lat, lng)
 
 
 def _salience(title: str, summary: str, raw: dict) -> float:
