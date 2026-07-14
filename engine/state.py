@@ -15,6 +15,7 @@ class EngineState:
         self.predictions: list[Prediction] = []     # current forecast set
         self.world: Optional[WorldBrief] = None
         self.events: list = []                       # latest raw WorldEvents (for agents)
+        self.health_score: Optional[dict] = None     # latest Global Health Score (1-100 + pillars)
         # persona name -> model override (empty = use main model).
         # Seeded from SWARM_MODELS in .env, then saved UI picks win; persisted across restarts.
         self.swarm_models: dict[str, str] = dict(CONFIG.swarm_models)

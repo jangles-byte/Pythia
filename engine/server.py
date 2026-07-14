@@ -18,13 +18,14 @@ log = logging.getLogger("pythia.server")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from .loop import ALERTS, BRIEF, LOOP, RESOLVE, SENSE
+    from .loop import ALERTS, BRIEF, HEALTH, LOOP, RESOLVE, SENSE
     from .pipeline import run_prediction
     LOOP.start()
     SENSE.start()   # keep live events fresh between forecasts
     RESOLVE.start()  # grade forecasts once their horizon expires
     ALERTS.start()   # evaluate user alert rules against the live world
     BRIEF.start()    # the daily Morning Brief, at the configured hour
+    HEALTH.start()   # the Global Health Score, at 00:00 & 12:00 local
     log.info("PYTHIA oracle up | %s", CONFIG.summary())
 
     async def _boot():
@@ -56,6 +57,14 @@ async def health():
 @app.get("/config")
 async def config():
     return CONFIG.summary()
+
+
+@app.get("/health-score")
+async def health_score():
+    """PYTHIA's Global Health Score (1-100) + the six-pillar breakdown. Computed twice
+    daily; falls back to computing on demand if the scheduled run hasn't landed yet."""
+    from . import healthscore
+    return healthscore.latest() or healthscore.compute()
 
 
 _links_cache: dict = {"ts": 0.0, "data": None}

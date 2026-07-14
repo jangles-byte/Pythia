@@ -61,6 +61,7 @@ FEEDS = [
     ("/api/geohazards", "geohazards", "disaster"),
     ("/api/ofac", "ofac", "geopolitical"),
     ("/api/hackernews", "hackernews", "attention"),
+    ("/api/planet-vitals", "planet-vitals", "environment"),
 ]
 
 # Words that raise an event's salience (drives auto-scan selection).
@@ -499,6 +500,37 @@ def _ofac_events(data: dict) -> list[WorldEvent]:
     return out
 
 
+def _planet_vitals_events(data: dict) -> list[WorldEvent]:
+    """Atmospheric CO₂ + global temperature anomaly → chronic 'environment' signals that
+    keep the Climate & Environment pillar honest about the long-run trend."""
+    out: list[WorldEvent] = []
+    c = data.get("co2")
+    if c and c.get("ppm"):
+        yoy = c.get("yoy")
+        out.append(WorldEvent(
+            title=f"Atmospheric CO₂: {c['ppm']} ppm" + (f" (+{yoy}/yr)" if yoy else ""),
+            summary=(f"NOAA Mauna Loa global CO₂ trend {c['ppm']} ppm as of {c.get('date', '')}"
+                     + (f", up {yoy} ppm year-on-year." if yoy else ".")
+                     + " Pre-industrial baseline ~280 ppm.")[:2000],
+            category="environment", source="planet-vitals", lat=None, lng=None,
+            url="https://gml.noaa.gov/ccgg/trends/", salience=0.5, raw={},
+        ))
+    t = data.get("temp")
+    if t and t.get("anomaly") is not None:
+        a = float(t["anomaly"])
+        out.append(WorldEvent(
+            title=f"Global temp anomaly: {a:+.2f}°C ({t.get('month', '')})",
+            summary=(f"NASA GISTEMP global surface temperature {a:+.2f}°C vs the 1951–1980 "
+                     f"baseline for {t.get('month', '')}. The 1.5°C guardrail is a monthly "
+                     f"anomaly around +1.5.")[:2000],
+            category="environment", source="planet-vitals", lat=None, lng=None,
+            url="https://data.giss.nasa.gov/gistemp/",
+            salience=round(min(0.75, 0.35 + max(0.0, a) * 0.22), 3),   # hotter = louder
+            raw={},
+        ))
+    return out
+
+
 def _hackernews_events(data: dict) -> list[WorldEvent]:
     """Hacker News front page → tech attention pulse (coordless). One rollup of what the
     builder world is fixated on, plus any breakout story as its own low-salience signal."""
@@ -748,6 +780,8 @@ class OsirisIntake:
                     out.extend(_ofac_events(data))
                 elif source == "hackernews":
                     out.extend(_hackernews_events(data))
+                elif source == "planet-vitals":
+                    out.extend(_planet_vitals_events(data))
                 elif source == "hungermap":
                     out.extend(_summary_signal(data, "hungermap", "food", "Food insecurity — worst-hit"))
                 elif source == "wb-unemployment":

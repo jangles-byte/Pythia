@@ -152,8 +152,36 @@ class BriefLoop:
             await asyncio.sleep(60)
 
 
+class HealthScoreLoop:
+    """Recomputes the Global Health Score twice a day (00:00 & 12:00 local), plus once
+    shortly after boot so a score is available immediately."""
+    def __init__(self) -> None:
+        self._task: asyncio.Task | None = None
+
+    def start(self) -> None:
+        if self._task is None:
+            self._task = asyncio.create_task(self._run(), name="health-score-loop")
+
+    async def _run(self) -> None:
+        import time as _t
+        from . import healthscore
+        await asyncio.sleep(100)   # boot first; the score needs a sensed world
+        last_key = None
+        while True:
+            try:
+                hh = int(_t.strftime("%H"))
+                key = _t.strftime("%Y-%m-%d") + ("PM" if hh >= 12 else "AM")  # noon/midnight half-day
+                if key != last_key and STATE.events:
+                    healthscore.compute()
+                    last_key = key
+            except Exception as e:  # noqa: BLE001
+                log.warning("health score loop failed: %s", e)
+            await asyncio.sleep(60)
+
+
 LOOP = OracleLoop()
 SENSE = SenseLoop()
 RESOLVE = ResolveLoop()
 ALERTS = AlertLoop()
 BRIEF = BriefLoop()
+HEALTH = HealthScoreLoop()
