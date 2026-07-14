@@ -28,7 +28,7 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `TickerWindow.tsx` | `src/components/TickerWindow.tsx` — the floating always-on-top ticker window (opened from the tool strip): watchlist rows with sparklines, add/remove synced with the Watch tab. Rendered via the `'ticker'` FloatingWindow kind in `page.tsx` |
 | `PatchPanel.tsx` | `src/components/PatchPanel.tsx` — My Patch (tool-strip pin button): set name/lat/lng/radius (localStorage), see only the events + forecasts inside it, click to fly |
 | `lib/shareCard.ts` | `src/lib/shareCard.ts` — canvas share-card renderer (1200×630 branded PNG download); buttons live in `DeliberationModal` + `BriefPanel` |
-| `tv-page.tsx` | `src/app/tv/page.tsx` — PYTHIA **Display Mode** (ambient kiosk): a slow equatorial spinning globe (`<OsirisMap>` with empty data + `spin.rotate` + `flyToLocation` zoom 1.5) behind live cards that **fade in/out at random** in the four corners + top/bottom banners — street cams, GOES weather, headlines, markets, storms, quakes, live TV news (embeddable feeds), and oracle forecasts. Scheduler staggers spawns (≤5 concurrent, one video max), no priority/ordering |
+| `tv-page.tsx` | `src/app/tv/page.tsx` — PYTHIA **Display Mode** (ambient kiosk): a slow equatorial spinning globe (`<OsirisMap>` with `spin.rotate` + `flyToLocation` zoom 1.5) behind live cards. **All map layers ON like startup** — it fetches satellites (silhouettes at altitude), flights, quakes, fires, weather, war fronts, storms, volcanoes into `mapData` and passes `ALL_ON` activeLayers (everything except 3D terrain/buildings + the default-off lattice). Cards have **fixed slots per category** (cam → top-left, weather/live-TV → top-right, seismic/volcano → bottom-left, markets → bottom-right, headlines/tech → top banner, oracle/storm/sanctions → bottom banner) so new items **fade in in place**; the scheduler fills one cooled-down free slot per tick. Longer card lives (~15–24s) |
 | `routes/kev-route.ts` | `src/app/api/kev/route.ts` — CISA Known Exploited Vulnerabilities (no key): newest actively-exploited CVEs, ransomware-flagged |
 | `routes/faa-route.ts` | `src/app/api/faa-status/route.ts` — FAA airspace status (no key): ground stops / delay programs / closures at major US airports, geocoded |
 | `RadarStrip.tsx` | `src/components/RadarStrip.tsx` — always-on radar chips in the deck: the highest-salience live event per domain, click to fly there. Imported by `PythiaPanel.tsx` |
@@ -117,6 +117,10 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   LEO is near-true; aircraft: `alt` is **meters**, × ~22 exaggeration to lift the thin air layer
   below LEO; satellites downsampled to ~2,200. Click handlers on both layers show name + altitude.
   `setVis(['alt-sats-ext','alt-air-ext'], orbits3d)`.
+  **Satellite silhouette (2026-07):** satellites now use a `satShape()` footprint (central body +
+  two solar-panel wings, ~12 vertices) instead of the octagon `col()`, with a flatter `SAT_THK`
+  (20,000). It's the *same* fill-extrusion primitive and the same ~2,200-feature cap — so it reads
+  as a little satellite at essentially zero extra GPU cost vs the "block". Aircraft keep `col()`.
 - `src/components/OsirisMap.tsx` — `nws-alerts` + `frontlines` polygon sources with
   `nws-fill`/`nws-outline` and `frontline-fill`/`frontline-line` layers; a `displacement`
   source + `displacement-circles` layer (sized by people displaced); social `economy`/

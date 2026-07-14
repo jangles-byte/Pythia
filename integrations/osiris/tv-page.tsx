@@ -2,10 +2,11 @@
 
 /**
  *  PYTHIA — Display Mode (/tv)
- *  A slow, equatorial spinning globe hanging in space, with live intel from every
- *  feed fading in and out at random — street cams, GOES weather, headlines, markets,
- *  storms, quakes, live TV news, and the oracle's own forecasts. No priority, no
- *  boards: an ambient window on the whole program. Leave it up on a wall.
+ *  A slow, equatorial spinning globe — with all live map layers on (satellites now
+ *  as little silhouettes at altitude, flights, quakes, fires, weather, war fronts,
+ *  storms, volcanoes) — and live intel cards fading in and out. Cards have ORDER: each
+ *  category keeps its own corner/banner, and new items of that category fade in there
+ *  (earthquakes always bottom-left, markets bottom-right, …). Leave it up on a wall.
  */
 import { useEffect, useRef, useState, useCallback } from 'react';
 import OsirisMap from '@/components/OsirisMap';
@@ -21,18 +22,28 @@ const GOES = [
 ];
 const TICKERS = ['SPY', 'QQQ', '^VIX', 'BTC-USD', 'ETH-USD', 'CL=F', 'GC=F', 'NG=F', 'NVDA', 'AAPL', 'TSLA', 'EURUSD=X'];
 
-// OsirisMap reads many data.* fields — a safe empty shape keeps the backdrop clean & error-free.
+// Empty base shape (fields OsirisMap reads) — filled in by loadMap().
 const EMPTY_DATA: any = {};
 for (const k of ['commercial_flights', 'private_flights', 'private_jets', 'military_flights',
                  'satellites', 'earthquakes', 'gdelt', 'fires', 'weather_events']) EMPTY_DATA[k] = [];
 for (const k of ['nws_alerts', 'frontlines', 'displacement', 'economy', 'censorship', 'health',
                  'unrest', 'food', 'unemployment', 'gdp', 'poverty', 'hurricanes', 'flood']) EMPTY_DATA[k] = { features: [] };
 
+// All layers ON — like the main app on startup: everything except 3D terrain/buildings
+// and the (default-off) comms/intel lattice.
+const ALL_ON: any = { terrain_3d: false, sdk_sea: false, sdk_air: false, sdk_naval: false };
+for (const k of ['satellites', 'sat_comms', 'sat_military', 'sat_navigation', 'sat_earth', 'sat_science',
+                 'flights', 'private', 'jets', 'military', 'earthquakes', 'fires', 'weather', 'nws_alerts',
+                 'frontlines', 'volcanoes', 'hurricanes', 'flood', 'cctv', 'day_night', 'orbits3d',
+                 'conflict_zones', 'global_incidents', 'gps_jamming', 'displacement', 'health', 'economy',
+                 'censorship', 'unrest', 'food', 'unemployment', 'gdp', 'poverty', 'infrastructure',
+                 'maritime', 'malware', 'radiation', 'balloons', 'live_news', 'news_intel',
+                 'predictions', 'predictions_all']) ALL_ON[k] = true;
+
 type Card = { id: number; slot: string; kind: string; life: number; node: React.ReactNode };
 type Pools = { cams: any[]; news: any[]; quotes: any[]; alerts: any[]; quakes: any[]; live: any[]; preds: any[]; hn: any[]; volcanoes: any[]; sanctions: any[] };
 
-const CORNERS = ['tl', 'tr', 'bl', 'br'];
-const BANNERS = ['top', 'bottom'];
+const SLOTS = ['tl', 'tr', 'bl', 'br', 'top', 'bottom'];
 const SLOT_POS: Record<string, string> = {
   tl: 'top-5 left-5', tr: 'top-5 right-5', bl: 'bottom-14 left-5', br: 'bottom-14 right-5',
   top: 'top-5 left-1/2 -translate-x-1/2', bottom: 'bottom-6 left-1/2 -translate-x-1/2',
@@ -73,8 +84,10 @@ export default function TVPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [now, setNow] = useState('');
   const [fly, setFly] = useState<{ lat: number; lng: number; zoom: number; ts: number } | null>(null);
+  const [mapData, setMapData] = useState<any>(EMPTY_DATA);
   const pools = useRef<Pools>({ cams: [], news: [], quotes: [], alerts: [], quakes: [], live: [], preds: [], hn: [], volcanoes: [], sanctions: [] });
   const idc = useRef(0);
+  const slotFreeAt = useRef<Record<string, number>>({});
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })), 1000);
@@ -84,7 +97,31 @@ export default function TVPage() {
   // frame the globe: equator-centered, zoomed just outside the satellites
   useEffect(() => { const t = setTimeout(() => setFly({ lat: 0, lng: 0, zoom: 1.5, ts: Date.now() }), 1400); return () => clearTimeout(t); }, []);
 
-  // ── feed loaders ───────────────────────────────────────────────────────
+  // ── globe map layers (all on, like startup) ─────────────────────────────
+  const loadMap = useCallback(async () => {
+    const j = (p: string) => fetch(p).then(r => (r.ok ? r.json() : null)).catch(() => null);
+    const [sats, fl, eq, fire, wx, geo, fronts, nws] = await Promise.all([
+      j('/api/satellites'), j('/api/flights'), j('/api/earthquakes'), j('/api/fires'),
+      j('/api/weather'), j('/api/geohazards'), j('/api/frontlines'), j('/api/nws-alerts'),
+    ]);
+    setMapData((prev: any) => ({
+      ...prev,
+      satellites: sats?.satellites || prev.satellites,
+      commercial_flights: fl?.commercial_flights ?? prev.commercial_flights,
+      private_flights: fl?.private_flights ?? prev.private_flights,
+      private_jets: fl?.private_jets ?? prev.private_jets,
+      military_flights: fl?.military_flights ?? prev.military_flights,
+      earthquakes: eq?.earthquakes || prev.earthquakes,
+      fires: fire?.fires || prev.fires,
+      weather_events: wx?.events || prev.weather_events,
+      geohazards: geo || prev.geohazards,
+      frontlines: fronts || prev.frontlines,
+      nws_alerts: nws || prev.nws_alerts,
+    }));
+  }, []);
+  useEffect(() => { loadMap(); const iv = setInterval(loadMap, 300_000); return () => clearInterval(iv); }, [loadMap]);
+
+  // ── card feed pools ─────────────────────────────────────────────────────
   const loadAll = useCallback(async () => {
     const j = (p: string) => fetch(p).then(r => (r.ok ? r.json() : null)).catch(() => null);
     const [cams, news, quotes, alerts, quakes, live, state, hn, geo, ofac] = await Promise.all([
@@ -105,21 +142,21 @@ export default function TVPage() {
     if (geo?.volcanoes) P.volcanoes = geo.volcanoes;
     if (ofac?.actions) P.sanctions = ofac.actions;
   }, []);
-
   useEffect(() => { loadAll(); const iv = setInterval(loadAll, 90_000); return () => clearInterval(iv); }, [loadAll]);
 
-  // ── card producers ─────────────────────────────────────────────────────
-  const producers = useRef<{ kind: string; slot: 'corner' | 'banner'; life: number; make: () => React.ReactNode | null }[]>([]);
+  // ── card producers — each pinned to a fixed slot so a category keeps its spot;
+  //    new items of that category fade in there. Longer lives = pop-ups linger. ──
+  const producers = useRef<{ kind: string; slot: string; life: number; make: () => React.ReactNode | null }[]>([]);
   producers.current = [
-    { kind: 'cam', slot: 'corner', life: 11000, make: () => {
+    { kind: 'cam', slot: 'tl', life: 16000, make: () => {
       const c = pick(pools.current.cams); if (!c) return null;
       return <Frame w={300}><Media src={bust(c.img)} tag={`LIVE CAM · ${c.src || ''}`} tagColor="var(--alert-green)" title={c.name} /></Frame>;
     } },
-    { kind: 'goes', slot: 'corner', life: 12000, make: () => {
+    { kind: 'goes', slot: 'tr', life: 19000, make: () => {
       const g = pick(GOES); if (!g) return null;
       return <Frame w={300}><Media src={bust(g.url)} tag="GOES · WEATHER" tagColor="#4FC3F7" title={g.label} sub="NOAA satellite" /></Frame>;
     } },
-    { kind: 'video', slot: 'corner', life: 16000, make: () => {
+    { kind: 'video', slot: 'tr', life: 24000, make: () => {
       const f = pick(pools.current.live); if (!f) return null;
       return <Frame w={340}>
         <div className="relative">
@@ -131,7 +168,7 @@ export default function TVPage() {
         <div className="px-2 py-1 text-[10px] text-white/80 font-mono">{f.name}</div>
       </Frame>;
     } },
-    { kind: 'quake', slot: 'corner', life: 9000, make: () => {
+    { kind: 'quake', slot: 'bl', life: 15000, make: () => {
       const q: any = pick(pools.current.quakes); if (!q) return null;
       const mag = q.magnitude ?? q.mag ?? q.properties?.mag;
       const place = q.place ?? q.properties?.place ?? q.location;
@@ -142,7 +179,16 @@ export default function TVPage() {
         <div className="text-[11px] text-white/80 truncate">{place || 'Earthquake'}</div>
       </div></Frame>;
     } },
-    { kind: 'market', slot: 'corner', life: 10000, make: () => {
+    { kind: 'volcano', slot: 'bl', life: 15000, make: () => {
+      const v: any = pick(pools.current.volcanoes); if (!v) return null;
+      const col = v.color === 'RED' ? '#FF1744' : v.color === 'ORANGE' ? '#FF6D00' : '#FFC400';
+      return <Frame w={260}><div className="p-3">
+        <Tag color={col}>▲ VOLCANO · {v.color}</Tag>
+        <div className="mt-1 text-[15px] text-white font-semibold truncate">{v.name}</div>
+        <div className="text-[10px] text-white/60 font-mono">{v.level} · {v.observatory}</div>
+      </div></Frame>;
+    } },
+    { kind: 'market', slot: 'br', life: 16000, make: () => {
       const qs = pools.current.quotes; if (qs.length < 3) return null;
       const some = [...qs].sort(() => Math.random() - 0.5).slice(0, 4);
       return <Frame w={250}><div className="p-3 space-y-1.5">
@@ -156,7 +202,7 @@ export default function TVPage() {
           </div>); })}
       </div></Frame>;
     } },
-    { kind: 'news', slot: 'banner', life: 12000, make: () => {
+    { kind: 'news', slot: 'top', life: 21000, make: () => {
       const n: any = pick(pools.current.news); if (!n) return null;
       const src = (() => { try { return new URL(n.link).hostname.replace('www.', ''); } catch { return 'news'; } })();
       return <Frame w={540}><div className="px-4 py-3">
@@ -164,17 +210,14 @@ export default function TVPage() {
         <div className="mt-1 text-[15px] text-white font-medium leading-snug line-clamp-2">{n.title}</div>
       </div></Frame>;
     } },
-    { kind: 'alert', slot: 'banner', life: 11000, make: () => {
-      const a: any = pick(pools.current.alerts); if (!a) return null;
-      const p = a.properties || {};
-      const sev = p.severity === 'Extreme' ? 'var(--alert-red)' : p.severity === 'Severe' ? '#FF6D00' : '#FFC400';
-      return <Frame w={500}><div className="px-4 py-3">
-        <Tag color={sev}>⚠ {p.severity || 'ALERT'} · STORM</Tag>
-        <div className="mt-1 text-[14px] text-white font-medium leading-snug">{p.event}</div>
-        <div className="text-[10px] text-white/55 font-mono truncate">{(p.areaDesc || '').split(';')[0]}</div>
+    { kind: 'tech', slot: 'top', life: 19000, make: () => {
+      const s: any = pick(pools.current.hn); if (!s) return null;
+      return <Frame w={480}><div className="px-4 py-3">
+        <Tag color="#FF9800">◈ HACKER NEWS · {s.points}▲</Tag>
+        <div className="mt-1 text-[13px] text-white/90 leading-snug line-clamp-2">{s.title}</div>
       </div></Frame>;
     } },
-    { kind: 'forecast', slot: 'banner', life: 13000, make: () => {
+    { kind: 'forecast', slot: 'bottom', life: 22000, make: () => {
       const f: any = pick(pools.current.preds); if (!f) return null;
       const prob = Math.round((f.probability ?? f.prob ?? 0) * 100);
       const stmt = f.statement || f.text || f.claim; if (!stmt) return null;
@@ -184,54 +227,51 @@ export default function TVPage() {
         <div className="mt-1 text-[13px] text-white/90 leading-snug line-clamp-2">{stmt}</div>
       </div></Frame>;
     } },
-    { kind: 'volcano', slot: 'corner', life: 10000, make: () => {
-      const v: any = pick(pools.current.volcanoes); if (!v) return null;
-      const col = v.color === 'RED' ? '#FF1744' : v.color === 'ORANGE' ? '#FF6D00' : '#FFC400';
-      return <Frame w={260}><div className="p-3">
-        <Tag color={col}>▲ VOLCANO · {v.color}</Tag>
-        <div className="mt-1 text-[15px] text-white font-semibold truncate">{v.name}</div>
-        <div className="text-[10px] text-white/60 font-mono">{v.level} · {v.observatory}</div>
+    { kind: 'alert', slot: 'bottom', life: 20000, make: () => {
+      const a: any = pick(pools.current.alerts); if (!a) return null;
+      const p = a.properties || {};
+      const sev = p.severity === 'Extreme' ? 'var(--alert-red)' : p.severity === 'Severe' ? '#FF6D00' : '#FFC400';
+      return <Frame w={500}><div className="px-4 py-3">
+        <Tag color={sev}>⚠ {p.severity || 'ALERT'} · STORM</Tag>
+        <div className="mt-1 text-[14px] text-white font-medium leading-snug">{p.event}</div>
+        <div className="text-[10px] text-white/55 font-mono truncate">{(p.areaDesc || '').split(';')[0]}</div>
       </div></Frame>;
     } },
-    { kind: 'sanctions', slot: 'banner', life: 12000, make: () => {
+    { kind: 'sanctions', slot: 'bottom', life: 20000, make: () => {
       const a: any = pick(pools.current.sanctions); if (!a) return null;
       return <Frame w={500}><div className="px-4 py-3">
         <Tag color="#E040FB">§ OFAC · {a.kind} · {a.date}</Tag>
         <div className="mt-1 text-[13px] text-white/90 leading-snug line-clamp-2">{a.title}</div>
       </div></Frame>;
     } },
-    { kind: 'tech', slot: 'banner', life: 11000, make: () => {
-      const s: any = pick(pools.current.hn); if (!s) return null;
-      return <Frame w={480}><div className="px-4 py-3">
-        <Tag color="#FF9800">◈ HACKER NEWS · {s.points}▲</Tag>
-        <div className="mt-1 text-[13px] text-white/90 leading-snug line-clamp-2">{s.title}</div>
-      </div></Frame>;
-    } },
   ];
 
-  // ── scheduler: stagger random cards into free slots, fade in & out ───────
+  // ── scheduler: one card per tick into a free, cooled-down slot; each category
+  //    keeps its own slot, so refreshes read as "new one fades in, in place". ──
   useEffect(() => {
-    const MAX = 5;
     const tick = () => {
       setCards(prev => {
-        if (prev.length >= MAX || Math.random() > 0.7) return prev;
-        const used = new Set(prev.map(c => c.slot));
+        const busy = new Set(prev.map(c => c.slot));
+        const t = Date.now();
+        const free = SLOTS.filter(s => !busy.has(s) && t >= (slotFreeAt.current[s] || 0));
+        if (!free.length) return prev;
+        const slot = pick(free)!;                          // one slot per tick → staggered
         const hasVideo = prev.some(c => c.kind === 'video');
-        const avail = producers.current.filter(p => !(p.kind === 'video' && hasVideo));
-        for (let attempt = 0; attempt < 5; attempt++) {
-          const prod = pick(avail); if (!prod) break;
+        const prods = producers.current.filter(p => p.slot === slot && !(p.kind === 'video' && hasVideo));
+        for (let attempt = 0; attempt < 4; attempt++) {
+          const prod = pick(prods); if (!prod) break;
           const node = prod.make(); if (!node) continue;
-          const poolSlots = (prod.slot === 'banner' ? BANNERS : CORNERS).filter(s => !used.has(s));
-          if (!poolSlots.length) continue;
-          const slot = pick(poolSlots)!;
           const id = ++idc.current;
-          setTimeout(() => setCards(c => c.filter(x => x.id !== id)), prod.life);
+          setTimeout(() => {
+            setCards(c => c.filter(x => x.id !== id));
+            slotFreeAt.current[slot] = Date.now() + 2500 + Math.random() * 4000; // breathing gap
+          }, prod.life);
           return [...prev, { id, slot, kind: prod.kind, life: prod.life, node }];
         }
         return prev;
       });
     };
-    const iv = setInterval(tick, 2200);
+    const iv = setInterval(tick, 2400);
     return () => clearInterval(iv);
   }, []);
 
@@ -240,16 +280,16 @@ export default function TVPage() {
       <style>{`
         @keyframes tvIn {
           0% { opacity: 0; transform: translateY(10px) scale(0.97); }
-          9% { opacity: 1; transform: translateY(0) scale(1); }
-          90% { opacity: 1; transform: translateY(0) scale(1); }
+          7% { opacity: 1; transform: translateY(0) scale(1); }
+          93% { opacity: 1; transform: translateY(0) scale(1); }
           100% { opacity: 0; transform: translateY(-8px) scale(0.98); }
         }
         .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
       `}</style>
 
-      {/* spinning globe backdrop */}
+      {/* spinning globe backdrop — all layers on */}
       <div className="absolute inset-0 z-0">
-        <OsirisMap data={EMPTY_DATA} activeLayers={{}} projection="globe"
+        <OsirisMap data={mapData} activeLayers={ALL_ON} projection="globe"
           spin={{ mode: 'rotate', speed: 1.6 }} flyToLocation={fly} theme="core" />
       </div>
       {/* vignette so cards read against the globe */}
