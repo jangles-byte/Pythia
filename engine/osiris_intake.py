@@ -128,10 +128,12 @@ def _coord(d: dict):
 # dropping a signal is recoverable, inverting one is not.
 #   news -> scoreRisk() in osiris news/route.ts: int, starts at 1, +2 per risk
 #           keyword, capped at 10.
-#   risk -> osiris country-risk/route.ts: 0-100 (floats occur, e.g. 66.6).
+# NOTE: country-risk ("risk", a 0-100 scale) is deliberately absent — it has a
+# dedicated handler (_country_risk_events) that never reaches _salience. Listing
+# it here would be dead config that reads as live. It was the feed that exposed
+# the guessing bug: 8 means 8/10 from news but 8/100 from country-risk.
 RISK_SCALE = {
     "news": 10.0,
-    "risk": 100.0,
 }
 
 
@@ -355,6 +357,57 @@ def _ioda_events(data: dict) -> list[WorldEvent]:
             category="outage", source="ioda",
             lat=o.get("lat"), lng=o.get("lng"),
             salience=round(min(1.0, 0.55 + o.get("score", 0) / 40000), 2),
+        ))
+    return out
+
+
+# Osiris country-risk emits {code, risk_score, risk_level, tags} — no name, no
+# coords — so the generic path found no title and DROPPED all 20 silently. Map
+# the ISO-2 codes it actually serves to a name and an approximate centroid so
+# they become real, locatable events. Codes are from RISK_FACTORS in
+# osiris/src/app/api/country-risk/route.ts; extend both together.
+_COUNTRY = {
+    "UA": ("Ukraine", 49.0, 32.0),      "RU": ("Russia", 61.5, 105.3),
+    "IL": ("Israel", 31.0, 34.9),       "PS": ("Palestinian Territories", 31.9, 35.2),
+    "SY": ("Syria", 34.8, 39.0),        "YE": ("Yemen", 15.6, 48.5),
+    "MM": ("Myanmar", 21.9, 95.9),      "SD": ("Sudan", 12.9, 30.2),
+    "AF": ("Afghanistan", 33.9, 67.7),  "KP": ("North Korea", 40.3, 127.5),
+    "IR": ("Iran", 32.4, 53.7),         "CN": ("China", 35.9, 104.2),
+    "TW": ("Taiwan", 23.7, 121.0),      "VE": ("Venezuela", 6.4, -66.6),
+    "HT": ("Haiti", 18.9, -72.3),       "LB": ("Lebanon", 33.9, 35.9),
+    "PK": ("Pakistan", 30.4, 69.3),     "SO": ("Somalia", 5.2, 46.2),
+    "LY": ("Libya", 26.3, 17.2),        "ET": ("Ethiopia", 9.1, 40.5),
+}
+
+
+def _country_risk_events(data: dict) -> list[WorldEvent]:
+    """Osiris country-risk → locatable events.
+
+    This is a HAND-MAINTAINED geopolitical baseline (osiris marks it
+    `static: true`), not a live measurement — so salience is capped well below
+    breaking-news territory and derived from the score alone. It is background
+    context for the oracle, not a signal that something just happened.
+    """
+    out = []
+    for c in (data or {}).get("countries", []) or []:
+        if not isinstance(c, dict):
+            continue
+        code = str(c.get("code") or "").upper()
+        score = c.get("risk_score")
+        if code not in _COUNTRY or not isinstance(score, (int, float)):
+            continue
+        name, lat, lng = _COUNTRY[code]
+        tags = ", ".join(t.replace("_", " ") for t in (c.get("tags") or []))
+        level = c.get("risk_level", "")
+        out.append(WorldEvent(
+            title=f"Country risk: {name} {score}/100 ({level})"[:120],
+            summary=(f"Standing geopolitical baseline — {tags}." if tags else
+                     "Standing geopolitical baseline.") + " Static reference, not a live event.",
+            category="instability", source="risk",
+            lat=lat, lng=lng,
+            # Ceiling 0.5: a static table must never outrank live signal. A
+            # 90/100 baseline is context; a missile landing is news.
+            salience=round(min(0.5, float(score) / 200.0), 2),
         ))
     return out
 
@@ -756,6 +809,8 @@ class OsirisIntake:
                 data = r.json()
                 if source in ("markets", "crypto"):
                     out.extend(_markets_events(data, source))
+                elif source == "risk":
+                    out.extend(_country_risk_events(data))
                 elif source == "futures":
                     out.extend(_futures_events(data))
                 elif source == "gdacs":
