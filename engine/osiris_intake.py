@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+from datetime import datetime, timezone
 
 import httpx
 
@@ -143,6 +144,34 @@ def _salience(title: str, summary: str, raw: dict) -> float:
     return round(min(1.0, score), 2)
 
 
+def _event_ts(d: dict) -> int | None:
+    """The item's own event time in epoch ms, if the feed carries one.
+    Without this every event is stamped at fetch time, so week-old posts
+    surface as breaking and `since` filtering is meaningless."""
+    for k in ("published", "pubDate", "pub_date", "date_added", "date", "datetime", "updated", "time"):
+        v = d.get(k)
+        if v is None or v == "":
+            continue
+        if isinstance(v, bool):
+            continue
+        if isinstance(v, (int, float)):        # epoch seconds or ms
+            v = float(v)
+            if v > 1e12:
+                return int(v)
+            if v > 1e9:
+                return int(v * 1000)
+            continue
+        if isinstance(v, str):
+            try:
+                dt = datetime.fromisoformat(v.strip().replace("Z", "+00:00"))
+            except ValueError:
+                continue
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return int(dt.timestamp() * 1000)
+    return None
+
+
 def _to_event(d: dict, source: str, category: str) -> WorldEvent | None:
     title = _text(d, "title", "name", "headline", "question", "html", "place")
     mag = d.get("magnitude") or d.get("mag")
@@ -163,7 +192,7 @@ def _to_event(d: dict, source: str, category: str) -> WorldEvent | None:
         except (TypeError, ValueError):
             pass
     lat, lng = _coord(d)
-    return WorldEvent(
+    evt = WorldEvent(
         title=title[:240],
         summary=summary[:2000],
         category=(category if source == "polymarket" else (_text(d, "category") or category)),
@@ -174,6 +203,10 @@ def _to_event(d: dict, source: str, category: str) -> WorldEvent | None:
         salience=_salience(title, summary, d),
         raw={k: d[k] for k in list(d)[:25]},
     )
+    ts = _event_ts(d)
+    if ts:
+        evt.ts = ts
+    return evt
 
 
 def _markets_events(data: dict, source: str) -> list[WorldEvent]:
