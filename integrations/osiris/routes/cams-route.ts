@@ -76,8 +76,11 @@ async function castleRockMap(host: string, src: string, region: string): Promise
   const data = await j(`https://${host}/map/mapIcons/Cameras`, 20000);
   const out: Cam[] = [];
   for (const c of (data?.item2 || [])) {
-    let lat: number, lng: number;
-    try { const loc = JSON.parse(c.location); lat = loc[0]; lng = loc[1]; } catch { continue; }
+    // location is [lat, lng] — usually already an array, occasionally a JSON string
+    const loc = Array.isArray(c.location) ? c.location
+      : (() => { try { return JSON.parse(c.location); } catch { return null; } })();
+    if (!Array.isArray(loc) || loc.length < 2) continue;
+    const lat = Number(loc[0]), lng = Number(loc[1]);
     if (!isFinite(lat) || !isFinite(lng)) continue;
     out.push({
       id: `${src.toLowerCase()}-${c.itemId}`,
