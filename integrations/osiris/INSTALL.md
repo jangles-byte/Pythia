@@ -123,6 +123,11 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   LEO is near-true; aircraft: `alt` is **meters**, × ~22 exaggeration to lift the thin air layer
   below LEO; satellites downsampled to ~2,200. Click handlers on both layers show name + altitude.
   `setVis(['alt-sats-ext','alt-air-ext'], orbits3d)`.
+  **Aircraft & balloons off the surface (2026-07):** the surface flight layers (`fl-*`) and
+  `balloon-dots`/`balloon-label` are now gated `&& !orbits3d` so they hide when 3D-altitude is on
+  (previously only the satellite surface dots were). Added a third altitude layer `alt-balloons-ext`
+  (source `alt-balloons`) — radiosondes lifted by `altitude(m) × 14` into a band above the air layer
+  but below LEO; the alt click-query and `showAltPopup` handle the `balloon` kind (🎈, altitude in km).
   **Satellite silhouette (2026-07):** satellites now use a `satShape()` footprint (central body +
   two solar-panel wings, ~12 vertices) instead of the octagon `col()`, with a flatter `SAT_THK`
   (20,000). It's the *same* fill-extrusion primitive and the same ~2,200-feature cap — so it reads
