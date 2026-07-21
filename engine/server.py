@@ -54,6 +54,12 @@ async def health():
     return {"status": "ok", "service": "pythia-oracle", "config": CONFIG.summary()}
 
 
+@app.get("/")
+async def root():
+    """Root health-check route for load balancers and service monitors."""
+    return {"status": "ok", "service": "pythia-oracle", "version": app.version}
+
+
 @app.get("/config")
 async def config():
     return CONFIG.summary()
