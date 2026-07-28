@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+from datetime import datetime, timezone
 
 import httpx
 
@@ -110,26 +111,79 @@ def _text(d: dict, *keys: str) -> str:
 def _coord(d: dict):
     lat = d.get("lat") or d.get("latitude")
     lng = d.get("lng") or d.get("lon") or d.get("longitude")
-    coords = d.get("coords") or (d.get("geometry") or {}).get("coordinates")
-    if (lat is None or lng is None) and isinstance(coords, (list, tuple)) and len(coords) >= 2:
-        lng, lat = coords[0], coords[1]  # GeoJSON [lng, lat]
+    if lat is None or lng is None:
+        geo = (d.get("geometry") or {}).get("coordinates")
+        if isinstance(geo, (list, tuple)) and len(geo) >= 2:
+            lng, lat = geo[0], geo[1]      # GeoJSON is [lng, lat]
+    if lat is None or lng is None:
+        coords = d.get("coords")
+        if isinstance(coords, (list, tuple)) and len(coords) >= 2:
+            lat, lng = coords[0], coords[1]  # Osiris `coords` is [lat, lng] (see news route)
     try:
-        return (float(lat), float(lng)) if lat is not None and lng is not None else (None, None)
+        lat, lng = float(lat), float(lng)
     except (TypeError, ValueError):
         return (None, None)
+    if abs(lat) > 90 or abs(lng) > 180:
+        return (None, None)
+    return (lat, lng)
 
 
-def _salience(title: str, summary: str, raw: dict) -> float:
+# A feed's risk scale CANNOT be inferred from the value: 8 means 8/10 from the
+# news route but 8/100 from country-risk, and guessing wrong INVERTS the ranking
+# — which is the whole bug this map exists to kill. So each producer declares its
+# own scale, keyed by source. An unlisted source is IGNORED rather than guessed:
+# dropping a signal is recoverable, inverting one is not.
+#   news -> scoreRisk() in osiris news/route.ts: int, starts at 1, +2 per risk
+#           keyword, capped at 10.
+# NOTE: country-risk ("risk", a 0-100 scale) is deliberately absent — it has a
+# dedicated handler (_country_risk_events) that never reaches _salience. Listing
+# it here would be dead config that reads as live. It was the feed that exposed
+# the guessing bug: 8 means 8/10 from news but 8/100 from country-risk.
+RISK_SCALE = {
+    "news": 10.0,
+}
+
+
+def _salience(title: str, summary: str, raw: dict, source: str = "") -> float:
     text = f"{title} {summary}".lower()
     score = 0.4
     for word, weight in _HOT.items():
         if word in text:
             score = max(score, weight)
-    # honor an upstream risk score if Osiris provided one
+    # Honor an upstream risk score ONLY when we know that source's scale.
     rs = raw.get("risk_score") or raw.get("severity_score")
-    if isinstance(rs, (int, float)):
-        score = max(score, min(1.0, float(rs) / (100.0 if rs > 1 else 1.0)))
+    scale = RISK_SCALE.get(source)
+    if scale and isinstance(rs, (int, float)) and not isinstance(rs, bool) and rs > 0:
+        score = max(score, min(1.0, float(rs) / scale))
     return round(min(1.0, score), 2)
+
+
+def _event_ts(d: dict) -> int | None:
+    """The item's own event time in epoch ms, if the feed carries one.
+    Without this every event is stamped at fetch time, so week-old posts
+    surface as breaking and `since` filtering is meaningless."""
+    for k in ("published", "pubDate", "pub_date", "date_added", "date", "datetime", "updated", "time"):
+        v = d.get(k)
+        if v is None or v == "":
+            continue
+        if isinstance(v, bool):
+            continue
+        if isinstance(v, (int, float)):        # epoch seconds or ms
+            v = float(v)
+            if v > 1e12:
+                return int(v)
+            if v > 1e9:
+                return int(v * 1000)
+            continue
+        if isinstance(v, str):
+            try:
+                dt = datetime.fromisoformat(v.strip().replace("Z", "+00:00"))
+            except ValueError:
+                continue
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return int(dt.timestamp() * 1000)
+    return None
 
 
 def _to_event(d: dict, source: str, category: str) -> WorldEvent | None:
@@ -152,7 +206,7 @@ def _to_event(d: dict, source: str, category: str) -> WorldEvent | None:
         except (TypeError, ValueError):
             pass
     lat, lng = _coord(d)
-    return WorldEvent(
+    evt = WorldEvent(
         title=title[:240],
         summary=summary[:2000],
         category=(category if source == "polymarket" else (_text(d, "category") or category)),
@@ -160,9 +214,13 @@ def _to_event(d: dict, source: str, category: str) -> WorldEvent | None:
         lat=lat,
         lng=lng,
         url=_text(d, "url", "link", "feed_url"),
-        salience=_salience(title, summary, d),
+        salience=_salience(title, summary, d, source),
         raw={k: d[k] for k in list(d)[:25]},
     )
+    ts = _event_ts(d)
+    if ts:
+        evt.ts = ts
+    return evt
 
 
 def _markets_events(data: dict, source: str) -> list[WorldEvent]:
@@ -306,6 +364,57 @@ def _ioda_events(data: dict) -> list[WorldEvent]:
             category="outage", source="ioda",
             lat=o.get("lat"), lng=o.get("lng"),
             salience=round(min(1.0, 0.55 + o.get("score", 0) / 40000), 2),
+        ))
+    return out
+
+
+# Osiris country-risk emits {code, risk_score, risk_level, tags} — no name, no
+# coords — so the generic path found no title and DROPPED all 20 silently. Map
+# the ISO-2 codes it actually serves to a name and an approximate centroid so
+# they become real, locatable events. Codes are from RISK_FACTORS in
+# osiris/src/app/api/country-risk/route.ts; extend both together.
+_COUNTRY = {
+    "UA": ("Ukraine", 49.0, 32.0),      "RU": ("Russia", 61.5, 105.3),
+    "IL": ("Israel", 31.0, 34.9),       "PS": ("Palestinian Territories", 31.9, 35.2),
+    "SY": ("Syria", 34.8, 39.0),        "YE": ("Yemen", 15.6, 48.5),
+    "MM": ("Myanmar", 21.9, 95.9),      "SD": ("Sudan", 12.9, 30.2),
+    "AF": ("Afghanistan", 33.9, 67.7),  "KP": ("North Korea", 40.3, 127.5),
+    "IR": ("Iran", 32.4, 53.7),         "CN": ("China", 35.9, 104.2),
+    "TW": ("Taiwan", 23.7, 121.0),      "VE": ("Venezuela", 6.4, -66.6),
+    "HT": ("Haiti", 18.9, -72.3),       "LB": ("Lebanon", 33.9, 35.9),
+    "PK": ("Pakistan", 30.4, 69.3),     "SO": ("Somalia", 5.2, 46.2),
+    "LY": ("Libya", 26.3, 17.2),        "ET": ("Ethiopia", 9.1, 40.5),
+}
+
+
+def _country_risk_events(data: dict) -> list[WorldEvent]:
+    """Osiris country-risk → locatable events.
+
+    This is a HAND-MAINTAINED geopolitical baseline (osiris marks it
+    `static: true`), not a live measurement — so salience is capped well below
+    breaking-news territory and derived from the score alone. It is background
+    context for the oracle, not a signal that something just happened.
+    """
+    out = []
+    for c in (data or {}).get("countries", []) or []:
+        if not isinstance(c, dict):
+            continue
+        code = str(c.get("code") or "").upper()
+        score = c.get("risk_score")
+        if code not in _COUNTRY or not isinstance(score, (int, float)):
+            continue
+        name, lat, lng = _COUNTRY[code]
+        tags = ", ".join(t.replace("_", " ") for t in (c.get("tags") or []))
+        level = c.get("risk_level", "")
+        out.append(WorldEvent(
+            title=f"Country risk: {name} {score}/100 ({level})"[:120],
+            summary=(f"Standing geopolitical baseline — {tags}." if tags else
+                     "Standing geopolitical baseline.") + " Static reference, not a live event.",
+            category="instability", source="risk",
+            lat=lat, lng=lng,
+            # Ceiling 0.5: a static table must never outrank live signal. A
+            # 90/100 baseline is context; a missile landing is news.
+            salience=round(min(0.5, float(score) / 200.0), 2),
         ))
     return out
 
@@ -824,6 +933,8 @@ class OsirisIntake:
                 data = r.json()
                 if source in ("markets", "crypto"):
                     out.extend(_markets_events(data, source))
+                elif source == "risk":
+                    out.extend(_country_risk_events(data))
                 elif source == "futures":
                     out.extend(_futures_events(data))
                 elif source == "gdacs":
