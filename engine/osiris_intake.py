@@ -62,6 +62,11 @@ FEEDS = [
     ("/api/ofac", "ofac", "geopolitical"),
     ("/api/hackernews", "hackernews", "attention"),
     ("/api/planet-vitals", "planet-vitals", "environment"),
+    # ── new Osiris feeds (Aug 2026 sync) ──
+    ("/api/gdelt-events", "gdelt-events", "geopolitical"),
+    ("/api/cloudflare-radar", "cloudflare-radar", "cyber"),
+    ("/api/cyber-attacks", "cyber-attacks", "cyber"),
+    ("/api/chain/daily", "chain-daily", "crypto"),
     # ── the "eyes": position/imagery layers, summarized so the oracle sees them too ──
     ("/api/flights", "flights", "movement"),
     ("/api/maritime", "maritime", "maritime"),
@@ -616,6 +621,7 @@ def _balloons_events(data: dict) -> list[WorldEvent]:
         return []
     return [WorldEvent(
         title=f"Upper-air: {n} weather balloons / radiosondes aloft",
+
         summary=f"{n} active radiosondes reporting upper-air observations (SondeHub).",
         category="movement", source="balloons", lat=None, lng=None, salience=0.25, raw={})]
 
@@ -634,6 +640,166 @@ def _hackernews_events(data: dict) -> list[WorldEvent]:
         category="attention", source="hackernews", lat=None, lng=None,
         url="https://news.ycombinator.com", salience=0.34, raw={},
     ))
+    return out
+
+
+def _gdelt_events_handler(data: dict) -> list[WorldEvent]:
+    """GDELT 2.0 geocoded events — real geopolitical event records with coordinates,
+    quad classification, and Goldstein tone. High-article-count events with extreme
+    tone are the most noteworthy."""
+    out: list[WorldEvent] = []
+    for e in (data.get("events") or [])[:40]:
+        title = e.get("title") or e.get("actor1") or ""
+        if not title:
+            continue
+        quad = e.get("quad") or 0
+        tone = e.get("goldstein") or e.get("tone") or 0
+        articles = e.get("articles") or e.get("num_articles") or 1
+        actor1 = e.get("actor1") or ""
+        actor2 = e.get("actor2") or ""
+        event_code = e.get("event_code") or e.get("code") or ""
+        lat = e.get("lat") or e.get("action_lat")
+        lng = e.get("lng") or e.get("lon") or e.get("action_lng")
+        try:
+            lat, lng = float(lat), float(lng)
+        except (TypeError, ValueError):
+            lat, lng = None, None
+        # quad 4 = material conflict, quad 3 = verbal conflict → highest signal
+        conflict_boost = {4: 0.25, 3: 0.15, 2: 0.05, 1: 0.0}.get(int(quad), 0.0)
+        tone_boost = min(0.15, abs(float(tone)) / 60)  # extreme tone = noteworthy
+        article_boost = min(0.15, (articles - 1) / 30)
+        sal = round(min(1.0, 0.40 + conflict_boost + tone_boost + article_boost), 3)
+        summary_bits = []
+        if actor1 and actor2:
+            summary_bits.append(f"{actor1} → {actor2}")
+        if event_code:
+            summary_bits.append(f"CAMEO {event_code}")
+        summary_bits.append(f"quad {quad}, tone {tone}, {articles} articles")
+        out.append(WorldEvent(
+            title=title[:240],
+            summary=f"GDELT geocoded event: {' · '.join(summary_bits)}"[:2000],
+            category="geopolitical", source="gdelt-events",
+            lat=lat, lng=lng,
+            url=e.get("url") or "",
+            salience=sal, raw={},
+        ))
+    return out
+
+
+def _cloudflare_radar_events(data: dict) -> list[WorldEvent]:
+    """Cloudflare Radar — internet outages (country-level disruptions, often the
+    first sign of a government shutdown or infrastructure failure) + layer-3 DDoS
+    attack origin countries. Ongoing outages are high-salience; attack origins give
+    the oracle a live cyber-geography picture."""
+    out: list[WorldEvent] = []
+    for o in (data.get("outages") or []):
+        ongoing = o.get("ongoing", False)
+        cause = o.get("cause") or o.get("event_type") or "disruption"
+        country = o.get("country_name") or o.get("country") or "unknown"
+        out.append(WorldEvent(
+            title=f"Internet {'OUTAGE' if ongoing else 'disruption'}: {country} — {cause}"[:240],
+            summary=(f"Cloudflare Radar: {o.get('description', '')} "
+                     f"(scope: {o.get('scope', 'country')}, started {o.get('start', '?')}"
+                     + (f", ended {o['end']}" if o.get('end') else ", ONGOING")
+                     + ")")[:2000],
+            category="cyber", source="cloudflare-radar",
+            lat=o.get("lat"), lng=o.get("lng"),
+            url=o.get("url") or "",
+            salience=0.82 if ongoing else 0.55,
+            raw={},
+        ))
+    for a in (data.get("attack_origins") or [])[:10]:
+        share = a.get("share") or 0
+        country = a.get("country_name") or a.get("country") or "?"
+        out.append(WorldEvent(
+            title=f"DDoS attack origin: {country} ({share}% of L3 traffic)"[:240],
+            summary=f"Cloudflare Radar layer-3 attack traffic — {country} accounts for {share}% of observed attack volume.",
+            category="cyber", source="cloudflare-radar",
+            lat=a.get("lat"), lng=a.get("lng"),
+            salience=round(min(0.72, 0.35 + share / 50), 3),
+            raw={},
+        ))
+    return out
+
+
+def _cyber_attacks_events(data: dict) -> list[WorldEvent]:
+    """Live C2/malware attack feed (abuse.ch Feodo Tracker) — attributed attack arcs
+    with malware family and severity. CobaltStrike and nation-state families (PlugX,
+    ShadowPad) earn the highest salience; commodity loaders are lower but still
+    worth seeing."""
+    out: list[WorldEvent] = []
+    seen_families: dict[str, int] = {}
+    for a in (data.get("attacks") or [])[:30]:
+        malware = a.get("malware") or "Unknown"
+        seen_families[malware] = seen_families.get(malware, 0) + 1
+    # one rollup per malware family (too many arcs = noise)
+    for fam, count in seen_families.items():
+        sev = {"CobaltStrike": 0.78, "PlugX": 0.75, "ShadowPad": 0.78, "Winnti": 0.75,
+               "Emotet": 0.62, "QakBot": 0.58, "Dridex": 0.58, "TrickBot": 0.55,
+               "IcedID": 0.55, "BumbleBee": 0.52, "Pikabot": 0.52}.get(fam, 0.45)
+        out.append(WorldEvent(
+            title=f"Active C2: {fam} — {count} live beacons"[:240],
+            summary=f"abuse.ch Feodo Tracker: {count} active {fam} command-and-control servers observed.",
+            category="cyber", source="cyber-attacks",
+            lat=None, lng=None,
+            salience=round(min(0.85, sev + count / 80), 3),
+            raw={},
+        ))
+    return out
+
+
+def _chain_daily_events(data: dict) -> list[WorldEvent]:
+    """Daily on-chain threat digest — DeFi exploits (DefiLlama), blockchain CVEs (NVD),
+    and newly OFAC-designated crypto wallets. A large exploit ($10M+) or a fresh OFAC
+    designation is a market-moving signal."""
+    out: list[WorldEvent] = []
+    for ex in (data.get("exploits") or [])[:8]:
+        amount = ex.get("amount") or ex.get("funds_lost") or 0
+        try:
+            amount = float(amount)
+        except (TypeError, ValueError):
+            amount = 0
+        name = ex.get("name") or ex.get("protocol") or "protocol"
+        chain = ex.get("chain") or ex.get("chains") or ""
+        if isinstance(chain, list):
+            chain = ", ".join(chain[:3])
+        am_str = f"${amount/1e6:.1f}M" if amount >= 1e6 else (f"${amount/1e3:.0f}K" if amount >= 1e3 else "")
+        out.append(WorldEvent(
+            title=f"DeFi exploit: {name}" + (f" — {am_str} lost" if am_str else ""),
+            summary=(f"DefiLlama hack tracker: {name}" + (f" on {chain}" if chain else "")
+                     + (f". Funds lost: {am_str}." if am_str else ".") + f" {ex.get('technique', '')}")[:2000],
+            category="crypto", source="chain-daily",
+            lat=None, lng=None,
+            url=ex.get("url") or "",
+            salience=round(min(0.92, 0.55 + min(0.35, amount / 50_000_000)), 3),
+            raw={},
+        ))
+    for cve in (data.get("cves") or [])[:5]:
+        out.append(WorldEvent(
+            title=f"Blockchain CVE: {cve.get('id', '')} — {cve.get('summary', '')}"[:240],
+            summary=f"NVD blockchain/crypto vulnerability: {cve.get('summary', '')}"[:2000],
+            category="crypto", source="chain-daily",
+            lat=None, lng=None,
+            url=cve.get("url") or "",
+            salience=0.52, raw={},
+        ))
+    for w in (data.get("ofac_wallets") or data.get("wallets") or [])[:6]:
+        out.append(WorldEvent(
+            title=f"OFAC wallet designation: {w.get('address', '')[:16]}…"[:240],
+            summary=(f"Newly OFAC-designated crypto address: {w.get('address', '')}. "
+                     f"{w.get('reason', '')} ({w.get('date', '')})")[:2000],
+            category="crypto", source="chain-daily",
+            lat=None, lng=None,
+            salience=0.65, raw={},
+        ))
+    # rollup summary if brief text is present
+    brief_text = data.get("brief") or data.get("summary") or ""
+    if brief_text and not out:
+        out.append(WorldEvent(
+            title=f"Chain threat brief: {brief_text}"[:240],
+            category="crypto", source="chain-daily",
+            salience=0.48, raw={},
+        ))
     return out
 
 
@@ -884,6 +1050,14 @@ class OsirisIntake:
                     out.extend(_satellites_events(data))
                 elif source == "balloons":
                     out.extend(_balloons_events(data))
+                elif source == "gdelt-events":
+                    out.extend(_gdelt_events_handler(data))
+                elif source == "cloudflare-radar":
+                    out.extend(_cloudflare_radar_events(data))
+                elif source == "cyber-attacks":
+                    out.extend(_cyber_attacks_events(data))
+                elif source == "chain-daily":
+                    out.extend(_chain_daily_events(data))
                 elif source == "hungermap":
                     out.extend(_summary_signal(data, "hungermap", "food", "Food insecurity — worst-hit"))
                 elif source == "wb-unemployment":
