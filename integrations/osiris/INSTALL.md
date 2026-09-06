@@ -74,7 +74,7 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `routes/unemployment-route.ts` | `src/app/api/unemployment/route.ts` — unemployment (World Bank, no key) |
 | `routes/gdp-growth-route.ts` | `src/app/api/gdp-growth/route.ts` — GDP growth (World Bank, no key) |
 | `routes/poverty-route.ts` | `src/app/api/poverty/route.ts` — extreme poverty (World Bank, no key) |
-| `lib/countryCentroids.ts` | `src/lib/countryCentroids.ts` — shared ISO3/ISO2/name → centroid for country layers |
+| `lib/pythiaCentroids.ts` | `src/lib/pythiaCentroids.ts` — shared ISO3/ISO2/name → centroid for the country layers (`byIso2`/`byIso3`/`byName`). **Renamed 2026-09** — it used to install as `src/lib/countryCentroids.ts`, but Osiris now ships its own file at that exact path exporting `COUNTRY`/`centroidFor`, which `src/app/api/cloudflare-radar/route.ts` imports. The overlay was overwriting it and breaking that route with `Export centroidFor doesn't exist in target module`. The two are different modules, not different versions, so PYTHIA's now sits beside Osiris's instead of on top of it |
 
 ## Before you start: one upstream bug breaks `/tv`
 

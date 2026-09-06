@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { byIso2 } from '@/lib/countryCentroids';
+import { byIso2 } from '@/lib/pythiaCentroids';
 
 export const dynamic = 'force-dynamic';
 

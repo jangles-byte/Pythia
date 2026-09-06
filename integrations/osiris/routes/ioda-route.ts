@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { byIso2 } from '@/lib/countryCentroids';
+import { byIso2 } from '@/lib/pythiaCentroids';
 
 /**
  * OSIRIS — internet outages (IODA / Georgia Tech Internet Intelligence, free, no key).
