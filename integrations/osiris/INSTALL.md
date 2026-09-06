@@ -28,16 +28,16 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `TickerWindow.tsx` | `src/components/TickerWindow.tsx` — the floating always-on-top ticker window (opened from the tool strip): watchlist rows with sparklines, add/remove synced with the Watch tab. Rendered via the `'ticker'` FloatingWindow kind in `page.tsx` |
 | `PatchPanel.tsx` | `src/components/PatchPanel.tsx` — My Patch (tool-strip pin button): set name/lat/lng/radius (localStorage), see only the events + forecasts inside it, click to fly |
 | `lib/shareCard.ts` | `src/lib/shareCard.ts` — canvas share-card renderer (1200×630 branded PNG download); buttons live in `DeliberationModal` + `BriefPanel` |
-| `tv-page.tsx` | `src/app/tv/page.tsx` — PYTHIA **Display Mode** (ambient kiosk): a slow equatorial spinning globe (`<OsirisMap>` with `spin.rotate` + `flyToLocation` zoom 1.5) behind live cards. **All map layers ON like startup** — it fetches satellites (silhouettes at altitude), flights, quakes, fires, weather, war fronts, storms, volcanoes into `mapData` and passes `ALL_ON` activeLayers (everything except 3D terrain/buildings + the default-off lattice). Cards have **fixed slots per category** (cam → top-left, weather/live-TV → top-right, seismic/volcano → bottom-left, markets → bottom-right, headlines/tech → top banner, oracle/storm/sanctions → bottom banner) so new items **fade in in place**; the scheduler fills one cooled-down free slot per tick. Longer card lives (~15–24s) |
+| `tv-page.tsx` | `src/app/tv/page.tsx` — PYTHIA **Display Mode** (ambient kiosk): a slow equatorial spinning globe (`<OsirisMap>` with `spin.rotate` + `flyToLocation` zoom 1.5) behind live cards. **All map layers ON like startup** — it fetches satellites (drawn at real altitude by upstream's own WebGL layer), flights, quakes, fires, weather, war fronts, storms, volcanoes into `mapData` and passes `ALL_ON` activeLayers (everything except 3D terrain/buildings + the default-off lattice). `ALL_ON` was resynced with upstream's key set (2026-09): `orbits3d` and `gps_jamming` are gone, `cctv_previews`, `gdelt_events`, `cyber_attacks`, `cf_outages` and `cf_attacks` added. **Camera cards** come from `/api/cams` plus a rotating three-region slice of `/api/cctv` per tick — asking upstream for every region at once is ~30k cameras, and rotating walks the cards around the world over an hour. Cards have **fixed slots per category** (cam → top-left, weather/live-TV → top-right, seismic/volcano → bottom-left, markets → bottom-right, headlines/tech → top banner, oracle/storm/sanctions → bottom banner) so new items **fade in in place**; the scheduler fills one cooled-down free slot per tick. Longer card lives (~15–24s) |
 | `routes/kev-route.ts` | `src/app/api/kev/route.ts` — CISA Known Exploited Vulnerabilities (no key): newest actively-exploited CVEs, ransomware-flagged |
 | `routes/faa-route.ts` | `src/app/api/faa-status/route.ts` — FAA airspace status (no key): ground stops / delay programs / closures at major US airports, geocoded |
 | `RadarStrip.tsx` | `src/components/RadarStrip.tsx` — always-on radar chips in the deck: the highest-salience live event per domain, click to fly there. Imported by `PythiaPanel.tsx` |
 | `HeadlineTicker.tsx` | `src/components/HeadlineTicker.tsx` — bottom world-headline ticker |
 | `MarketTicker.tsx` | `src/components/MarketTicker.tsx` — rolling market ticker (indices · futures · crypto · FX + the engine watchlist) stacked above the headline ticker; keyless quotes via `/api/quotes`, hover to pause. Rendered next to `<HeadlineTicker/>` in `page.tsx` |
 | `routes/engine-proxy-route.ts` | `src/app/api/engine/[...path]/route.ts` — same-origin proxy to the engine |
-| `CamsNearby.tsx` | `src/components/CamsNearby.tsx` — "cameras near this location" modal: nearest public cams as an auto-refreshing still grid, click to enlarge. Opened from `LiveAlerts` (cams link) + `DeliberationModal` (Cams near). Uses `/api/cams?near=` |
+| `CamsNearby.tsx` | `src/components/CamsNearby.tsx` — "cameras near this location" modal: nearest public cams as an auto-refreshing still grid, click to enlarge. Opened from `LiveAlerts` (cams link) + `DeliberationModal` (Cams near). **Reads both directories (2026-09):** `/api/cams?near=` for PYTHIA's supplement and `/api/cctv?lat=&lng=&radius=` for upstream's world, merged, distance-ranked here (upstream answers by region, not by distance) and de-duplicated by position. Before this it only knew PYTHIA's North American sources, so it came up empty in Bangkok, Athens or Taipei |
 | `SatelliteView.tsx` | `src/components/SatelliteView.tsx` — live NOAA GOES imagery window — 14 views (East/West CONUS + full-disk, regional sectors ne/se/taw/psw/hi, mesoscale M1/M2, and IR/AirMass/Sandwich bands), 2-min refresh. Rendered via the `'satellite'` FloatingWindow kind in `page.tsx` |
-| `routes/cams-route.ts` | `src/app/api/cams/route.ts` — public camera directory (no keys): Caltrans (12 CA districts) + NYC TMC + London TfL + Ontario/Alberta 511 + DelDOT + NZ NZTA, ~4,000 cams normalized to `{name,lat,lng,img,video,src}`. `?near=lat,lng&radius_km=&limit=` returns nearest. Merged into the map's CCTV layer in `page.tsx` |
+| `routes/cams-route.ts` | `src/app/api/cams/route.ts` — **the cameras upstream doesn't carry** (no keys). Osiris's own `/api/cctv` is now ~30k cameras across 45 regional sources, so this route was trimmed (2026-09) from 16 sources to the 8 with no upstream fetcher — **NYC TMC · DelDOT · 511 for NY, PA, WI, ID, AK and New England** — and the two compose instead of fetching Caltrans, TfL, Ontario, Alberta, NZTA, FL511, GA511 and LA511 twice. Cams are normalized to `{name,lat,lng,img,video,src}`; `?registry=1`, `?bbox=`, `?source=`, and `?near=lat,lng&radius_km=&limit=` (nearest-first). Merged into the map's CCTV layer in `page.tsx` alongside `/api/cctv` |
 | `FilingsWindow.tsx` | `src/components/FilingsWindow.tsx` — the floating **SEC filings tape** (opened from the tool strip, Landmark icon): two tabs — **INSIDER** (Form 4 buy/sell/grant/exercise rows with company, ticker, insider, $ value; all/buys/sells filter) and **8-K** (material events) — across all public companies, click a row to open the filing on SEC.gov. Auto-refreshes on the route's cache cadence. Rendered via the `'filings'` FloatingWindow kind in `page.tsx` |
 | `routes/edgar-route.ts` | `src/app/api/edgar/route.ts` — SEC EDGAR firehose (no key; **a contact email in the User-Agent is required or SEC 403s**): parses the `getcurrent` atom feeds for Form 4 + 8-K, dedupes each filing (listed twice — filer & issuer CIK) by its 18-digit accession folder, and enriches the ~20 newest Form 4s by fetching `form4.xml` for issuer/ticker/insider/transaction-code/shares/value (summed per transaction block). 150s cache |
 | `ContractsWindow.tsx` | `src/components/ContractsWindow.tsx` — the floating **federal-money tape** (tool strip, Coins icon): **AWARDED** tab (top-100 USASpending contract awards) + **OPEN** tab (the *full* posted Grants.gov pool, ~1.3k). A **search box** filters recipient/agency/opportunity, and rows are grouped into **collapsible agency sections** (awarded sorted by total $, open by count; sticky headers; expand/collapse-all; sections auto-open while searching). Every row links out (`rel=noopener`, mousedown `stopPropagation` so the window drag never eats the click). Rendered via the `'contracts'` FloatingWindow kind in `page.tsx` |
@@ -76,6 +76,27 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 | `routes/poverty-route.ts` | `src/app/api/poverty/route.ts` — extreme poverty (World Bank, no key) |
 | `lib/countryCentroids.ts` | `src/lib/countryCentroids.ts` — shared ISO3/ISO2/name → centroid for country layers |
 
+## Before you start: one upstream bug breaks `/tv`
+
+As of Osiris `f478162`, `src/components/OsirisMap.tsx` has its `'use client'` directive on
+**line 2**, underneath an `import` of `@/lib/draw`. Next refuses to compile any route that
+pulls it in as a client component:
+
+```
+The "use client" directive must be placed before other expressions.
+```
+
+Osiris's own `/` happens to survive this, but PYTHIA's Display Mode (`src/app/tv/page.tsx`)
+imports `OsirisMap` directly and 500s. Fix it in your Osiris checkout before installing the
+overlay — move the directive to line 1, above the import:
+
+```ts
+'use client';
+import { buildGeometry, closeRing, drawReducer, /* … */ } from '@/lib/draw';
+```
+
+Verified 2026-09-05: with that one line moved, `/tv` returns 200 and Display Mode renders.
+
 ## Edits to existing Osiris files (high level)
 - `src/components/OsirisMap.tsx` — **Hardened GeoJSON sanitizer (2026-07):** the `setGeo` helper now coalesces **`null` and object/array** property values to `''` (not just `undefined`) — MapLibre's geojson-vt string table crashes ("Index requested n=0 can't be >= length 0") on any of them, and feeds occasionally send `null`. Also routed the previously-direct `scan-targets` `setData` through `setGeo` so nothing bypasses the sanitizer (only day/night, which has empty props, still sets data directly).
 - `src/app/page.tsx` — **Mobile launcher (2026-07):** the bottom nav was only 7 tabs and none of the new tools were reachable on a phone. Now the bottom bar is a **MENU** button (`LayoutGrid`) + 4 quick tabs (PYTHIA/Chat/Layers/Alerts); MENU opens a **full-screen tool launcher** — a 3-col grid of every panel & window (Oracle Deck, Ask Oracle, Layers, Markets, Intel, Alerts, Signals, Ticker, SEC Filings, Contracts, GOES Sat, Search, Display Mode). Tapping a tool sets `mobilePanel` (opens the bottom drawer) or, for Display Mode, opens `/tv`. The drawer's `mobilePanel` union + render branches + title map gained `filings`/`contracts`/`feeds`/`ticker`/`satellite` (each renders its window component in a `h-[52vh]` wrapper). New state: `showMobileMenu`.
@@ -86,7 +107,7 @@ working install). Osiris itself is upstream — clone it separately, then apply 
 - `src/app/api/conflicts/route.ts` — **Stale-while-revalidate (2026-07):** GDELT enforces ~1 req/5s so a live conflict fetch takes 20–90s; the route used to run that on every request and time out on every engine cycle. Now it answers **instantly** from a module cache (static known-zones fallback on the first hit) and refreshes the live GDELT enrichment in the background at most once per 8 min (`buildBody` / `refresh` / `cache`).
 - `src/components/OsirisMap.tsx` — **Spin yields to the user (2026-07):** the `rotate`-mode spin effect now binds `mousedown/touchstart/dragstart/wheel` → pause and `mouseup/touchend/dragend/zoomend/rotateend/pitchend` → resume-after-500ms, and the per-frame `setCenter` is skipped while `interacting` is true. So grabbing the globe stops the auto-spin instantly and it resumes a half-second after release (drag-inertia settles first). Listeners are cleaned up in the effect's return.
 - `src/app/page.tsx` — **Floating windows + Display Mode (2026-07):** the `Win` kind union gains `'filings'` and `'contracts'` (with their icons/sizes/render branches → `<FilingsWindow/>` / `<ContractsWindow/>`), and the right tool strip gains **Filings** (Landmark), **Contracts** (Coins), and **Display Mode** (MonitorPlay → `window.open('/tv')`) buttons. Import `FilingsWindow`, `ContractsWindow`, and the `Landmark, Coins, MonitorPlay` lucide icons.
-- `src/app/page.tsx` — **3D altitude:** `orbits3d` in `activeLayers` (**default true**), a Rocket tool-strip button toggling it, and `orbits3d` added to the satellite + flights fetch gates so the data loads when it's on.
+- `src/app/page.tsx` — ~~**3D altitude:** `orbits3d` in `activeLayers`~~ — **dropped (2026-09):** upstream draws satellites at altitude with no flag, see the `satellite-layer.ts` note below.
   **Boot defaults (2026-07):** every layer in `activeLayers` defaults **on** except `terrain_3d` (heavy 3D buildings/terrain, stays off); globe `spin` defaults to `{ mode: 'rotate', speed: 3 }` (gentle auto-spin). The spin control is the **leftmost** map-view control — a 3-way segmented toggle (**Off · Spin · Snap**; snap = 'smart' jump-to-events) with the speed slider floated above it. The old Rocket tool-strip button for 3D altitude was removed (it's the SPACE-tab toggle now). Initial map zoom is **2.4** (wide 'just above the satellites' view); IP-geolocate flies to the user's region at that same zoom instead of zooming to street level.
 - `src/app/page.tsx` — render `<PythiaStatus/>`, the floating windows, `<CreditsModal/>`;
   a right-toolbar with Layers/Chat/Markets/Alerts/PYTHIA(Eye)/Search buttons; globe-spin
@@ -114,24 +135,29 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   "any data landed" (`dataVersion > 0`) as live, since not every fetch path sets
   `backendStatus`.
 - `src/app/layout.tsx` — load the Doto + JetBrains Mono Google Fonts.
-- `src/components/OsirisMap.tsx` — **3D altitude layer (2026-07):** two `geojson` sources
-  `alt-sats` + `alt-air` and matching `fill-extrusion` layers (`alt-sats-ext`/`alt-air-ext`)
-  that raise satellites & aircraft off the globe. A `useEffect` keyed on `activeLayers.orbits3d`
-  builds small octagonal chips whose `fill-extrusion-base` is set AT the object's real altitude
-  (and `-height` = base + ~16km), so the dots **float off the surface with no line down and no
-  forced camera tilt**. Satellites: `alt`km × 1000, clamped 6,000km so GEO stays on-screen while
-  LEO is near-true; aircraft: `alt` is **meters**, × ~22 exaggeration to lift the thin air layer
-  below LEO; satellites downsampled to ~2,200. Click handlers on both layers show name + altitude.
-  `setVis(['alt-sats-ext','alt-air-ext'], orbits3d)`.
-  **Aircraft & balloons off the surface (2026-07):** the surface flight layers (`fl-*`) and
-  `balloon-dots`/`balloon-label` are now gated `&& !orbits3d` so they hide when 3D-altitude is on
-  (previously only the satellite surface dots were). Added a third altitude layer `alt-balloons-ext`
-  (source `alt-balloons`) — radiosondes lifted by `altitude(m) × 14` into a band above the air layer
-  but below LEO; the alt click-query and `showAltPopup` handle the `balloon` kind (🎈, altitude in km).
-  **Satellite silhouette (2026-07):** satellites now use a `satShape()` footprint (central body +
-  two solar-panel wings, ~12 vertices) instead of the octagon `col()`, with a flatter `SAT_THK`
-  (20,000). It's the *same* fill-extrusion primitive and the same ~2,200-feature cap — so it reads
-  as a little satellite at essentially zero extra GPU cost vs the "block". Aircraft keep `col()`.
+- ~~`src/components/OsirisMap.tsx` — **3D altitude layer (2026-07)**~~ — **superseded upstream (2026-09).
+  Do not apply this patch any more.** PYTHIA used to raise satellites, aircraft and balloons off the
+  globe itself, with `fill-extrusion` sources (`alt-sats`/`alt-air`/`alt-balloons`) whose base was set
+  at the object's altitude, gated on an `orbits3d` layer key and an **Off Earth / On Earth** pill in
+  the SPACE group. Osiris has since built its own, better version of exactly this (`#296`, `#297`), so
+  the overlay no longer touches it:
+  - `src/lib/satellite-layer.ts` — a **MapLibre custom WebGL layer**. Instead of extruded footprints it
+    draws one instanced quad per satellite and positions it with the globe projection's own
+    `projectTileFor3D(posInTile, elevation)` prelude, so the points sit above the surface with the
+    globe's real curvature and camera — and the same shader still compiles for mercator, so it keeps
+    working when the operator presses 2D. Real altitude is mapped onto a `[620km, 2500km]` display band
+    by a **sqrt** curve (`displayElevation`), which spreads the crowded LEO shell instead of flattening
+    it while keeping MEO and GEO distinguishable above; the popup shows the true kilometres. The floor
+    exists because anything nearer the surface loses the depth test against the globe, the ceiling
+    because GEO at true scale leaves the frustum.
+  - Satellites are **clickable**: `src/components/SatelliteCard.tsx` reads out the selection on the
+    object itself, and `src/app/api/satellites/orbit/route.ts` + `src/lib/orbit.ts` draw its orbit
+    track. The selection is held by NORAD id, not by index, so it survives a catalogue re-poll.
+  - There is **no `orbits3d` key and no Off Earth / On Earth toggle** any more — satellites are simply
+    drawn where they are. If you are upgrading an older PYTHIA install, drop `orbits3d` from
+    `activeLayers` and remove the `alt-*` sources/layers; leaving them in means two implementations
+    fighting over the same satellites.
+
 - `src/components/OsirisMap.tsx` — `nws-alerts` + `frontlines` polygon sources with
   `nws-fill`/`nws-outline` and `frontline-fill`/`frontline-line` layers; a `displacement`
   source + `displacement-circles` layer (sized by people displaced); social `economy`/
@@ -149,7 +175,7 @@ working install). Osiris itself is upstream — clone it separately, then apply 
   red `hurr-cone-fill`/`hurr-cone-line` polygons with `hurr-center`/`hurr-label` storm
   points, and `flood-circles` sized/shaded by the GloFAS risk ratio (≥1.5 shown);
   click popups for both.
-- `src/components/LayerPanel.tsx` — an **Off Earth / On Earth** pill toggle on the SPACE group's title line (flips `orbits3d`) controls how satellites are drawn — floating at real altitude vs flat on the surface — rather than being a separate layer row;
+- ~~`src/components/LayerPanel.tsx` — an **Off Earth / On Earth** pill toggle on the SPACE group's title line~~ — **dropped (2026-09)** along with `orbits3d`; there is no longer an on-surface mode to switch back to.
 - `src/components/LayerPanel.tsx` — added "Storm / Flood Zones", "Conflict / War Zones"
   and "War Front / Territory" toggles; a new SOCIAL group of 9 keyless layers (Displacement,
   Disease Outbreaks, Inflation, Censorship, Civil Unrest, Food Insecurity, Unemployment,

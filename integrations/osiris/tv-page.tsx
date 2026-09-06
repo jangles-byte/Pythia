@@ -30,18 +30,38 @@ for (const k of ['nws_alerts', 'frontlines', 'displacement', 'economy', 'censors
                  'unrest', 'food', 'unemployment', 'gdp', 'poverty', 'hurricanes', 'flood']) EMPTY_DATA[k] = { features: [] };
 
 // All layers ON — like the main app on startup: everything except 3D terrain/buildings
-// and the (default-off) comms/intel lattice.
+// and the (default-off) comms/intel lattice. Two keys that used to live here are
+// gone: `orbits3d` (Osiris now draws satellites at real altitude in its own WebGL
+// layer — src/lib/satellite-layer.ts — with no flag to turn on) and `gps_jamming`
+// (dropped upstream when SIGINT News and GPS Jamming were retired).
 const ALL_ON: any = { terrain_3d: false, sdk_sea: false, sdk_air: false, sdk_naval: false };
 for (const k of ['satellites', 'sat_comms', 'sat_military', 'sat_navigation', 'sat_earth', 'sat_science',
                  'flights', 'private', 'jets', 'military', 'earthquakes', 'fires', 'weather', 'nws_alerts',
-                 'frontlines', 'volcanoes', 'hurricanes', 'flood', 'cctv', 'day_night', 'orbits3d',
-                 'conflict_zones', 'global_incidents', 'gps_jamming', 'displacement', 'health', 'economy',
+                 'frontlines', 'volcanoes', 'hurricanes', 'flood', 'cctv', 'cctv_previews', 'day_night',
+                 'conflict_zones', 'global_incidents', 'displacement', 'health', 'economy',
                  'censorship', 'unrest', 'food', 'unemployment', 'gdp', 'poverty', 'infrastructure',
-                 'maritime', 'malware', 'radiation', 'balloons', 'live_news', 'news_intel',
+                 'maritime', 'malware', 'cyber_attacks', 'gdelt_events', 'cf_outages', 'cf_attacks',
+                 'radiation', 'balloons', 'live_news', 'news_intel',
                  'predictions', 'predictions_all']) ALL_ON[k] = true;
 
 type Card = { id: number; slot: string; kind: string; life: number; node: React.ReactNode };
 type Pools = { cams: any[]; news: any[]; quotes: any[]; alerts: any[]; quakes: any[]; live: any[]; preds: any[]; hn: any[]; volcanoes: any[]; sanctions: any[] };
+
+// Upstream's /api/cctv answers by region, and asking for all of them is ~30k
+// cameras — far more than an ambient kiosk needs on a 90s refresh. So each tick
+// asks for a different three, which keeps the payload small and, over an hour,
+// walks the cards around the world. A region upstream no longer serves is simply
+// dropped by the route, so this list going stale costs variety, never a failure.
+const CCTV_REGIONS = ['uk', 'us-west', 'us-east', 'canada', 'europe', 'europe-live',
+  'latam-live', 'africa-live', 'middle-east', 'asia', 'asia-live', 'eastasia', 'seasia',
+  'westasia', 'japan', 'thailand', 'taiwan', 'hongkong', 'spain', 'italy', 'germany',
+  'france', 'australia', 'newzealand', 'iceland', 'greece', 'turkey'];
+let cctvCursor = 0;
+const nextCctvRegions = () => {
+  const pick = [0, 1, 2].map((i) => CCTV_REGIONS[(cctvCursor + i) % CCTV_REGIONS.length]);
+  cctvCursor = (cctvCursor + 3) % CCTV_REGIONS.length;
+  return pick.join(',');
+};
 
 const SLOTS = ['tl', 'tr', 'bl', 'br', 'top', 'bottom'];
 const SLOT_POS: Record<string, string> = {
@@ -124,13 +144,24 @@ export default function TVPage() {
   // ── card feed pools ─────────────────────────────────────────────────────
   const loadAll = useCallback(async () => {
     const j = (p: string) => fetch(p).then(r => (r.ok ? r.json() : null)).catch(() => null);
-    const [cams, news, quotes, alerts, quakes, live, state, hn, geo, ofac] = await Promise.all([
-      j('/api/cams'), j('/api/news'), j(`/api/quotes?symbols=${TICKERS.join(',')}`),
+    const [cams, cctv, news, quotes, alerts, quakes, live, state, hn, geo, ofac] = await Promise.all([
+      j('/api/cams'), j(`/api/cctv?region=${nextCctvRegions()}`),
+      j('/api/news'), j(`/api/quotes?symbols=${TICKERS.join(',')}`),
       j('/api/nws-alerts'), j('/api/earthquakes'), j('/api/live-news'), j('/api/engine/state'),
       j('/api/hackernews'), j('/api/geohazards'), j('/api/ofac'),
     ]);
     const P = pools.current;
-    if (cams) P.cams = (cams.cams || (Array.isArray(cams) ? cams : [])).filter((c: any) => c.img);
+    // Cameras come from both directories: PYTHIA's supplement (/api/cams) and the
+    // slice of upstream's world this tick asked for. Upstream names its still
+    // `feed_url`, so it is normalized to `img` before the cards ever see it.
+    const mine = cams ? (cams.cams || (Array.isArray(cams) ? cams : [])) : [];
+    const theirs = (cctv?.cameras || []).map((c: any) => ({
+      id: `cctv-${c.id}`, name: c.name,
+      place: [c.city, c.country].filter(Boolean).join(', '),
+      lat: c.lat, lng: c.lng, img: c.feed_url, video: c.stream_url, src: c.source,
+    }));
+    const pool = [...mine, ...theirs].filter((c: any) => c.img);
+    if (pool.length) P.cams = pool;
     if (news?.news) P.news = news.news;
     if (quotes?.quotes) P.quotes = Object.values(quotes.quotes).filter(Boolean);
     if (alerts?.features) P.alerts = alerts.features.filter((f: any) => f.properties?.event);

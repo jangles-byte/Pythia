@@ -11,6 +11,13 @@ import { X, Video, MapPin, RefreshCw, ExternalLink } from 'lucide-react';
 
 type Cam = { id: string; name: string; place?: string; lat: number; lng: number; img?: string; video?: string; src: string; distance_km: number };
 
+const haversine = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+  const R = 6371, d = Math.PI / 180;
+  const a = Math.sin(((lat2 - lat1) * d) / 2) ** 2
+    + Math.cos(lat1 * d) * Math.cos(lat2 * d) * Math.sin(((lng2 - lng1) * d) / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+};
+
 export default function CamsNearby({ lat, lng, label, onClose }: {
   lat: number; lng: number; label?: string; onClose: () => void;
 }) {
@@ -22,11 +29,48 @@ export default function CamsNearby({ lat, lng, label, onClose }: {
   useEffect(() => setMounted(true), []);
 
   const load = useCallback(async () => {
-    try {
-      const r = await fetch(`/api/cams?near=${lat},${lng}&radius_km=${radius}&limit=18`);
-      const j = await r.json();
-      setCams(j.cams || []);
-    } catch { setCams([]); }
+    // Two directories, because neither one is the whole world. Osiris upstream's
+    // /api/cctv is the ~30k-camera global set (45 regional sources); /api/cams is
+    // PYTHIA's supplement, the agencies upstream has no fetcher for. Asking only
+    // the second is why this used to come up empty everywhere but North America.
+    // Only /api/cams sorts by distance, so the merged set is ranked here.
+    const [mine, upstream] = await Promise.all([
+      fetch(`/api/cams?near=${lat},${lng}&radius_km=${radius}&limit=48`)
+        .then((r) => r.json()).catch(() => null),
+      // lat/lng both 0 makes the route load every region on earth, so skip it.
+      (lat || lng)
+        ? fetch(`/api/cctv?lat=${lat}&lng=${lng}&radius=${radius}`)
+            .then((r) => r.json()).catch(() => null)
+        : null,
+    ]);
+
+    const merged: Cam[] = [
+      ...((mine?.cams || []) as Cam[]),
+      ...((upstream?.cameras || []) as any[])
+        .filter((c) => Number.isFinite(c?.lat) && Number.isFinite(c?.lng))
+        .map((c): Cam => ({
+          id: `cctv-${c.id}`,
+          name: c.name || 'Camera',
+          place: [c.city, c.country].filter(Boolean).join(', '),
+          lat: c.lat, lng: c.lng,
+          img: c.feed_url || undefined,
+          video: c.stream_url || c.external_url || undefined,
+          src: c.source || 'CCTV',
+          distance_km: Math.round(haversine(lat, lng, c.lat, c.lng) * 10) / 10,
+        }))
+        .filter((c) => c.distance_km <= radius),
+    ];
+
+    // One physical camera can reach both directories if upstream later adds an
+    // agency this route carries; keep the first at each position.
+    const seen = new Set<string>();
+    setCams(merged
+      .sort((a, b) => a.distance_km - b.distance_km)
+      .filter((c) => {
+        const k = `${c.lat.toFixed(4)},${c.lng.toFixed(4)}`;
+        return seen.has(k) ? false : (seen.add(k), true);
+      })
+      .slice(0, 18));
   }, [lat, lng, radius]);
 
   useEffect(() => { setCams(null); load(); }, [load]);
