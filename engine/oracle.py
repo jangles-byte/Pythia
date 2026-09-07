@@ -96,7 +96,7 @@ class Oracle:
         return preds
 
     async def _chat(self, user: str) -> str:
-        return await self._complete([{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}], 1400)
+        return await self._complete([{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}], CONFIG.oracle_max_tokens)
 
     async def _complete(self, messages: list[dict], max_tokens: int = 900, model: str | None = None) -> str:
         body = {"model": model or self.model, "messages": messages, "temperature": CONFIG.temperature, "max_tokens": max_tokens}
@@ -245,9 +245,13 @@ class Oracle:
                 it = json.loads(chunk)
             except (ValueError, TypeError):
                 continue
-            pred = cls._clean_pred(it, brief_id)
-            if pred:
-                preds.append(pred)
+            # models frequently wrap the array in {"predictions": [...]} even when the
+            # prompt asks for a bare array; accept both shapes instead of dropping the pass.
+            items = it.get("predictions", []) if isinstance(it, dict) and isinstance(it.get("predictions"), list) else [it]
+            for item in items:
+                pred = cls._clean_pred(item, brief_id)
+                if pred:
+                    preds.append(pred)
         if not preds:
             log.warning("oracle: no predictions parsed from: %s", text[:200])
         return preds

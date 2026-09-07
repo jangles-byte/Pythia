@@ -84,6 +84,11 @@ class Config:
     # models burn ~1300 tokens (mostly hidden chain-of-thought) here, so keep generous
     # headroom or the JSON truncates mid-answer (see JUDGE_MAX_TOKENS).
     whatif_max_tokens: int = field(default_factory=lambda: _i("WHATIF_MAX_TOKENS", 2400))
+    # token budget for the main forecast pass. The prompt asks for
+    # PREDICTIONS_PER_HORIZON x len(HORIZONS) objects, each carrying statement +
+    # reasoning + location + coords, so the previous hardcoded 1400 truncated the
+    # JSON mid-array and _parse() silently returned zero predictions.
+    oracle_max_tokens: int = field(default_factory=lambda: _i("ORACLE_MAX_TOKENS", 6000))
 
     # ── Swarm (a council of LLM personas deliberates each forecast) ──
     swarm_enabled: bool = field(default_factory=lambda: _b("SWARM_ENABLED", True))
