@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Space Exploration Quiz</title>
+  <style>
+    :root{
+      --bg:#f6f8fb; --card:#fff; --muted:#555; --accent:#0b76ff; --good:#1abc9c; --bad:#e74c3c; --glass: rgba(255,255,255,0.6);
+      --shadow: 0 6px 18px rgba(20,30,60,0.08);
+      font-synthesis: none;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{ --bg:#0b0f14; --card:#0f1720; --muted:#aab3c2; --accent:#66b2ff; --good:#2ecc71; --bad:#ff6b6b; --glass: rgba(255,255,255,0.03); --shadow:0 6px 18px rgba(2,6,12,0.7);}    
+    }
+    html,body{height:100%;}
+    body{margin:0;display:flex;align-items:center;justify-content:center;padding:32px;background:linear-gradient(180deg,var(--bg),#fff0);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; font-size:15px;color:var(--muted);}
+
+    .shell{width:100%;max-width:520px;}
+    .card{background:var(--card);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin:0 auto;}
+
+    .col{max-width:480px;margin:0 auto}
+
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .title{font-weight:600;color:var(--muted);}
+    .score{font-weight:700;color:var(--accent)}
+
+    .progress{height:10px;background:linear-gradient(90deg,#0000,#0000);border-radius:999px;overflow:hidden;box-shadow:inset 0 -1px 0 rgba(0,0,0,0.04)}
+    .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#6ee7ff);transition:width .45s ease}
+    .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin:8px 0 16px}
+
+    .qcard{padding:18px;border-radius:12px;background:linear-gradient(180deg,transparent,transparent);transition:transform .18s ease,box-shadow .18s ease;border:1px solid rgba(0,0,0,0.04)}
+
+    .question{font-size:16px;color:var(--muted);margin-bottom:12px}
+    .choices{display:grid;gap:10px}
+    .btn{background:var(--glass);border:1px solid rgba(0,0,0,0.04);padding:12px 14px;border-radius:10px;cursor:pointer;text-align:left;color:var(--muted);font-weight:600;transition:transform .12s ease,box-shadow .12s ease}
+    .btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(8,20,40,0.06)}
+
+    .btn.correct{background:linear-gradient(90deg,var(--good),#9cf3c8);color:#042;}
+    .btn.reveal{outline:2px solid rgba(0,0,0,0.05)}
+
+    .actions{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+    .next{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .next:disabled{opacity:.5;cursor:default}
+
+    .small{font-size:13px;color:var(--muted)}
+
+    /* correct pulse */
+    .qcard.correct{animation:correctFlash .8s ease forwards}
+    @keyframes correctFlash{0%{box-shadow:0 6px 20px rgba(26,188,156,0.05);transform:translateY(0);}50%{transform:scale(1.02);background:linear-gradient(90deg,rgba(26,188,156,0.06),transparent);}100%{transform:translateY(0);}}
+
+    /* wrong shake */
+    .qcard.wrong{animation:shake .6s ease}
+    @keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
+
+    .results{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px}
+    .big{font-size:40px}
+    .emoji{font-size:48px}
+
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+
+    /* responsive */
+    @media (max-width:420px){body{padding:18px}.card{padding:16px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="card col" id="app" role="application" aria-live="polite">
+      <header>
+        <div class="title">Space Exploration Quiz</div>
+        <div class="score">Score: <span id="score">0</span>/<span id="qCount">10</span></div>
+      </header>
+
+      <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+      <div class="meta"><div id="qIndex">Question 1</div><div class="small" id="hint">Pick the best answer</div></div>
+
+      <section class="qcard" id="card">
+        <div class="question" id="question">Loading...</div>
+        <div class="choices" id="choices"></div>
+        <div class="actions">
+          <div class="small">Green = correct • Red = wrong</div>
+          <button class="next" id="nextBtn" disabled>Next</button>
+        </div>
+      </section>
+
+      <section class="card" id="results" style="display:none;margin-top:14px">
+        <div class="results" id="resultsInner">
+          <div class="big" id="resTitle">All done!</div>
+          <div id="resEmoji" class="emoji">🚀</div>
+          <div id="resText" class="small">You scored <strong id="finalScore">0</strong> out of <strong id="finalTotal">10</strong>.</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="next" id="restart">Try again</button>
+            <button class="next" id="share" style="background:#444;color:#fff">Share</button>
+          </div>
+        </div>
+      </section>
+
+      <footer style="border-top:1px dashed rgba(0,0,0,0.04);padding-top:12px;margin-top:12px">
+        <div class="small">Narrow column demo — no server, single file.</div>
+        <div class="small">Tip: add your GitHub repos as projects using the sidebar.</div>
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    const questions = [
+      {q:"Which planet is known as the Red Planet?", a:["Venus","Mars","Jupiter","Mercury"], correct:1},
+      {q:"What is the name of the first human to walk on the Moon?", a:["Yuri Gagarin","Buzz Aldrin","Neil Armstrong","Alan Shepard"], correct:2},
+      {q:"Which NASA program landed the Curiosity rover on Mars?", a:["Apollo","Voyager","Mars Science Laboratory","Artemis"], correct:2},
+      {q:"What is the largest planet in our solar system?", a:["Saturn","Jupiter","Uranus","Neptune"], correct:1},
+      {q:"Which telescope observed the deep-field images of distant galaxies?", a:["Hubble Space Telescope","Kepler","Spitzer","Chandra"], correct:0},
+      {q:"What does ISS stand for?", a:["International Space Station","Interstellar Space Ship","Internal Satellite System","Independent Space Station"], correct:0},
+      {q:"Which element powers most modern spacecraft ion thrusters?", a:["Xenon","Hydrogen","Helium","Neon"], correct:0},
+      {q:"Which planet has a prominent ring system?", a:["Mars","Venus","Saturn","Mercury"], correct:2},
+      {q:"What year did the first Sputnik launch (first artificial satellite)?", a:["1957","1969","1945","1971"], correct:0},
+      {q:"Which mission returned the first samples from an asteroid (Hayabusa2 returned samples from which asteroid?)", a:["Ryugu","Bennu","Itokawa","Vesta"], correct:0}
+    ];
+
+    const total = questions.length;
+    let index = 0, score = 0, answered = false;
+
+    const qCount = document.getElementById('qCount'); qCount.textContent = total;
+    const scoreEl = document.getElementById('score');
+    const questionEl = document.getElementById('question');
+    const choicesEl = document.getElementById('choices');
+    const prog = document.getElementById('prog');
+    const qIndex = document.getElementById('qIndex');
+    const nextBtn = document.getElementById('nextBtn');
+    const card = document.getElementById('card');
+    const results = document.getElementById('results');
+    const resEmoji = document.getElementById('resEmoji');
+    const finalScore = document.getElementById('finalScore');
+    const finalTotal = document.getElementById('finalTotal');
+
+    function render(){
+      const current = questions[index];
+      questionEl.textContent = current.q;
+      choicesEl.innerHTML = '';
+      current.a.forEach((text,i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.type = 'button';
+        btn.innerHTML = text;
+        btn.dataset.idx = i;
+        btn.addEventListener('click', onChoose);
+        choicesEl.appendChild(btn);
+      });
+      updateMeta();
+      nextBtn.disabled = true;
+      answered = false;
+      card.classList.remove('correct','wrong');
+    }
+
+    function updateMeta(){
+      qIndex.textContent = `Question ${index+1} / ${total}`;
+      const pct = Math.round((index/total)*100);
+      prog.style.width = pct + '%';
+      scoreEl.textContent = score;
+    }
+
+    function onChoose(e){
+      if(answered) return;
+      answered = true;
+      const chosen = Number(e.currentTarget.dataset.idx);
+      const correct = questions[index].correct;
+
+      // reveal feedback
+      if(chosen === correct){
+        e.currentTarget.classList.add('correct');
+        score++;
+        scoreEl.textContent = score;
+        card.classList.add('correct');
+      } else {
+        e.currentTarget.style.background = 'linear-gradient(90deg,var(--bad),#ffb6b6)';
+        e.currentTarget.style.color = '#3a0d0d';
+        card.classList.add('wrong');
+        // highlight correct
+        const buttons = choicesEl.querySelectorAll('.btn');
+        buttons.forEach(b=>{ if(Number(b.dataset.idx)===correct){ b.classList.add('correct'); b.style.outline='2px solid rgba(0,0,0,0.04)'; }});
+      }
+
+      // enable next
+      nextBtn.disabled = false;
+    }
+
+    nextBtn.addEventListener('click', ()=>{
+      // advance
+      index++;
+      prog.style.width = Math.round((index/total)*100)+'%';
+      if(index>=total){ showResults(); return; }
+      render();
+    });
+
+    function showResults(){
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('finalTotal').textContent = total;
+      const pct = Math.round((score/total)*100);
+      let emoji = '🚀';
+      let title = 'Nice work!';
+      if(pct === 100){ emoji='🏆✨'; title='Perfect!'; }
+      else if(pct >= 80){ emoji='🚀🌟'; title='Great job!'; }
+      else if(pct >= 50){ emoji='🙂'; title='Not bad!'; }
+      else { emoji='🤖💫'; title='Keep learning!'; }
+
+      resEmoji.textContent = emoji;
+      document.getElementById('resTitle').textContent = title;
+      results.style.display = 'block';
+      document.getElementById('resultsInner').scrollIntoView({behavior:'smooth'});
+      // final progress
+      prog.style.width = '100%';
+      // hide question area
+      document.querySelector('.qcard').style.display = 'none';
+    }
+
+    document.getElementById('restart').addEventListener('click', ()=>{
+      // reset
+      index = 0; score = 0; answered = false; document.querySelector('.qcard').style.display = '';
+      results.style.display = 'none'; scoreEl.textContent = 0; prog.style.width = '0%'; render();
+    });
+
+    document.getElementById('share').addEventListener('click', ()=>{
+      const url = location.href;
+      if(navigator.share) navigator.share({title:'Space Quiz',text:`I scored ${score}/${total} on this Space Quiz!`,url}).catch(()=>alert('Share cancelled'));
+      else { navigator.clipboard && navigator.clipboard.writeText(url); alert('Link copied to clipboard'); }
+    });
+
+    // init
+    render();
+  </script>
+</body>
+</html>
