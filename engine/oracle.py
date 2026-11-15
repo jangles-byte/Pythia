@@ -96,7 +96,8 @@ class Oracle:
         return preds
 
     async def _chat(self, user: str) -> str:
-        return await self._complete([{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}], 1400)
+        return await self._complete([{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}],
+                                    CONFIG.oracle_max_tokens)
 
     async def _complete(self, messages: list[dict], max_tokens: int = 900, model: str | None = None) -> str:
         body = {"model": model or self.model, "messages": messages, "temperature": CONFIG.temperature, "max_tokens": max_tokens}
@@ -104,12 +105,18 @@ class Oracle:
             r = await c.post(f"{self.base}/chat/completions", json=body,
                              headers={"Authorization": f"Bearer {self.key}"})
             r.raise_for_status()
-            msg = r.json()["choices"][0]["message"]
+            choice = r.json()["choices"][0]
+            msg = choice.get("message") or {}
             # Reasoning models (gemma4, qwen3, …) put their answer in `content` but
             # stream chain-of-thought into a separate `reasoning` field. If the token
             # budget was spent on CoT, `content` comes back empty — fall back to
             # `reasoning` so JSON extraction still has something to parse.
-            return (msg.get("content") or "").strip() or (msg.get("reasoning") or "")
+            text = (msg.get("content") or "").strip() or (msg.get("reasoning") or "").strip()
+            if choice.get("finish_reason") == "length":
+                # Hit the cap instead of finishing: the answer is cut off. Raise the matching
+                # budget (ORACLE_MAX_TOKENS / CHAT_MAX_TOKENS / SWARM / JUDGE / WHATIF).
+                log.warning("LLM stopped at the token cap (%d) — output truncated", max_tokens)
+            return text
 
     async def chat(self, question: str, brief, predictions, history=None,
                    persona: tuple[str, str] | None = None, model: str | None = None) -> str:
@@ -140,7 +147,7 @@ class Oracle:
             role = "assistant" if h.get("role") == "assistant" else "user"
             messages.append({"role": role, "content": str(h.get("content", ""))[:2000]})
         messages.append({"role": "user", "content": f"{context}\n\n— USER QUESTION —\n{question}"})
-        return await self._complete(messages, 800, model=model)
+        return await self._complete(messages, CONFIG.chat_max_tokens, model=model)
 
     async def judge(self, forecast: dict, evidence: list[str], current_brief: str) -> tuple[str, str]:
         """Grade one expired forecast against what actually happened.

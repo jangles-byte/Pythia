@@ -84,6 +84,11 @@ class Config:
     # models burn ~1300 tokens (mostly hidden chain-of-thought) here, so keep generous
     # headroom or the JSON truncates mid-answer (see JUDGE_MAX_TOKENS).
     whatif_max_tokens: int = field(default_factory=lambda: _i("WHATIF_MAX_TOKENS", 2400))
+    # token budget for the prediction pass and for chat answers. These were hardcoded
+    # (1400 / 800) and ignored ORACLE_MAX_TOKENS, so long chat reports were cut off
+    # mid-sentence and forecast JSON could truncate. Both are env-tunable now.
+    oracle_max_tokens: int = field(default_factory=lambda: _i("ORACLE_MAX_TOKENS", 2400))
+    chat_max_tokens: int = field(default_factory=lambda: _i("CHAT_MAX_TOKENS", 2400))
 
     # ── Swarm (a council of LLM personas deliberates each forecast) ──
     swarm_enabled: bool = field(default_factory=lambda: _b("SWARM_ENABLED", True))
