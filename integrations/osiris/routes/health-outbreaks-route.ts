@@ -20,10 +20,13 @@ export async function GET() {
     const summaryBits: string[] = [];
     for (const it of items) {
       const title: string = it?.Title || '';
-      const idx = title.lastIndexOf(' - ');
-      if (idx < 0) continue;
-      const disease = title.slice(0, idx).trim();
-      const country = title.slice(idx + 3).trim();
+      // WHO titles are free-form: "Ebola virus disease - Uganda" but also
+      // "Ebola virus disease – Democratic Republic of the Congo" and "Cholera, Haiti".
+      // Requiring an exact " - " silently dropped every en/em-dash and comma title.
+      const parts = title.split(/\s+[-\u2013\u2014]\s+|\s*,\s*/).filter((p: string) => p.trim());
+      if (parts.length < 2) continue;
+      const disease = parts.slice(0, -1).join(', ').trim();
+      const country = parts[parts.length - 1].trim();
       if (summaryBits.length < 8) summaryBits.push(`${disease} (${country})`);
       const c = byName(country);                         // "Global"/"Multi-country" have no centroid -> oracle-only
       if (!c) continue;
