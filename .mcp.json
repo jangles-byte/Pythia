@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pythia": {
+      "command": "bash",
+      "args": [".devcontainer/mcp.sh"]
+    }
+  }
+}

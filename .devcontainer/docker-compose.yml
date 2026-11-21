@@ -29,6 +29,8 @@ services:
       - ${HOME}/.ssh:/home/node/.ssh:ro
       # Claude Code state (chat history, login, memory) survives container rebuilds.
       - claude-config:/home/node/.claude
+      # Keep Codex login, settings, and history in a project-scoped Docker volume.
+      - codex-state:/home/node/.codex
     command: sleep infinity
     environment:
       CLAUDE_CONFIG_DIR: /home/node/.claude
@@ -88,3 +90,4 @@ volumes:
   osiris-node-modules:
   osiris-next:
   claude-config:
+  codex-state:

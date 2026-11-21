@@ -20,7 +20,8 @@
       "extensions": [
         "ms-azuretools.vscode-docker",
         "ms-python.python",
-        "Anthropic.claude-code"
+        "Anthropic.claude-code",
+        "openai.chatgpt"
       ]
     }
   }

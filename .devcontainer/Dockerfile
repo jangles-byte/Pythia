@@ -10,6 +10,6 @@ ENV UV_PYTHON_INSTALL_DIR=/opt/uv-python
 RUN uv python install 3.12 && chmod -R a+rX /opt/uv-python
 
 # Mount points for named volumes; pre-created so the volumes are owned by node, not root.
-RUN mkdir -p /home/node/.claude /workspace/.venv \
+RUN mkdir -p /home/node/.claude /home/node/.codex /workspace/.venv \
        /workspace/vendor/osiris/node_modules /workspace/vendor/osiris/.next \
-    && chown -R node:node /home/node/.claude /workspace
+    && chown -R node:node /home/node/.claude /home/node/.codex /workspace

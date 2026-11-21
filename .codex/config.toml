@@ -1,0 +1,7 @@
+# Project-scoped Codex config (used when this project is trusted).
+# Pythia's MCP server: live world state, forecasts, ask/what-if. Needs the app container running.
+# Runs .devcontainer/mcp.sh from the repo root, inside the dev container or on the Mac.
+[mcp_servers.pythia]
+command = "bash"
+args = ["-c", "exec bash \"$(git rev-parse --show-toplevel)/.devcontainer/mcp.sh\""]
+startup_timeout_sec = 30
