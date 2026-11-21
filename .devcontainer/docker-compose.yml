@@ -1,0 +1,90 @@
+# Pythia = the engine in this repo (FastAPI, :8088) + an Osiris checkout with Pythia's overlay
+# (Next.js globe, :3000 inside the container). Osiris is cloned into vendor/osiris (gitignored)
+# by install-deps.sh, so nothing is installed on the Mac.
+#
+# The LLM is Ollama on the Mac, reached at host.docker.internal:11434. Ollama inside Docker on
+# macOS can't use the GPU, so it stays on the host; the container only talks to its HTTP API.
+
+x-dev-build: &dev-build
+  context: .
+  dockerfile: Dockerfile
+
+x-workspace: &workspace
+  - ..:/workspace:cached
+  # Linux dependencies and build output in named volumes, away from the Mac.
+  - venv:/workspace/.venv
+  - osiris-node-modules:/workspace/vendor/osiris/node_modules
+  - osiris-next:/workspace/vendor/osiris/.next
+
+services:
+  # The dev environment itself. VS Code attaches to this container.
+  devcontainer:
+    build: *dev-build
+    volumes:
+      - ..:/workspace:cached
+      - venv:/workspace/.venv
+      - osiris-node-modules:/workspace/vendor/osiris/node_modules
+      - osiris-next:/workspace/vendor/osiris/.next
+      # Host SSH keys (git clone/push, signing). Read-only; requires $HOME set on the host.
+      - ${HOME}/.ssh:/home/node/.ssh:ro
+      # Claude Code state (chat history, login, memory) survives container rebuilds.
+      - claude-config:/home/node/.claude
+    command: sleep infinity
+    environment:
+      CLAUDE_CONFIG_DIR: /home/node/.claude
+      UV_LINK_MODE: copy
+      PYTHIA_ENGINE_URL: http://app:8088
+      OSIRIS_URL: http://app:3000
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+
+  # One-shot: clones Osiris, applies the overlay, installs dependencies, then exits.
+  deps:
+    build: *dev-build
+    user: node
+    working_dir: /workspace
+    command: ["bash", ".devcontainer/install-deps.sh"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      UV_LINK_MODE: copy
+    volumes: *workspace
+    restart: "no"
+
+  # The engine + the Osiris UI, started by run-app.sh.
+  app:
+    build: *dev-build
+    user: node
+    working_dir: /workspace
+    command: ["bash", ".devcontainer/run-app.sh"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      UV_LINK_MODE: copy
+      OSIRIS_URL: http://localhost:3000
+      ENGINE_HOST: 0.0.0.0
+      ENGINE_PORT: "8088"
+      PYTHIA_ENGINE_URL: http://localhost:8088
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+      LLM_API_KEY: ${LLM_API_KEY:-ollama}
+      LLM_MODEL: ${LLM_MODEL:-qwen3:14b}
+      # No ~/MiroFish inside the container; point the fallback somewhere empty.
+      MIROFISH_DIR: /nonexistent
+    volumes: *workspace
+    ports:
+      # Bound to the Mac's loopback so Pythia stays private to this computer.
+      - "127.0.0.1:${UI_PORT:-3010}:3000"
+      - "127.0.0.1:${ENGINE_HOST_PORT:-8088}:8088"
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  venv:
+  osiris-node-modules:
+  osiris-next:
+  claude-config:

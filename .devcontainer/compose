@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Runs docker compose for this project from the Mac, e.g. `.devcontainer/compose logs -f app`.
+# Matches the project name the dev container tools derive from the repo folder.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+project="$(basename "$PWD" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9_-')_devcontainer"
+exec docker compose -p "$project" -f .devcontainer/docker-compose.yml "$@"

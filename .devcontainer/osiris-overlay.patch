@@ -1,0 +1,70 @@
+diff --git a/src/app/api/proxy-tiles/route.ts b/src/app/api/proxy-tiles/route.ts
+index a878345..a78f518 100644
+--- a/src/app/api/proxy-tiles/route.ts
++++ b/src/app/api/proxy-tiles/route.ts
+@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
+     const response = await fetch(targetUrl.toString(), {
+       headers: {
+         'Accept': '*/*',
+-        'User-Agent': 'Osiris-Tile-Proxy/1.0',
++        // No custom User-Agent: Carto 403s 'Osiris-Tile-Proxy/1.0'.
+       },
+       // Using Next.js fetch cache options to heavily cache tiles locally
+       next: {
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+index 2fce0a7..4aa77f5 100644
+--- a/src/app/page.tsx
++++ b/src/app/page.tsx
+@@ -15,6 +15,15 @@ import ViewPresets from '@/components/ViewPresets';
+ import KeyboardShortcuts from '@/components/KeyboardShortcuts';
+ import GlobalStatusBar from '@/components/GlobalStatusBar';
+ import LiveAlerts from '@/components/LiveAlerts';
++// ── PYTHIA overlay (minimal wiring; see Pythia's integrations/osiris/INSTALL.md) ──
++import PanelModal from '@/components/PanelModal';
++import PythiaPanel from '@/components/PythiaPanel';
++import PythiaStatus from '@/components/PythiaStatus';
++import FloatingWindow from '@/components/FloatingWindow';
++import ChatBox from '@/components/ChatBox';
++import GlobalHealthScore from '@/components/GlobalHealthScore';
++import SignalNotifier from '@/components/SignalNotifier';
++import { Eye, MessageSquare } from 'lucide-react';
+ 
+ const OsirisMap = dynamic(() => import('@/components/OsirisMap'), { ssr: false });
+ const LayerPanel = dynamic(() => import('@/components/LayerPanel'));
+@@ -98,6 +107,8 @@ export default function Dashboard() {
+   const [regionDossier, setRegionDossier] = useState<any>(null);
+   const [dossierLoading, setDossierLoading] = useState(false);
+   const [showSplash, setShowSplash] = useState(true);
++  const [showPythia, setShowPythia] = useState(false);
++  const [showPythiaChat, setShowPythiaChat] = useState(false);
+   const [activeCamera, setActiveCamera] = useState<any>(null);
+   const [spaceWeather, setSpaceWeather] = useState<any>(null);
+   const [showLayers, setShowLayers] = useState(true);
+@@ -1286,6 +1297,27 @@ export default function Dashboard() {
+         [?] SHORTCUTS · [F] FULLSCREEN · [S] SHARE · [R] RESET VIEW
+       </div>
+ 
++      {/* ── PYTHIA ── */}
++      <SignalNotifier />
++      <div className="desktop-only"><GlobalHealthScore /></div>
++      <div className="fixed z-[450] bottom-[44px] left-1/2 -translate-x-1/2 flex items-center gap-2 glass-panel px-2 py-1.5" style={{ borderRadius: 14 }}>
++        <button onClick={() => setShowPythia(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-[11px] tracking-widest text-[var(--gold-primary)] hover:bg-white/10">
++          <Eye size={14} /> PYTHIA
++        </button>
++        <button onClick={() => setShowPythiaChat(v => !v)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-[11px] tracking-widest text-[var(--cyan-primary)] hover:bg-white/10">
++          <MessageSquare size={14} /> ASK
++        </button>
++        <PythiaStatus compact />
++      </div>
++      <PanelModal open={showPythia} onClose={() => setShowPythia(false)} title="PYTHIA" subtitle="Oracle deck" icon={<Eye size={16} />} width={1040}>
++        <PythiaPanel embedded onLocate={(lat, lng) => { setShowPythia(false); setFlyToLocation({ lat, lng, zoom: 5, ts: Date.now() }); }} />
++      </PanelModal>
++      {showPythiaChat && (
++        <FloatingWindow title="Ask the oracle" icon={<MessageSquare size={14} />} initial={{ x: 80, y: 120, w: 420, h: 520 }} z={500} onClose={() => setShowPythiaChat(false)} onFocus={() => {}}>
++          <ChatBox />
++        </FloatingWindow>
++      )}
++
+ 
+     </main>
+   );

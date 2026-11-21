@@ -10,3 +10,7 @@ Screen Recording.mov
 *.mov
 runs/*.json
 runs/briefs/
+
+# Osiris checkout used by the dev container (cloned by .devcontainer/install-deps.sh)
+vendor/
+.devcontainer/.env
