@@ -34,6 +34,20 @@ the overlay ships as code, so the patch wires up only part of them:
 - a bottom bar with **PYTHIA** (oracle deck), **ASK** (chat) and the status/model picker
 - the Global Health Score badge, and browser notifications for signal rules
 - a tile-proxy fix (Carto rejects Osiris's old custom User-Agent)
+- Osiris's analytics middleware disabled (it posted page views and visitor IPs to its author's server)
+
+## Security
+
+The engine API has no authentication, so it is fenced in instead:
+
+- Ports are published on the Mac's loopback only, and Next.js telemetry is off.
+- The engine only answers to known Host names (`ENGINE_ALLOWED_HOSTS`) and refuses
+  cross-origin browser requests (`ENGINE_CORS_ORIGINS`, empty by default). The UI's
+  `/api/engine` proxy applies the same checks. Together these stop a web page in your
+  browser from driving the engine, directly or via DNS rebinding.
+- `~/.ssh` is not mounted. The `pythia` MCP server hands agents text from feeds anyone can
+  write (Manifold, Hacker News, news), so agents here must not be able to read keys.
+  VS Code forwards your SSH agent for git; from a terminal, push from the Mac.
 
 Not wired up: forecast rings on the globe, the new map layers, the market/headline tickers,
 and the Filings/Contracts/Signals windows. The engine still ingests every feed.
@@ -42,7 +56,7 @@ Osiris is pinned to `OSIRIS_REF` (in `.env`), the last commit before Pythia's ow
 commit. To change the patch, edit files in `vendor/osiris`, then:
 
 ```bash
-git -C vendor/osiris diff -- src/app/page.tsx src/app/api/proxy-tiles/route.ts > .devcontainer/osiris-overlay.patch
+git -C vendor/osiris diff -- src/app/page.tsx src/app/api/proxy-tiles/route.ts src/middleware.ts > .devcontainer/osiris-overlay.patch
 ```
 
 ## Settings

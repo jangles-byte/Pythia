@@ -10,6 +10,37 @@ export const runtime = 'nodejs';
 
 const ENGINE = (process.env.PYTHIA_ENGINE_URL || 'http://localhost:8088').replace(/\/$/, '');
 
+// The engine has no auth and trusts this proxy (server-side requests carry no Origin), so
+// the proxy must refuse what a hostile web page could send. Hosts it answers to: localhost
+// names, plus any in PYTHIA_DEV_ORIGINS (comma-separated; run-all.sh puts the Tailscale IP there).
+const ALLOWED_HOSTS = new Set([
+  'localhost', '127.0.0.1', '[::1]',
+  ...(process.env.PYTHIA_DEV_ORIGINS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
+]);
+
+function hostnameOf(hostport: string): string {
+  try { return new URL('http://' + hostport).hostname.toLowerCase(); } catch { return ''; }
+}
+
+function refuse(req: NextRequest): Response | null {
+  const host = (req.headers.get('host') || '').toLowerCase();
+  const deny = (why: string) => new Response(JSON.stringify({ error: why }), {
+    status: 403, headers: { 'Content-Type': 'application/json' },
+  });
+  // DNS rebinding: a page on evil.example resolving to 127.0.0.1 arrives with that Host.
+  if (!ALLOWED_HOSTS.has(hostnameOf(host))) return deny('host not allowed');
+  // Cross-origin requests from other pages (including other localhost ports).
+  const origin = req.headers.get('origin');
+  if (origin) {
+    let originHost = '';
+    try { originHost = new URL(origin).host.toLowerCase(); } catch { /* "null" etc. */ }
+    if (originHost !== host) return deny('origin not allowed');
+  }
+  const site = req.headers.get('sec-fetch-site');
+  if (site && site !== 'same-origin' && site !== 'none') return deny('cross-site request');
+  return null;
+}
+
 async function proxy(req: NextRequest, path: string[]): Promise<Response> {
   const sub = '/' + (path || []).join('/');
   const url = ENGINE + sub + (req.nextUrl.search || '');
@@ -68,8 +99,8 @@ async function proxy(req: NextRequest, path: string[]): Promise<Response> {
 }
 
 export async function GET(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  return proxy(req, (await ctx.params).path);
+  return refuse(req) ?? proxy(req, (await ctx.params).path);
 }
 export async function POST(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  return proxy(req, (await ctx.params).path);
+  return refuse(req) ?? proxy(req, (await ctx.params).path);
 }

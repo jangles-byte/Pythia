@@ -4,10 +4,11 @@ from __future__ import annotations
 import asyncio
 import logging
 from contextlib import asynccontextmanager
+from urllib.parse import urlsplit
 
-from fastapi import Body, FastAPI, HTTPException
+from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from .config import CONFIG
 from .state import STATE
@@ -46,7 +47,34 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="PYTHIA Oracle", version="0.2.0", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=CONFIG.cors_origins, allow_methods=["*"], allow_headers=["*"])
+
+
+def _hostname(hostport: str) -> str:
+    """'example.com:8088' -> 'example.com', '[::1]:8088' -> '::1'."""
+    try:
+        return (urlsplit("//" + hostport).hostname or "").lower()
+    except ValueError:
+        return ""
+
+
+@app.middleware("http")
+async def network_guard(request: Request, call_next):
+    """The API has no auth, so refuse what a hostile web page could send:
+    - a Host header we don't know (DNS rebinding: evil.example resolving to 127.0.0.1);
+    - a cross-origin browser request (any page in your browser calling localhost:8088).
+    Requests without an Origin header (the UI's server-side proxy, agents, MCP, curl)
+    and same-origin pages (the engine's own /docs) pass. Registered last, so it runs first."""
+    host = request.headers.get("host", "")
+    if "*" not in CONFIG.allowed_hosts and _hostname(host) not in CONFIG.allowed_hosts:
+        return JSONResponse({"error": "host not allowed", "hint": "set ENGINE_ALLOWED_HOSTS"}, status_code=403)
+    origin = request.headers.get("origin")
+    if origin:
+        same_origin = urlsplit(origin).netloc.lower() == host.lower()
+        allowed = "*" in CONFIG.cors_origins or origin.lower().rstrip("/") in CONFIG.cors_origins
+        if not (same_origin or allowed):
+            return JSONResponse({"error": "origin not allowed", "hint": "set ENGINE_CORS_ORIGINS"}, status_code=403)
+    return await call_next(request)
 
 
 @app.get("/health")

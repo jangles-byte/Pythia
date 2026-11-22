@@ -52,6 +52,10 @@ def _f(name: str, default: float) -> float:
         return default
 
 
+def _csv(name: str, default: str) -> list[str]:
+    return [s.strip().lower() for s in os.environ.get(name, default).split(",") if s.strip()]
+
+
 def _b(name: str, default: bool) -> bool:
     return os.environ.get(name, str(default)).strip().lower() in ("1", "true", "yes", "on")
 
@@ -62,8 +66,18 @@ class Config:
     runs_dir: Path = _ROOT / "runs"
 
     osiris_url: str = field(default_factory=lambda: os.environ.get("OSIRIS_URL", "http://localhost:3000"))
-    engine_host: str = field(default_factory=lambda: os.environ.get("ENGINE_HOST", "0.0.0.0"))
+    # Loopback by default: the API has no auth, so it shouldn't be on the network unless
+    # you ask for it. The UI reaches it through its same-origin /api/engine proxy.
+    engine_host: str = field(default_factory=lambda: os.environ.get("ENGINE_HOST", "127.0.0.1"))
     engine_port: int = field(default_factory=lambda: _i("ENGINE_PORT", 8088))
+    # Host header values the engine answers to ("*" = any). Blocks DNS rebinding, where a
+    # web page points its own domain at 127.0.0.1 to read this API. Add your Tailscale /
+    # LAN address here if you call the engine directly from another device.
+    allowed_hosts: list[str] = field(default_factory=lambda: _csv("ENGINE_ALLOWED_HOSTS", "localhost,127.0.0.1,::1"))
+    # Browser origins allowed to call the engine cross-origin. Empty = none: the UI goes
+    # through its own server-side proxy, and requests with no Origin (agents, curl, MCP)
+    # are unaffected. Same-origin pages (the engine's own /docs) are always allowed.
+    cors_origins: list[str] = field(default_factory=lambda: _csv("ENGINE_CORS_ORIGINS", ""))
 
     # ── Oracle LLM (defaults to MiroFish's configured local model) ──
     llm_base_url: str = field(default_factory=lambda: os.environ.get("LLM_BASE_URL") or _MF.get("LLM_BASE_URL") or "http://localhost:11434/v1")
